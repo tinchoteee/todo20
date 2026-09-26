@@ -20,8 +20,8 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Hecho: catálogo con fotos (logos "Todo20" recortados; Todo20 es otra marca del mismo dueño), logo e isotipo (`img/`), checkout, envíos, editor, textos legales.
 - Botas con precio. Faltan los precios del zapato acordonado y de las zapatillas gamuza. Campus y Samba: $30.000.
 - Faltan las fotos de los colores nuevos: negro (punta cuadrada, texana con tachas, corta con tachas, caña fruncida), blanco (caña alta con flecos) y bordó (caña fruncida). Mientras tanto la página avisa "foto de referencia en otro color".
-- El código está en GitHub: `tinchoteee/todo20` (rama `claude/webpage-editing-odsc8k`).
-- **Nada está publicado todavía.** Faltan las cuentas: Vercel, Mercado Pago developers, Zipnova, Resend, Upstash. Git y gh no están instalados.
+- El código está en GitHub: `tinchoteee/todo20`. Vercel publica la rama `main` en https://nacireina.vercel.app (cada push a `main` se publica solo).
+- Faltan las cuentas: Mercado Pago developers, Zipnova, Resend, Upstash (base de datos en Vercel). Todavía no cobra.
 - Falta en `productos.js`: el WhatsApp del local, y el peso y las medidas reales de las cajas.
 - Nunca pedir ni pegar claves ni datos bancarios en el chat: el usuario los carga directo en Vercel y en Mercado Pago.
-- Siguiente paso: publicar en Vercel y hacer una compra de prueba con las credenciales de prueba de Mercado Pago.
+- Siguiente paso: crear la base de datos (Upstash) y `ADMIN_CLAVE` en Vercel, cargar `MP_ACCESS_TOKEN` de prueba y hacer una compra de prueba.
