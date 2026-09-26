@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nací Reina Calzados</title>
+<meta name="description" content="Botas, zapatos y zapatillas. Envíos a todo el país con Andreani y retiro en Ramos Mejía.">
+<meta name="theme-color" content="#E0157F">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nací Reina Calzados">
+<meta property="og:description" content="Botas, zapatos y zapatillas. Envíos a todo el país con Andreani y retiro en Ramos Mejía.">
+<meta property="og:image" content="img/logo.jpg">
+<meta property="og:locale" content="es_AR">
+<link rel="icon" href="img/isotipo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="img/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+<div class="aviso" id="aviso">Envíos a <b>todo el país</b> con Andreani · Retiro gratis en Av. de Mayo 1614, Ramos Mejía</div>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#" aria-label="Nací Reina Calzados, inicio"><img src="img/logo.jpg" alt="Nací Reina Calzados" width="1221" height="1005"></a>
+    <nav class="nav" id="nav" aria-label="Categorías"></nav>
+    <button class="btn-carrito" id="abrirCarrito" aria-label="Ver carrito">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      <span class="c" id="contador"></span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <!-- INICIO -->
+  <div id="vista-inicio">
+    <div class="hero">
+      <div class="wrap">
+        <div class="hero-txt">
+          <h1>Pisá <em>fuerte.</em></h1>
+          <p>Botas, zapatos y zapatillas. Pagá seguro con Mercado Pago y recibilo con Andreani en todo el país, o retiralo por el local.</p>
+          <a class="btn btn-negro" href="#catalogo">Ver productos</a>
+        </div>
+        <div class="hero-logo"><img src="img/logo.jpg" alt="" width="1221" height="1005"></div>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="ventajas">
+        <div class="ventaja"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/></svg></span><div><b>Envíos con Andreani</b><span id="ventajaEnvio">A domicilio o a sucursal, en todo el país.</span></div></div>
+        <div class="ventaja"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg></span><div><b>Pagá con Mercado Pago</b><span>Tarjeta, débito o dinero en cuenta.</span></div></div>
+        <div class="ventaja"><span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10l8-6 8 6v10H4z"/><path d="M10 20v-6h4v6"/></svg></span><div><b>Retiro gratis</b><span>Av. de Mayo 1614, Ramos Mejía.</span></div></div>
+      </div>
+
+      <section class="bloque" id="catalogo">
+        <h2>Nuestros productos</h2>
+        <p class="sub">Tocá un producto para ver fotos, colores y talles.</p>
+        <div class="cats" id="cats" role="group" aria-label="Filtrar por categoría"></div>
+        <div class="grilla" id="grilla"></div>
+      </section>
+
+      <section class="bloque" id="talles">
+        <div class="guia">
+          <div>
+            <h2>¿No sabés tu talle?</h2>
+            <p>Pisá una hoja, marcá la punta del dedo más largo y el talón, y medí en centímetros. Buscá ese largo en la tabla. Si estás entre dos, elegí el más grande.</p>
+          </div>
+          <div class="tabla-wrap">
+            <table>
+              <thead><tr><th>Talle AR</th><th>35</th><th>36</th><th>37</th><th>38</th><th>39</th><th>40</th><th>41</th><th>42</th><th>43</th><th>44</th><th>45</th></tr></thead>
+              <tbody><tr><td>Pie (cm)</td><td>22,5</td><td>23</td><td>23,5</td><td>24,5</td><td>25</td><td>25,5</td><td>26,5</td><td>27</td><td>27,5</td><td>28,5</td><td>29</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="bloque" id="local">
+        <h2>Estamos cerca</h2>
+        <p class="sub">Comprá online o vení a probártelo.</p>
+        <div class="local">
+          <div class="card-l"><h3>Retiro por el local</h3><p>Av. de Mayo 1614, Ramos Mejía. Comprá online y pasá a buscarlo sin costo.</p></div>
+          <div class="card-l"><h3>Envíos con Andreani</h3><p>A tu casa o a la sucursal que elijas. El costo se calcula con tu código postal.</p></div>
+          <div class="card-l"><h3>Pago seguro</h3><p>Pagás en la página de Mercado Pago. Tus datos de tarjeta nunca pasan por nuestra página.</p></div>
+        </div>
+      </section>
+
+      <section class="bloque" id="ayuda">
+        <h2>Preguntas frecuentes</h2>
+        <p class="sub">Todo lo que necesitás saber antes de comprar.</p>
+        <div class="faq">
+          <details><summary>¿Cuánto cuesta el envío y cuánto tarda?</summary>
+            <p>Depende de tu código postal: lo podés calcular en la página de cada producto o en el checkout. Enviamos con Andreani a todo el país, a tu casa o a la sucursal que elijas. Despachamos dentro de las 48 horas hábiles de acreditado el pago y el correo tarda entre 2 y 7 días hábiles según la zona. <span data-gratis></span></p></details>
+          <details><summary>¿Cómo sigo mi envío?</summary>
+            <p>Cuando despachamos tu pedido te llega por email el número de seguimiento de Andreani. También te avisamos por WhatsApp.</p></details>
+          <details><summary>¿Puedo retirar por el local?</summary>
+            <p>Sí, sin costo. Elegí “Retiro en el local” al finalizar la compra y te avisamos cuando esté listo en Av. de Mayo 1614, Ramos Mejía.</p></details>
+          <details><summary>¿Qué medios de pago aceptan?</summary>
+            <p>Pagás con Mercado Pago: tarjeta de crédito, débito, dinero en cuenta y otros medios que ofrece Mercado Pago. Las cuotas disponibles las ves al momento de pagar.</p></details>
+          <details id="cambios"><summary>¿Puedo cambiar el talle o el modelo?</summary>
+            <p>Sí. Tenés 30 días desde que recibís el producto para cambiarlo, sin uso y en su caja original. Escribinos por WhatsApp con tu número de pedido. Si el cambio es por talle, el envío de vuelta corre por tu cuenta; si el producto llegó fallado, el cambio no tiene costo.</p></details>
+          <details><summary>¿Y si me arrepiento de la compra?</summary>
+            <p>Por ley tenés 10 días corridos desde que recibís el producto para arrepentirte y pedir la devolución del dinero, sin dar explicaciones. Usá el <button class="link" data-arrepentimiento>botón de arrepentimiento</button>: el producto tiene que volver sin uso y en su caja.</p></details>
+          <details><summary>¿Cómo sé mi talle?</summary>
+            <p>Mirá la <a class="link" href="#talles">guía de talles</a>. Si estás entre dos talles, te recomendamos el más grande. Ante la duda, escribinos y te asesoramos.</p></details>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- PRODUCTO -->
+  <div id="vista-producto" hidden>
+    <div class="wrap">
+      <nav class="migas" id="migas" aria-label="Estás en"></nav>
+      <div class="producto">
+        <div class="galeria">
+          <div class="miniaturas" id="miniaturas"></div>
+          <div class="foto-grande" id="fotoGrande"></div>
+        </div>
+        <div class="info-prod">
+          <div>
+            <p class="cat-lbl" id="pCat"></p>
+            <h1 id="pNombre"></h1>
+          </div>
+          <div class="precio" id="pPrecio"></div>
+          <p class="desc" id="pDesc"></p>
+          <div id="pColoresBox">
+            <div class="lbl">Color <span id="pColorNombre"></span></div>
+            <div class="colores" id="pColores"></div>
+          </div>
+          <div>
+            <div class="lbl">Talle <a class="link" href="#talles" style="font-size:14px">Guía de talles</a></div>
+            <div class="talles" id="pTalles"></div>
+          </div>
+          <p class="aviso-error" id="pFalta" aria-live="polite"></p>
+          <div id="pAcciones" style="display:grid;gap:10px"></div>
+          <div class="caja-gris calc">
+            <b>Calculá el envío</b>
+            <form class="fila" id="calcForm">
+              <input class="in" id="calcCP" inputmode="numeric" maxlength="8" placeholder="Código postal" aria-label="Código postal" autocomplete="postal-code">
+              <select class="in" id="calcProv" aria-label="Provincia"></select>
+              <button class="btn btn-borde" style="width:auto;padding-block:11px">Calcular</button>
+            </form>
+            <div id="calcRes" aria-live="polite"></div>
+          </div>
+          <ul class="beneficios">
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span id="pGratis">Envíos a todo el país con Andreani.</span></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Retiro gratis en el local de Ramos Mejía.</span></li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg><span>Pago seguro con Mercado Pago.</span></li>
+          </ul>
+        </div>
+      </div>
+      <section class="bloque" id="relacionados" hidden>
+        <h2>También te puede gustar</h2>
+        <p class="sub"></p>
+        <div class="grilla" id="grillaRel"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- CHECKOUT -->
+  <div id="vista-checkout" hidden>
+    <div class="wrap checkout">
+      <div>
+        <h1>Finalizar compra</h1>
+        <ol class="pasos-ck" id="pasosCk">
+          <li data-p="1"><span class="n">1</span>Tus datos</li>
+          <li data-p="2"><span class="n">2</span>Entrega</li>
+          <li data-p="3"><span class="n">3</span>Pago</li>
+        </ol>
+
+        <div class="paso" id="paso1">
+          <div class="paso-h"><h2>1. Tus datos</h2><button class="link" data-editar="1" hidden>Editar</button></div>
+          <p class="resumen-paso" id="res1" hidden></p>
+          <form class="paso-cuerpo" id="form1" novalidate>
+            <div class="campo"><label for="ckEmail">Email <small>(ahí te llega el seguimiento del envío)</small></label><input class="in" id="ckEmail" type="email" autocomplete="email"></div>
+            <div class="campo"><label for="ckNombre">Nombre y apellido</label><input class="in" id="ckNombre" autocomplete="name"></div>
+            <div class="fila2">
+              <div class="campo"><label for="ckTel">Teléfono (WhatsApp)</label><input class="in" id="ckTel" type="tel" inputmode="tel" autocomplete="tel"></div>
+              <div class="campo"><label for="ckDni">DNI</label><input class="in" id="ckDni" inputmode="numeric" maxlength="10"></div>
+            </div>
+            <p class="aviso-error" id="falta1" aria-live="polite"></p>
+            <button class="btn btn-negro">Continuar</button>
+          </form>
+        </div>
+
+        <div class="paso bloqueado cerrado" id="paso2">
+          <div class="paso-h"><h2>2. Entrega</h2><button class="link" data-editar="2" hidden>Editar</button></div>
+          <p class="resumen-paso" id="res2" hidden></p>
+          <div class="paso-cuerpo">
+            <form class="fila2" id="formCP">
+              <div class="campo"><label for="ckCP">Código postal</label><input class="in" id="ckCP" inputmode="numeric" maxlength="8" autocomplete="postal-code"></div>
+              <div class="campo"><label for="ckProv">Provincia</label><select class="in" id="ckProv" autocomplete="address-level1"></select></div>
+              <div class="campo" style="grid-column:1/-1"><label for="ckLoc">Localidad</label><input class="in" id="ckLoc" autocomplete="address-level2"></div>
+              <button class="btn btn-borde" style="grid-column:1/-1">Ver opciones de envío</button>
+            </form>
+            <div class="radios" id="opcionesCk" aria-live="polite"></div>
+            <div id="ckDomicilio" hidden class="paso-cuerpo" style="margin:0">
+              <div class="fila3">
+                <div class="campo"><label for="ckCalle">Calle</label><input class="in" id="ckCalle" autocomplete="address-line1"></div>
+                <div class="campo"><label for="ckNum">Número</label><input class="in" id="ckNum" inputmode="numeric"></div>
+                <div class="campo"><label for="ckPiso">Piso/Depto <small>(opcional)</small></label><input class="in" id="ckPiso" autocomplete="address-line2"></div>
+              </div>
+            </div>
+            <div id="ckSucursal" hidden>
+              <div class="lbl">Elegí la sucursal</div>
+              <div class="sucursales radios" id="listaSucursales"></div>
+            </div>
+            <p class="aviso-error" id="falta2" aria-live="polite"></p>
+            <button class="btn btn-negro" id="continuar2">Continuar al pago</button>
+          </div>
+        </div>
+
+        <div class="paso bloqueado cerrado" id="paso3">
+          <div class="paso-h"><h2>3. Pago</h2></div>
+          <div class="paso-cuerpo">
+            <p style="margin:0">Vas a pagar en la página segura de Mercado Pago. Podés usar tarjeta de crédito, débito o dinero en cuenta.</p>
+            <p class="aviso-error" id="falta3" aria-live="polite"></p>
+            <button class="btn btn-mp" id="pagar"><span id="pagarTxt">Pagar con Mercado Pago</span><small>Se abre Mercado Pago</small></button>
+            <p class="seguro">🔒 Tus datos de tarjeta nunca pasan por esta página.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="resumen" aria-label="Resumen del pedido">
+        <h2>Tu pedido</h2>
+        <div id="resLineas"></div>
+        <div class="cuentas" id="resCuentas"></div>
+        <a class="link" href="#" id="seguirComprando" style="justify-self:start">← Seguir comprando</a>
+      </aside>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="pie-marca"><img src="img/isotipo.svg" alt="" width="44" height="44"><span><b>Nací Reina Calzados</b><br>Av. de Mayo 1614, Ramos Mejía, Buenos Aires</span></span>
+    <nav class="pie-links" aria-label="Ayuda">
+      <a href="#ayuda">Preguntas frecuentes</a>
+      <a href="#cambios">Cambios y devoluciones</a>
+      <button data-arrepentimiento>Botón de arrepentimiento</button>
+      <a href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario" target="_blank" rel="noopener">Defensa del consumidor</a>
+    </nav>
+  </div>
+  <div class="wrap pie-final">Envíos con Andreani · Pagos con Mercado Pago · © Nací Reina Calzados</div>
+</footer>
+
+<!-- Botón de arrepentimiento -->
+<div class="modal" id="arrepentimiento" hidden role="dialog" aria-modal="true" aria-labelledby="arrTit">
+  <form class="modal-caja" id="formArr" novalidate>
+    <div class="paso-h"><h2 id="arrTit">Botón de arrepentimiento</h2><button type="button" class="cerrar" data-cerrar-arr aria-label="Cerrar">×</button></div>
+    <div id="arrCuerpo" style="display:grid;gap:12px">
+      <p style="margin:0;color:var(--tinta-2)">Tenés 10 días corridos desde que recibiste tu compra para cancelarla. Completá tus datos y te contactamos para coordinar la devolución y el reintegro del dinero.</p>
+      <div class="campo"><label for="arrNombre">Nombre y apellido</label><input class="in" id="arrNombre" autocomplete="name"></div>
+      <div class="fila2">
+        <div class="campo"><label for="arrEmail">Email</label><input class="in" id="arrEmail" type="email" autocomplete="email"></div>
+        <div class="campo"><label for="arrTel">Teléfono</label><input class="in" id="arrTel" type="tel" autocomplete="tel"></div>
+      </div>
+      <div class="campo"><label for="arrPedido">Número de pedido <small>(ej: NR-ABC123)</small></label><input class="in" id="arrPedido"></div>
+      <div class="campo"><label for="arrMotivo">Motivo <small>(opcional)</small></label><input class="in" id="arrMotivo"></div>
+      <p class="aviso-error" id="arrError" aria-live="polite"></p>
+      <button class="btn btn-negro">Enviar solicitud</button>
+    </div>
+  </form>
+</div>
+
+<a class="flotante" id="flotante" href="#" target="_blank" rel="noopener" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>Consultas</a>
+
+<!-- Carrito -->
+<div class="velo" id="velo" hidden></div>
+<aside class="panel" id="panel" hidden aria-label="Carrito" role="dialog" aria-modal="true">
+  <div class="panel-h"><h2>Tu carrito</h2><button class="cerrar" id="cerrarCarrito" aria-label="Cerrar">×</button></div>
+  <div class="panel-b" id="items"></div>
+  <div class="panel-f" id="panelF" hidden>
+    <div class="barra-gratis" id="barraGratis"></div>
+    <div class="total"><span>Subtotal</span><span id="subtotal">$0</span></div>
+    <p class="nota" id="notaConsultar" hidden>Hay productos con precio a consultar. Para pagar online, consultalos por WhatsApp o sacalos del carrito.</p>
+    <a class="btn btn-negro" id="iniciarCompra" href="#checkout">Iniciar compra</a>
+    <a class="btn btn-wa" id="waCarrito" href="#" target="_blank" rel="noopener">Consultar por WhatsApp</a>
+    <p class="nota">El envío se calcula en el siguiente paso.</p>
+  </div>
+</aside>
+
+<!-- Resultado del pago -->
+<div class="modal" id="resultado" hidden role="dialog" aria-modal="true" aria-labelledby="resTit">
+  <div class="modal-caja">
+    <div class="paso-h"><h2 id="resTit"></h2><button class="cerrar" id="resCerrar" aria-label="Cerrar">×</button></div>
+    <div id="resCuerpo" style="display:grid;gap:12px"></div>
+  </div>
+</div>
+
+<script src="productos.js"></script>
+<script src="ajustes.js"></script>
+<script src="tienda.js"></script>
+</body>
+</html>

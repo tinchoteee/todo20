@@ -1,0 +1,6 @@
+{
+  "name": "naci-reina-tienda",
+  "private": true,
+  "description": "Tienda online de Nací Reina Calzados",
+  "engines": { "node": ">=20" }
+}

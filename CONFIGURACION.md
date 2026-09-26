@@ -1,0 +1,109 @@
+# Nací Reina · Cómo poner la tienda en funcionamiento
+
+La tienda ya está armada. Para que venda sola faltan crear algunas cuentas (son tuyas, por eso las tenés que crear vos) y pegar sus claves en Vercel. Claude te guía en cada paso: tardás más o menos una hora en total.
+
+---
+
+## Qué hace la tienda sola
+
+1. El cliente elige producto, color y talle, y calcula el envío con su código postal.
+2. En el checkout elige: **Andreani a domicilio**, **Andreani a sucursal** o **retiro en el local**.
+3. Paga todo junto con **Mercado Pago** (productos + envío).
+4. Cuando el pago se aprueba:
+   - El pedido aparece en el **editor** (pestaña Pedidos).
+   - Se **crea solo el envío en Zipnova**, que le pide a Andreani la etiqueta y el retiro.
+   - Te llega un **email** con todo el pedido.
+5. **Vos solo tenés que**: imprimir la etiqueta desde el panel de Zipnova, pegarla en la caja y dársela a Andreani cuando pase por el local (o llevarla a una sucursal).
+
+---
+
+## Paso 1 · Publicar la página (Vercel)
+
+1. Creá una cuenta gratis en **github.com** y otra en **vercel.com** (entrá a Vercel con tu cuenta de GitHub).
+2. Lo más fácil: pedile a Claude que suba la tienda por vos. Para eso instalá Git y GitHub CLI (los comandos están en la conversación) y ejecutá `gh auth login`.
+3. En Vercel: **Add New → Project → Import** el repositorio de la tienda → **Deploy**.
+4. Vercel te da una dirección tipo `naci-reina.vercel.app`. Más adelante podés comprar un dominio propio (ej: `nacireina.com.ar` en nic.ar) y conectarlo.
+
+## Paso 2 · Base de datos (para el editor y los pedidos)
+
+En Vercel, dentro del proyecto: **Storage → Create Database → Upstash (Redis) → plan Free → Connect**.
+Eso crea solo las variables `KV_REST_API_URL` y `KV_REST_API_TOKEN`. No hay que copiar nada.
+
+## Paso 3 · Mercado Pago (para cobrar)
+
+1. Entrá a **mercadopago.com.ar/developers** con tu cuenta de Mercado Pago → **Tus integraciones → Crear aplicación**.
+2. Tipo de pago: **pagos online** con **Checkout Pro**.
+3. Primero usá las **credenciales de prueba** para hacer una compra de prueba. Después cambiás a las **credenciales de producción**.
+4. Copiá el **Access Token** (empieza con `APP_USR-`) y pegalo en Vercel como `MP_ACCESS_TOKEN`.
+
+## Paso 4 · Zipnova (envíos con Andreani)
+
+1. Creá una cuenta en **zipnova.com.ar** (no necesitás contrato con Andreani).
+2. Cargá la dirección del local como **origen**: Av. de Mayo 1614, Ramos Mejía (CP 1704). Elegí que **retiren en el local**.
+3. Activá **Andreani** como transportista.
+4. En **Configuración → API** generá un token y copiá:
+   - API Token → `ZIPNOVA_API_TOKEN`
+   - API Secret → `ZIPNOVA_API_SECRET`
+   - Número de cuenta → `ZIPNOVA_ACCOUNT_ID`
+   - (opcional) id de la dirección de origen → `ZIPNOVA_ORIGIN_ID`
+
+Mientras no esté Zipnova, la tienda cobra el envío con precios fijos por zona (se cambian en `productos.js`).
+
+## Paso 5 · Emails de aviso (Resend)
+
+1. Creá una cuenta gratis en **resend.com**, con el email donde querés recibir las ventas.
+2. **API Keys → Create API Key** → pegala en Vercel como `RESEND_API_KEY`.
+3. En Vercel agregá `AVISOS_EMAIL` con ese mismo email.
+4. (Más adelante, con dominio propio) verificá el dominio en Resend y agregá `RESEND_FROM`, por ejemplo `Nací Reina <ventas@nacireina.com.ar>`. Así también le llega un email de confirmación a cada cliente.
+
+## Paso 6 · Contraseña del editor
+
+En Vercel agregá `ADMIN_CLAVE` con una contraseña larga que solo sepas vos (por ejemplo, tres palabras y un número).
+
+---
+
+## Dónde se pegan las claves en Vercel
+
+Proyecto → **Settings → Environment Variables**. Después de agregarlas: **Deployments → ⋯ → Redeploy**.
+
+| Variable | Para qué | Obligatoria |
+|---|---|---|
+| `MP_ACCESS_TOKEN` | Cobrar con Mercado Pago | Sí |
+| `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Base de datos (se crean solas en el paso 2) | Sí |
+| `ADMIN_CLAVE` | Entrar al editor | Sí |
+| `ZIPNOVA_API_TOKEN`, `ZIPNOVA_API_SECRET`, `ZIPNOVA_ACCOUNT_ID` | Cotizar y crear envíos Andreani | Sí, para Andreani |
+| `ZIPNOVA_ORIGIN_ID` | Dirección de origen en Zipnova | No |
+| `ZIPNOVA_CREAR_ENVIOS` | Poné `no` si preferís crear los envíos a mano | No |
+| `RESEND_API_KEY`, `AVISOS_EMAIL` | Email con cada venta | Recomendado |
+| `RESEND_FROM` | Email de confirmación al cliente (dominio propio) | No |
+
+**Nunca** compartas estas claves por WhatsApp ni las pegues en la página: solo van en Vercel.
+
+---
+
+## Antes de abrir: compra de prueba
+
+1. Con las credenciales de **prueba** de Mercado Pago, hacé una compra con envío a domicilio.
+2. Revisá que: te llegue el email, el pedido aparezca en el editor y el envío aparezca en Zipnova (cancelalo desde Zipnova si era de prueba).
+3. Cambiá a las credenciales de **producción** y listo.
+
+---
+
+## Uso diario
+
+**Editor:** entrá a `tu-tienda.vercel.app/admin.html` con tu contraseña.
+
+- **Stock y precios**: tocá un talle para marcarlo agotado (queda tachado) o disponible (verde). También podés marcar un color agotado, el modelo entero agotado, o cambiar el precio. Tocá **Guardar**: la tienda se actualiza en segundos.
+- **Pedidos**: todas las ventas, con el seguimiento de Andreani. Cambiá el estado (despachado, entregado…) y usá **Avisar al cliente** para mandarle un WhatsApp armado.
+- **Estado**: muestra qué está configurado y qué falta.
+
+**Cuando entra una venta con envío:** imprimí la etiqueta desde el panel de Zipnova → pegala en la caja → entregala a Andreani.
+**Cuando entra una venta con retiro:** prepará el pedido y avisale al cliente desde el editor.
+**Si alguien usa el botón de arrepentimiento:** te llega un email. Coordiná la devolución y devolvé el dinero desde Mercado Pago.
+
+## Cosas que se cambian en `productos.js` (pedíselas a Claude)
+
+- Tu número de **WhatsApp** (hoy está vacío: el botón de consultas no aparece hasta cargarlo).
+- El monto de **envío gratis** (hoy $150.000).
+- El **peso y tamaño de las cajas**: Andreani cobra según eso. Pesá y medí una caja de cada tipo.
+- Productos nuevos, fotos, nombres y descripciones.
