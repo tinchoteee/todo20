@@ -44,8 +44,8 @@ def procesar(src, box, out, lado=1400, borrar=(), claros=(), libre=False):
     cut=cut.resize((round(cut.width*k2),round(cut.height*k2)),Image.LANCZOS)
     x=(lado-cut.width)//2; y=round(lado*0.52-cut.height/2)
     # lo que en la foto original seguía más allá del borde (piernas, mano) sale desde el borde
-    if toca["t"]: y=0
     if toca["b"]: y=lado-cut.height
+    if toca["t"]: y=0   # si la pierna sigue hacia arriba, manda el borde de arriba
     if toca["l"] and not toca["r"]: x=0
     if toca["r"] and not toca["l"]: x=lado-cut.width
     # sombra de contacto suave
