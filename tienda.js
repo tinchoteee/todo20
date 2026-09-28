@@ -152,9 +152,10 @@ function tarjeta(p) {
 }
 function pintarCatalogo() {
   $("#cats").innerHTML = CATS.map(c => `<button class="cat" data-cat="${c.id}" aria-pressed="${c.id === catActual}">${c.nombre}</button>`).join("");
-  // Los agotados van al final
+  // Agrupados por categoría; los agotados van al final
+  const orden = p => CATS.findIndex(c => c.id === p.cat);
   $("#grilla").innerHTML = PRODUCTOS.filter(p => catActual === "todo" || p.cat === catActual)
-    .sort((a, b) => a.agotado - b.agotado).map(tarjeta).join("");
+    .sort((a, b) => a.agotado - b.agotado || orden(a) - orden(b)).map(tarjeta).join("");
   document.querySelectorAll("#nav a").forEach(a => a.setAttribute("aria-current", a.dataset.cat === catActual));
 }
 $("#nav").innerHTML = CATS.filter(c => c.id !== "todo").map(c => `<a href="#cat/${c.id}" data-cat="${c.id}">${c.nombre}</a>`).join("");

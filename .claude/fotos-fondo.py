@@ -13,7 +13,9 @@ def fondo(W,H):
     vign=1-0.05*(x**2)[...,None]
     return Image.fromarray(np.clip(img*vign,0,255).astype(np.uint8))
 def procesar(src, box, out, lado=1400, borrar=(), claros=(), libre=False):
-    im=Image.open(U+src+"-image.png").convert("RGB").crop(box)
+    ruta=src if os.path.exists(src) else U+src+"-image.png"
+    im=Image.open(ruta).convert("RGB")
+    im=im.crop(box) if box else im
     # agrandar con buena interpolación y un poco de nitidez
     k=lado/max(im.size)*0.86
     im=im.resize((round(im.width*k),round(im.height*k)),Image.LANCZOS)
@@ -59,4 +61,5 @@ def procesar(src, box, out, lado=1400, borrar=(), claros=(), libre=False):
 if __name__=="__main__":
     import json
     extra=json.loads(sys.argv[4]) if len(sys.argv)>4 else {}
-    procesar(sys.argv[1],tuple(map(int,sys.argv[2].split(","))),sys.argv[3],**extra)
+    box=None if sys.argv[2]=="-" else tuple(map(int,sys.argv[2].split(",")))
+    procesar(sys.argv[1],box,sys.argv[3],**extra)
