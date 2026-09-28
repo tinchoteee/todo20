@@ -10,9 +10,10 @@
 })((function () {
   function aplicarAjustes(productos, ajustes) {
     const aj = (ajustes && ajustes.productos) || {};
-    return productos.map(original => {
+    // Los productos o colores con oculto:true están desactivados: no se muestran ni se pueden comprar
+    return productos.filter(p => !p.oculto).map(original => {
       const a = aj[original.id] || {};
-      const p = { ...original, colores: (original.colores || []).map(c => ({ ...c })) };
+      const p = { ...original, colores: (original.colores || []).filter(c => !c.oculto).map(c => ({ ...c })) };
       if (a.precio > 0) p.precio = a.precio;
       p.agotado = Boolean(a.agotado);
       for (const c of p.colores) {

@@ -18,11 +18,12 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 
 ## Estado (2026-09-26)
 - Hecho: catálogo con fotos (logos "Todo20" recortados; Todo20 es otra marca del mismo dueño), logo e isotipo (`img/`), checkout, envíos, editor, textos legales.
-- Catálogo Pontecomoda (proveedor/socio, se pueden usar sus fotos): cargándose desde capturas del catálogo de WhatsApp, ids 15 en adelante, sin precio por ahora. Nombres reescritos para clientes.
+- Catálogo Pontecomoda (proveedor/socio, se pueden usar sus fotos): ids 15 en adelante, nombres reescritos para clientes. Solo están disponibles los artículos de la "lista de precios verano" (Samba, Emi, Vicky, Ricky, París, Lore, Katy, Aldi, Romi, Vitto, Italia, Moscú, Zahira, Ximena, Cleo/Creo, Lali, India, Ameli, Cruz, Birk, Frida, Lupe, Verona tachas, Verona lisa, Támesis, Umma). El resto tiene `oculto:true` (desactivado, se reactiva borrando esa marca). Precio de venta = costo + $10.000 redondeado hacia abajo al millar (margen $9.000–10.000). No cargar artículos con logos de otras marcas (se descartó la Art. Air por la pipa de Nike).
 - Botas con precio. Faltan los precios del zapato acordonado y de las zapatillas gamuza. Campus y Samba: $30.000.
 - Faltan las fotos de los colores nuevos: negro (punta cuadrada, texana con tachas, corta con tachas, caña fruncida), blanco (caña alta con flecos) y bordó (caña fruncida). Mientras tanto la página avisa "foto de referencia en otro color".
 - El código está en GitHub: `tinchoteee/todo20`. Vercel publica la rama `main` en https://nacireina.vercel.app (cada push a `main` se publica solo).
 - Faltan las cuentas: Mercado Pago developers, Zipnova, Resend, Upstash (base de datos en Vercel). Todavía no cobra.
-- Falta en `productos.js`: el WhatsApp del local, y el peso y las medidas reales de las cajas.
+- WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
+- Falta en `productos.js`: el peso y las medidas reales de las cajas.
 - Nunca pedir ni pegar claves ni datos bancarios en el chat: el usuario los carga directo en Vercel y en Mercado Pago.
 - Siguiente paso: crear la base de datos (Upstash) y `ADMIN_CLAVE` en Vercel, cargar `MP_ACCESS_TOKEN` de prueba y hacer una compra de prueba.

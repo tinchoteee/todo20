@@ -4,7 +4,7 @@
 const $ = s => document.querySelector(s);
 const esc = t => String(t == null ? "" : t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const pesos = n => "$" + Math.round(n).toLocaleString("es-AR");
-const PRODUCTOS = CATALOGO.productos;
+const PRODUCTOS = CATALOGO.productos.filter(p => !p.oculto);
 const fotoDe = p => p.foto || ((p.colores || []).find(c => c.foto) || {}).foto || "img/isotipo.svg";
 
 let permiso = sessionStorage.getItem("nr-permiso") || "";
