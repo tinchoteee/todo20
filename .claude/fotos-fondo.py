@@ -1,7 +1,8 @@
 import sys, numpy as np
 from PIL import Image, ImageFilter, ImageEnhance
 from rembg import remove, new_session
-S=new_session("isnet-general-use")
+import os
+S=new_session(os.environ.get("MODELO","isnet-general-use"))
 U="/root/.claude/uploads/e655eb29-b6eb-556d-bbbf-6a2d4941695c/"
 def fondo(W,H):
     # fondo de estudio: crema rosado con luz suave arriba y piso apenas más oscuro
