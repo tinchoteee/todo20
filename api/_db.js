@@ -1,8 +1,14 @@
 // Base de datos chiquita (Upstash Redis, gratis) para guardar el stock, los precios editados y los pedidos.
 // Se conecta sola si en Vercel agregás la integración "Upstash for Redis" (crea estas variables):
 //   KV_REST_API_URL y KV_REST_API_TOKEN   (o UPSTASH_REDIS_REST_URL y UPSTASH_REDIS_REST_TOKEN)
-const URL_DB = () => process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const TOKEN_DB = () => process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+// Si al conectarla se eligió otro prefijo (ej. STORAGE_KV_REST_API_URL), también la encuentra.
+const variable = (...finales) => {
+  for (const f of finales) if (process.env[f]) return process.env[f];
+  for (const f of finales) { const k = Object.keys(process.env).find(n => n.endsWith("_" + f) && process.env[n]); if (k) return process.env[k]; }
+  return undefined;
+};
+const URL_DB = () => variable("KV_REST_API_URL", "UPSTASH_REDIS_REST_URL", "REST_API_URL");
+const TOKEN_DB = () => variable("KV_REST_API_TOKEN", "UPSTASH_REDIS_REST_TOKEN", "REST_API_TOKEN");
 
 const hayDB = () => Boolean(URL_DB() && TOKEN_DB());
 
