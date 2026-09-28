@@ -12,7 +12,7 @@ def fondo(W,H):
     img=top*(1-t)+bot*t
     vign=1-0.05*(x**2)[...,None]
     return Image.fromarray(np.clip(img*vign,0,255).astype(np.uint8))
-def procesar(src, box, out, lado=1400, borrar=(), claros=(), libre=False):
+def procesar(src, box, out, lado=1400, borrar=(), claros=(), libre=False, rellenar=False):
     ruta=src if os.path.exists(src) else U+src+"-image.png"
     im=Image.open(ruta).convert("RGB")
     im=im.crop(box) if box else im
@@ -27,6 +27,13 @@ def procesar(src, box, out, lado=1400, borrar=(), claros=(), libre=False):
         x0,y0,x1,y1=esc(r); A[y0:y1,x0:x1,3]=0
     for r in claros:   # dentro de la zona, borrar solo lo claro (floreros) y dejar lo oscuro
         x0,y0,x1,y1=esc(r); z=A[y0:y1,x0:x1]; z[z[...,:3].mean(-1)>110,3]=0
+    if rellenar:   # huecos cerrados dentro del calzado (ej. plantilla oscura) vuelven a ser producto
+        import cv2
+        m=(A[...,3]>128).astype(np.uint8)
+        h,w=m.shape; f=np.zeros((h+2,w+2),np.uint8); fuera=m.copy()
+        cv2.floodFill(fuera,f,(0,0),2)
+        huecos=(fuera==0)
+        A[huecos,:3]=np.array(im)[huecos]; A[huecos,3]=255
     # borrar manchitas sueltas: quedan solo las partes grandes (el producto)
     import cv2
     n,lab,st,_=cv2.connectedComponentsWithStats((A[...,3]>30).astype(np.uint8),8)
