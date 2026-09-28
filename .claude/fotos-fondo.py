@@ -40,6 +40,7 @@ def procesar(src, box, out, lado=1400, borrar=(), claros=(), libre=False):
     bg=fondo(lado,lado)
     marg=0.9 if any(toca.values()) else 0.81
     k2=min(lado*marg/cut.width, lado*marg/cut.height)
+    if toca["t"] and toca["b"]: k2=min(lado*0.95/cut.width, lado/cut.height)   # va de borde a borde
     cut=cut.resize((round(cut.width*k2),round(cut.height*k2)),Image.LANCZOS)
     x=(lado-cut.width)//2; y=round(lado*0.52-cut.height/2)
     # lo que en la foto original seguía más allá del borde (piernas, mano) sale desde el borde
