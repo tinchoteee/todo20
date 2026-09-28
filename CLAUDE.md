@@ -19,7 +19,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 ## Estado (2026-09-26)
 - Hecho: catálogo con fotos (logos "Todo20" recortados; Todo20 es otra marca del mismo dueño), logo e isotipo (`img/`), checkout, envíos, editor, textos legales.
 - Catálogo Pontecomoda (proveedor/socio, se pueden usar sus fotos): ids 15 en adelante, nombres reescritos para clientes. Solo están disponibles los artículos de la "lista de precios verano" (Samba, Emi, Vicky, Ricky, París, Lore, Katy, Aldi, Romi, Vitto, Italia, Moscú, Zahira, Ximena, Cleo/Creo, Lali, India, Ameli, Cruz, Birk, Frida, Lupe, Verona tachas, Verona lisa, Támesis, Umma). El resto tiene `oculto:true` (desactivado, se reactiva borrando esa marca). Precio de venta = costo + $10.000 redondeado hacia abajo al millar (margen $9.000–10.000). No cargar artículos con logos de otras marcas (se descartó la Art. Air por la pipa de Nike).
-- Botas con precio. Faltan los precios del zapato acordonado y de las zapatillas gamuza. Campus y Samba: $30.000.
+- Todos los productos activos tienen precio. Zapato acordonado $30.000, zapatillas urbanas gamuza $45.000, Campus y Samba (viejas) $30.000.
 - Faltan las fotos de los colores nuevos: negro (punta cuadrada, texana con tachas, corta con tachas, caña fruncida), blanco (caña alta con flecos) y bordó (caña fruncida). Mientras tanto la página avisa "foto de referencia en otro color".
 - El código está en GitHub: `tinchoteee/todo20`. Vercel publica la rama `main` en https://nacireina.vercel.app (cada push a `main` se publica solo).
 - Faltan las cuentas: Mercado Pago developers, Zipnova, Resend, Upstash (base de datos en Vercel). Todavía no cobra.
