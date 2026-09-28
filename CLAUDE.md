@@ -18,6 +18,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 
 ## Estado (2026-09-26)
 - Hecho: catálogo con fotos (logos "Todo20" recortados; Todo20 es otra marca del mismo dueño), logo e isotipo (`img/`), checkout, envíos, editor, textos legales.
+- Catálogo Pontecomoda (proveedor/socio, se pueden usar sus fotos): cargándose desde capturas del catálogo de WhatsApp, ids 15 en adelante, sin precio por ahora. Nombres reescritos para clientes.
 - Botas con precio. Faltan los precios del zapato acordonado y de las zapatillas gamuza. Campus y Samba: $30.000.
 - Faltan las fotos de los colores nuevos: negro (punta cuadrada, texana con tachas, corta con tachas, caña fruncida), blanco (caña alta con flecos) y bordó (caña fruncida). Mientras tanto la página avisa "foto de referencia en otro color".
 - El código está en GitHub: `tinchoteee/todo20`. Vercel publica la rama `main` en https://nacireina.vercel.app (cada push a `main` se publica solo).

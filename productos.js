@@ -23,7 +23,9 @@
       "botas":      { peso: 1500, alto: 13, ancho: 30, largo: 35 },
       "bota-alta":  { peso: 2000, alto: 14, ancho: 32, largo: 45 },
       "zapatos":    { peso: 1100, alto: 12, ancho: 21, largo: 32 },
-      "zapatillas": { peso: 1100, alto: 13, ancho: 22, largo: 33 }
+      "zapatillas": { peso: 1100, alto: 13, ancho: 22, largo: 33 },
+      "sandalias":  { peso: 900,  alto: 12, ancho: 21, largo: 32 },
+      "suecos":     { peso: 900,  alto: 12, ancho: 21, largo: 32 }
     },
     // Solo se usa mientras Zipnova no esté configurado: costo fijo por zona.
     zonasDeRespaldo: { "CABA": 5000, "Buenos Aires": 6500, "resto": 9500 }
@@ -42,6 +44,12 @@
     {id:6,cat:"zapatos",nombre:"Zapato acordonado con tachas",desc:"Plataforma dentada, tachas plateadas.",precio:0,talles:[35,36,37,38,39,40],foto:"fotos/zapato-acordonado-bordo.webp",colores:[{id:"bordo",nombre:"Bordó",hex:"#5E1A22"}]},
     {id:7,cat:"zapatillas",nombre:"Zapatillas Campus",desc:"Gamuza, cordones anchos, suela de goma.",precio:30000,talles:[35,36,37,38,39,40,41,42,43,44],colores:[{id:"verde",nombre:"Verde",hex:"#095D13",foto:"fotos/zapatilla-campus-verde.webp"},{id:"negro",nombre:"Negro",hex:"#000000",foto:"fotos/zapatilla-campus-negra.jpg"}]},
     {id:8,cat:"zapatillas",nombre:"Zapatillas Samba",desc:"Tiras laterales, suela caramelo.",precio:30000,talles:[37,38,39,40,41,42,43,44,45],colores:[{id:"negro",nombre:"Negro",hex:"#1C1C1C",foto:"fotos/zapatilla-samba-negra.jpg"},{id:"marron",nombre:"Marrón",hex:"#9A5A32",foto:"fotos/zapatilla-samba-marron.jpg"}]},
-    {id:10,cat:"zapatillas",nombre:"Zapatillas urbanas gamuza",desc:"Gamuza, cordones beige, suela caramelo.",precio:0,talles:[35,36,37,38,39,40],foto:"fotos/zapatilla-gamuza-marron.jpg",colores:[{id:"marron",nombre:"Marrón",hex:"#3F2E22"}]}
+    {id:10,cat:"zapatillas",nombre:"Zapatillas urbanas gamuza",desc:"Gamuza, cordones beige, suela caramelo.",precio:0,talles:[35,36,37,38,39,40],foto:"fotos/zapatilla-gamuza-marron.jpg",colores:[{id:"marron",nombre:"Marrón",hex:"#3F2E22"}]},
+    // Catálogo Pontecomoda (sin precio todavía)
+    {id:15,cat:"zapatillas",nombre:"Zapatillas Samba sin talón",desc:"Estilo Samba abierta atrás, se calza como un sueco. Suela caramelo.",precio:0,talles:[35,36,37,38,39,40,41],colores:[{id:"blanco",nombre:"Blanco y negro",hex:"#F2EFEA",foto:"fotos/zapatilla-samba-sueco-blanca.jpg"}]},
+    {id:16,cat:"sandalias",nombre:"Sandalia plataforma con ojalillos",desc:"Dos tiras con ojalillos plateados, hebilla al tobillo, base alta.",precio:0,talles:[35,36,37,38,39,40],colores:[{id:"negro",nombre:"Negro",hex:"#1C1C1C",foto:"fotos/sandalia-plataforma-ojalillos-negra.jpg"}]},
+    {id:17,cat:"suecos",nombre:"Sueco de rafia con hebilla",desc:"Tejido de rafia, tira con hebilla y plantilla de corcho.",precio:0,talles:[35,36,37,38,39,40],colores:[{id:"marron",nombre:"Marrón",hex:"#6B4A34",foto:"fotos/sueco-rafia-hebilla-marron.jpg"}]},
+    {id:18,cat:"sandalias",nombre:"Sandalia de tiras cruzadas",desc:"Chinela de tiras anchas cruzadas, suela liviana.",precio:0,talles:[35,36,37,38,39,40],colores:[{id:"negro",nombre:"Negro",hex:"#1C1C1C",foto:"fotos/sandalia-tiras-cruzadas-negra.jpg"}]},
+    {id:19,cat:"sandalias",nombre:"Sandalia con abrojo",desc:"Dos tiras con abrojo y tira al talón. Viene en varias combinaciones.",precio:0,talles:[35,36,37,38,39,40],colores:[{id:"negro",nombre:"Negro",hex:"#1C1C1C",foto:"fotos/sandalia-abrojo-negra.jpg"}]}
   ]
 });
