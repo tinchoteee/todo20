@@ -12,7 +12,7 @@ def fondo(W,H):
     img=top*(1-t)+bot*t
     vign=1-0.05*(x**2)[...,None]
     return Image.fromarray(np.clip(img*vign,0,255).astype(np.uint8))
-def procesar(src, box, out, lado=1400, borrar=(), claros=()):
+def procesar(src, box, out, lado=1400, borrar=(), claros=(), libre=False):
     im=Image.open(U+src+"-image.png").convert("RGB").crop(box)
     # agrandar con buena interpolación y un poco de nitidez
     k=lado/max(im.size)*0.86
@@ -35,6 +35,7 @@ def procesar(src, box, out, lado=1400, borrar=(), claros=()):
     cut=Image.fromarray(A); a=cut.split()[3]
     M=np.array(a)>200
     toca=dict(t=M[:4].any(),b=M[-4:].any(),l=M[:,:4].any(),r=M[:,-4:].any())
+    if libre: toca=dict(t=False,b=False,l=False,r=False)   # centrar aunque toque los bordes
     bb=a.getbbox(); cut=cut.crop(bb)
     bg=fondo(lado,lado)
     marg=0.9 if any(toca.values()) else 0.81
