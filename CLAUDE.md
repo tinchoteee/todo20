@@ -23,6 +23,8 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Faltan las fotos de los colores nuevos: negro (punta cuadrada, corta con tachas, caña fruncida), blanco (caña alta con flecos) y bordó (caña fruncida). Mientras tanto la página avisa "foto de referencia en otro color".
 - El código está en GitHub: `tinchoteee/todo20`. Vercel publica la rama `main` en https://nacireina.vercel.app (cada push a `main` se publica solo).
 - Configurado en Vercel (2026-09-28): base de datos Upstash, `ADMIN_CLAVE` y `MP_ACCESS_TOKEN` de producción (app "Nací Reina" en MP developers). La tienda ya cobra. Después (2026-09-29): Resend (`RESEND_API_KEY`, `AVISOS_EMAIL`) y Zipnova (`ZIPNOVA_API_TOKEN/SECRET/ACCOUNT_ID`, sin `ZIPNOVA_ORIGIN_ID`: usa el origen predeterminado de la cuenta) configurados y probados; compra real de prueba OK.
+- Beneficios por monto: envío gratis desde $150.000 (`envio.gratisDesde`, sobre el subtotal sin descuento) y 15% OFF en los productos desde $200.000 (`descuento` en productos.js; la cuenta está en `aplicarAjustes.conDescuento`, la usan página y servidor). El carrito muestra una barra de progreso con las dos metas.
+- Se sacó la guía de talles (pedido del dueño). El botón de arrepentimiento se mantiene: es obligatorio por ley en Argentina (Res. 424/2020, Ley 24.240 art. 34).
 - WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
 - Bota texana con tachas negra: foto recoloreada digitalmente a partir de la blanca (a pedido del dueño); reemplazar por una foto real cuando haya.
 - Cajas de envío: tamaño caja de Nike, 35 × 24 × 13 cm y 800 g (dato del dueño). Botas de caña alta: 45 × 32 × 14 cm, 800 g.

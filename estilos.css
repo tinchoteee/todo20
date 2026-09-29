@@ -201,8 +201,14 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 .vacio{text-align:center;color:var(--tinta-2);padding-block:50px}
 .panel-f{padding:16px 18px;border-top:1px solid var(--borde);display:grid;gap:12px}
 .barra-gratis{font-size:14px}
-.barra-gratis .barra{height:6px;border-radius:99px;background:var(--gris);margin-top:6px;overflow:hidden}
-.barra-gratis .barra i{display:block;height:100%;background:var(--ok);border-radius:99px}
+.barra-gratis .barra{position:relative;height:8px;border-radius:99px;background:var(--gris);margin:14px 10px 0}
+.barra-gratis .barra i{display:block;height:100%;background:linear-gradient(90deg,var(--rosa),var(--ok));border-radius:99px;transition:width .4s}
+.barra-gratis .meta{position:absolute;top:50%;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;background:var(--blanco);border:2px solid var(--borde);display:grid;place-items:center;font-size:13px;filter:grayscale(1);opacity:.7}
+.barra-gratis .meta.ok{border-color:var(--ok);filter:none;opacity:1}
+.barra-gratis .barra-metas{position:relative;height:30px;margin:6px 10px 0;font-size:11px;color:var(--tinta-2);line-height:1.2}
+.barra-gratis .barra-metas span{position:absolute;transform:translateX(-50%);text-align:center;white-space:nowrap}
+.barra-gratis .barra-metas span:last-child{transform:translateX(-85%)}
+.total.descuento{font-size:15px;color:var(--ok)}
 .total{display:flex;justify-content:space-between;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
 .nota{font-size:13px;color:var(--tinta-2);margin:0;text-align:center}
 

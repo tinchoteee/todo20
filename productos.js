@@ -12,6 +12,10 @@
 
   local: { direccion: "Av. de Mayo 1614, Ramos Mejía", cp: "1704" },
 
+  // Descuento por monto: cuando los productos suman "desde" o más, se descuenta "porcentaje" a cada producto.
+  // (No se aplica al envío.) desde: 0 = sin descuento.
+  descuento: { desde: 200000, porcentaje: 15 },
+
   envio: {
     // Envío gratis cuando los productos suman este monto o más. 0 = sin envío gratis.
     gratisDesde: 150000,

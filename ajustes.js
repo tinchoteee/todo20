@@ -37,5 +37,14 @@
     const lista = (p.colores && p.colores.length ? p.colores.map(c => aplicarAjustes.precioDe(p, c.id)) : [p.precio || 0]).filter(n => n > 0);
     return lista.length ? { min: Math.min(...lista), max: Math.max(...lista) } : null;
   };
+  // Descuento por monto de compra (ver "descuento" en productos.js). Recibe [{ precio, cant }] y devuelve
+  // el precio con descuento de cada línea (redondeado a centavos) y los totales. Página y servidor usan esta misma cuenta.
+  aplicarAjustes.conDescuento = function (lineas, cfg) {
+    const subtotal = lineas.reduce((a, l) => a + l.precio * l.cant, 0);
+    const pct = cfg && cfg.desde > 0 && subtotal >= cfg.desde ? Number(cfg.porcentaje) || 0 : 0;
+    const precios = lineas.map(l => Math.round(l.precio * (100 - pct)) / 100);
+    const total = Math.round(precios.reduce((a, p, i) => a + p * lineas[i].cant, 0) * 100) / 100;
+    return { subtotal, porcentaje: pct, descuento: Math.round((subtotal - total) * 100) / 100, total, precios };
+  };
   return aplicarAjustes;
 })());

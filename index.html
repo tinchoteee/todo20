@@ -59,20 +59,6 @@
         <div class="grilla" id="grilla"></div>
       </section>
 
-      <section class="bloque" id="talles">
-        <div class="guia">
-          <div>
-            <h2>¿No sabés tu talle?</h2>
-            <p>Pisá una hoja, marcá la punta del dedo más largo y el talón, y medí en centímetros. Buscá ese largo en la tabla. Si estás entre dos, elegí el más grande.</p>
-          </div>
-          <div class="tabla-wrap">
-            <table>
-              <thead><tr><th>Talle AR</th><th>35</th><th>36</th><th>37</th><th>38</th><th>39</th><th>40</th><th>41</th><th>42</th><th>43</th><th>44</th><th>45</th></tr></thead>
-              <tbody><tr><td>Pie (cm)</td><td>22,5</td><td>23</td><td>23,5</td><td>24,5</td><td>25</td><td>25,5</td><td>26,5</td><td>27</td><td>27,5</td><td>28,5</td><td>29</td></tr></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
 
       <section class="bloque" id="local">
         <h2>Estamos cerca</h2>
@@ -100,8 +86,6 @@
             <p>Sí. Tenés 30 días desde que recibís el producto para cambiarlo, sin uso y en su caja original. Escribinos por WhatsApp con tu número de pedido. Si el cambio es por talle, el envío de vuelta corre por tu cuenta; si el producto llegó fallado, el cambio no tiene costo.</p></details>
           <details><summary>¿Y si me arrepiento de la compra?</summary>
             <p>Por ley tenés 10 días corridos desde que recibís el producto para arrepentirte y pedir la devolución del dinero, sin dar explicaciones. Usá el <button class="link" data-arrepentimiento>botón de arrepentimiento</button>: el producto tiene que volver sin uso y en su caja.</p></details>
-          <details><summary>¿Cómo sé mi talle?</summary>
-            <p>Mirá la <a class="link" href="#talles">guía de talles</a>. Si estás entre dos talles, te recomendamos el más grande. Ante la duda, escribinos y te asesoramos.</p></details>
         </div>
       </section>
     </div>
@@ -128,7 +112,7 @@
             <div class="colores" id="pColores"></div>
           </div>
           <div>
-            <div class="lbl">Talle <a class="link" href="#talles" style="font-size:14px">Guía de talles</a></div>
+            <div class="lbl">Talle</div>
             <div class="talles" id="pTalles"></div>
           </div>
           <p class="aviso-error" id="pFalta" aria-live="polite"></p>
@@ -278,6 +262,7 @@
   <div class="panel-b" id="items"></div>
   <div class="panel-f" id="panelF" hidden>
     <div class="barra-gratis" id="barraGratis"></div>
+    <div class="total descuento" id="filaDescuento" hidden></div>
     <div class="total"><span>Subtotal</span><span id="subtotal">$0</span></div>
     <p class="nota" id="notaConsultar" hidden>Hay productos con precio a consultar. Para pagar online, consultalos por WhatsApp o sacalos del carrito.</p>
     <a class="btn btn-negro" id="iniciarCompra" href="#checkout">Iniciar compra</a>

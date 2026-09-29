@@ -63,6 +63,10 @@ function problemaItem(i) {
 // ---------- Carrito ----------
 let carrito = leer("nacireina-carrito", []).filter(i => producto(i.id) && producto(i.id).talles.includes(i.talle));
 const subtotal = () => carrito.reduce((a, i) => a + precioDe(producto(i.id), i.color) * i.cant, 0);
+// Descuento por monto (ver "descuento" en productos.js): misma cuenta que hace el servidor al cobrar
+const DESCUENTO = CATALOGO.descuento || { desde: 0, porcentaje: 0 };
+const cuenta = () => aplicarAjustes.conDescuento(carrito.map(i => ({ precio: precioDe(producto(i.id), i.color), cant: i.cant })), DESCUENTO);
+const totalProductos = () => cuenta().total;
 const hayConsultar = () => carrito.some(problemaItem);
 const detalleItem = i => { const p = producto(i.id), c = colorDe(p, i.color); return `${c ? c.nombre + " · " : ""}Talle ${i.talle}`; };
 
@@ -101,14 +105,11 @@ function pintarCarrito() {
 
   const sub = subtotal();
   const sinPrecio = carrito.some(i => !(precioDe(producto(i.id), i.color) > 0));
-  $("#subtotal").textContent = sinPrecio ? (sub ? pesos(sub) + " + a consultar" : "A consultar") : pesos(sub);
-  const g = ENVIO.gratisDesde || 0;
-  $("#barraGratis").hidden = !g;
-  if (g) {
-    const falta = g - sub;
-    $("#barraGratis").innerHTML = (falta <= 0 ? `<span class="gratis">¡Tenés envío gratis!</span>` : `Te faltan <b>${pesos(falta)}</b> para el envío gratis`)
-      + `<div class="barra"><i style="width:${Math.min(100, sub / g * 100)}%"></i></div>`;
-  }
+  const cta = cuenta();
+  $("#subtotal").textContent = sinPrecio ? (sub ? pesos(cta.total) + " + a consultar" : "A consultar") : pesos(cta.total);
+  $("#filaDescuento").hidden = !cta.porcentaje;
+  if (cta.porcentaje) $("#filaDescuento").innerHTML = `<span>Descuento ${cta.porcentaje}% OFF</span><span>−${pesos(cta.descuento)}</span>`;
+  pintarBarraBeneficios(sub);
   $("#notaConsultar").hidden = !hayConsultar();
   $("#notaConsultar").textContent = carrito.some(i => problemaItem(i) === "Se agotó")
     ? "Hay productos que se agotaron. Sacalos del carrito para seguir con la compra."
@@ -118,6 +119,26 @@ function pintarCarrito() {
   $("#iniciarCompra").style.pointerEvents = hayConsultar() ? "none" : "";
   let t = "¡Hola Nací Reina! Quiero consultar por:\n\n" + carrito.map(i => `• ${i.cant} x ${producto(i.id).nombre} - ${detalleItem(i)}`).join("\n");
   $("#waCarrito").href = wa(t);
+}
+// Barra de beneficios del carrito: se llena a medida que se suman productos (envío gratis y descuento)
+function pintarBarraBeneficios(sub) {
+  const metas = [];
+  if (ENVIO.gratisDesde > 0) metas.push({ monto: ENVIO.gratisDesde, texto: "envío gratis", logrado: "¡Tenés envío gratis!", ic: "🚚" });
+  if (DESCUENTO.desde > 0) metas.push({ monto: DESCUENTO.desde, texto: `${DESCUENTO.porcentaje}% OFF`, logrado: `¡Tenés ${DESCUENTO.porcentaje}% OFF en tu compra!`, ic: "🏷️" });
+  metas.sort((a, b) => a.monto - b.monto);
+  $("#barraGratis").hidden = !metas.length;
+  if (!metas.length) return;
+  const tope = metas[metas.length - 1].monto;
+  const proxima = metas.find(m => sub < m.monto);
+  const logradas = metas.filter(m => sub >= m.monto);
+  let msj;
+  if (!proxima) msj = `<span class="gratis">¡Tenés ${metas.map(m => m.texto).join(" y ")}!</span>`;
+  else msj = (logradas.length ? `<span class="gratis">${logradas[logradas.length - 1].logrado}</span> ` : "")
+    + `Te faltan <b>${pesos(proxima.monto - sub)}</b> para ${logradas.length ? "sumar " : "tener "}<b>${proxima.texto}</b>`;
+  $("#barraGratis").innerHTML = `<div class="barra-msj">${msj}</div>
+    <div class="barra"><i style="width:${Math.min(100, sub / tope * 100)}%"></i>
+      ${metas.map(m => `<span class="meta${sub >= m.monto ? " ok" : ""}" style="left:${m.monto / tope * 100}%" title="${esc(m.texto)} desde ${pesos(m.monto)}">${m.ic}</span>`).join("")}</div>
+    <div class="barra-metas">${metas.map(m => `<span style="left:${m.monto / tope * 100}%">${esc(m.texto)}<br>${pesos(m.monto)}</span>`).join("")}</div>`;
 }
 function abrirCarrito() { $("#velo").hidden = false; $("#panel").hidden = false; $("#cerrarCarrito").focus(); }
 function cerrarCarrito() { $("#velo").hidden = true; $("#panel").hidden = true; }
@@ -285,10 +306,12 @@ function pintarCheckout() {
     <div class="linea"><div class="mini">${img(fotoDe(p, i.color), p.nombre)}<span class="q">${i.cant}</span></div>
       <div><b>${esc(p.nombre)}</b><span>${esc(detalleItem(i))}</span></div><div class="m">${pesos(precioDe(p, i.color) * i.cant)}</div></div>`; }).join("");
   const envio = ck.opcion ? ck.opcion.precio : null;
-  $("#resCuentas").innerHTML = `<div><span>Subtotal</span><span>${pesos(subtotal())}</span></div>
+  const cta = cuenta();
+  $("#resCuentas").innerHTML = `<div><span>Subtotal</span><span>${pesos(cta.subtotal)}</span></div>
+    ${cta.porcentaje ? `<div class="gratis"><span>Descuento ${cta.porcentaje}% OFF</span><span>−${pesos(cta.descuento)}</span></div>` : ""}
     <div><span>Envío</span><span>${envio == null ? '<span style="color:var(--tinta-2)">Se calcula en el paso 2</span>' : envio ? pesos(envio) : '<span class="gratis">Gratis</span>'}</span></div>
-    <div class="tot"><span>Total</span><span>${pesos(subtotal() + (envio || 0))}</span></div>`;
-  $("#pagarTxt").textContent = `Pagar ${pesos(subtotal() + (envio || 0))} con Mercado Pago`;
+    <div class="tot"><span>Total</span><span>${pesos(cta.total + (envio || 0))}</span></div>`;
+  $("#pagarTxt").textContent = `Pagar ${pesos(cta.total + (envio || 0))} con Mercado Pago`;
 
   // Pasos
   for (let n = 1; n <= 3; n++) {
@@ -427,7 +450,7 @@ $("#pagar").addEventListener("click", async () => {
   $("#pagar").disabled = true; $("#pagarTxt").textContent = "Conectando con Mercado Pago…"; $("#falta3").textContent = "";
   try {
     const r = await api("/api/crear-pago", pedido);
-    recordarPedido(r.pedido, subtotal() + o.precio, pedido.cliente);
+    recordarPedido(r.pedido, totalProductos() + o.precio, pedido.cliente);
     location.href = r.url;
   } catch (err) {
     $("#pagar").disabled = false; pintarCheckout();
@@ -460,7 +483,7 @@ function sacarTarjeta() {
 async function pintarTarjeta() {
   const enPago = !$("#vista-checkout").hidden && ck.paso === 3 && ck.opcion;
   if (!enPago) { sacarTarjeta(); return; }
-  const monto = subtotal() + (ck.opcion.precio || 0);
+  const monto = Math.round((totalProductos() + (ck.opcion.precio || 0)) * 100) / 100;
   if ((pagoTarjeta.brick && pagoTarjeta.monto === monto) || pagoTarjeta.armando) return;
   pagoTarjeta.armando = true;
   try {
@@ -531,7 +554,7 @@ document.addEventListener("keydown", e => {
 
 // ---------- Textos que dependen de la configuración ----------
 if (ENVIO.gratisDesde > 0) {
-  $("#aviso").innerHTML = `<b>Envío gratis</b> en compras desde ${pesos(ENVIO.gratisDesde)} · Envíos a todo el país`;
+  $("#aviso").innerHTML = `<b>Envío gratis</b> desde ${pesos(ENVIO.gratisDesde)}${DESCUENTO.desde > 0 ? ` · <b>${DESCUENTO.porcentaje}% OFF</b> desde ${pesos(DESCUENTO.desde)}` : ""} · Envíos a todo el país`;
   $("#pGratis").textContent = `Envío gratis en compras desde ${pesos(ENVIO.gratisDesde)}.`;
   $("#ventajaEnvio").textContent = `Gratis desde ${pesos(ENVIO.gratisDesde)}. A domicilio o a sucursal.`;
 }
