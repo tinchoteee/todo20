@@ -31,6 +31,19 @@ const wa = texto => (WHATSAPP ? `https://wa.me/${WHATSAPP}` : "https://wa.me/") 
 const leer = (k, def) => { try { return JSON.parse(localStorage.getItem(k)) ?? def } catch (e) { return def } };
 const escribir = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) {} };
 
+// ---------- Datos públicos del servidor y Píxel de Meta ----------
+// El número del píxel se carga en Vercel (META_PIXEL_ID). Sin número, no se mide nada.
+const configPublica = fetch("/api/config").then(r => r.json()).catch(() => ({}));
+const pixelListo = configPublica.then(c => {
+  if (!c.metaPixelId) return false;
+  /* Código oficial de Meta */
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");
+  fbq("init", String(c.metaPixelId));
+  fbq("track", "PageView");
+  return true;
+});
+const medir = (evento, datos, id) => pixelListo.then(ok => { if (ok) fbq("track", evento, { currency: "ARS", ...datos }, id ? { eventID: id } : undefined); });
+
 async function api(ruta, datos) {
   let r;
   try {
@@ -82,6 +95,8 @@ function agregar(id, color, talle) {
   const ex = carrito.find(i => i.id === id && i.talle === talle && i.color === color);
   ex ? ex.cant++ : carrito.push({ id, color, talle, cant: 1 });
   guardarCarrito();
+  const p = producto(id);
+  medir("AddToCart", { content_ids: [String(id)], content_name: p.nombre, content_type: "product", value: precioDe(p, color) || 0 });
 }
 
 function pintarCarrito() {
@@ -191,6 +206,7 @@ const sel = { id: null, color: null, talle: null, foto: null };
 function mostrarProducto(id) {
   const p = producto(id);
   if (!p) { location.hash = ""; return; }
+  if (sel.id !== id) medir("ViewContent", { content_ids: [String(id)], content_name: p.nombre, content_type: "product", value: (rangoDe(p) || {}).min || 0 });
   if (sel.id !== id) Object.assign(sel, { id, color: p.colores && p.colores.length === 1 ? p.colores[0].id : null, talle: null, foto: null });
   document.title = `${p.nombre} · Nací Reina Calzados`;
   $("#migas").innerHTML = `<a href="#">Inicio</a> / <a href="#cat/${p.cat}">${esc(nombreCat(p.cat))}</a> / ${esc(p.nombre)}`;
@@ -295,6 +311,7 @@ const val = id => document.getElementById(id).value.trim();
 function mostrarCheckout() {
   if (!carrito.length || hayConsultar()) { location.hash = ""; abrirCarrito(); return; }
   document.title = "Finalizar compra · Nací Reina Calzados";
+  medir("InitiateCheckout", { value: cuenta().total, num_items: carrito.reduce((a, i) => a + i.cant, 0), content_ids: carrito.map(i => String(i.id)), content_type: "product" });
   // Si ya calculó el envío en la página del producto, se completa solo
   const z = leer("nacireina-cp", {});
   if (!val("ckCP") && z.cp) { $("#ckCP").value = z.cp; $("#ckProv").value = z.provincia || ""; }
@@ -469,7 +486,7 @@ function cargarScript(src) {
 }
 async function prepararTarjeta() {
   if (pagoTarjeta.clave === undefined) {
-    try { pagoTarjeta.clave = (await (await fetch("/api/config")).json()).mpPublicKey || null; } catch (e) { pagoTarjeta.clave = null; }
+    try { pagoTarjeta.clave = (await configPublica).mpPublicKey || null; } catch (e) { pagoTarjeta.clave = null; }
   }
   if (!pagoTarjeta.clave) return false;
   if (!window.MercadoPago) { try { await cargarScript("https://sdk.mercadopago.com/js/v2"); } catch (e) { pagoTarjeta.clave = null; return false; } }
@@ -596,6 +613,7 @@ $("#formArr").addEventListener("submit", async e => {
   }
   if (estado === "aprobado") {
     tit = "¡Gracias por tu compra!";
+    if (ult) medir("Purchase", { value: ult.total, content_type: "product" }, ult.numero);
     cuerpo = `<img class="isotipo-grande" src="img/isotipo.svg" alt="" style="margin:0"><p style="margin:0">Recibimos tu pago${ult ? ` del pedido <b>${esc(ult.numero)}</b>` : ""}. ${ult && ult.local ? "Te avisamos por WhatsApp cuando esté listo para retirar." : "Te avisamos por WhatsApp cuando lo despachemos, con el número de seguimiento."}</p>${lista}`;
     if (WHATSAPP && ult) {
       const t = `¡Hola Nací Reina! Ya pagué el pedido ${ult.numero}:\n\n${ult.lineas.map(l => "• " + l).join("\n")}\n\nTotal: ${pesos(ult.total)}\nNombre: ${ult.cliente.nombre}\nEntrega: ${ult.entrega}`;

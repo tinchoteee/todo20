@@ -26,6 +26,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Beneficios por monto: envío gratis desde $150.000 (`envio.gratisDesde`, sobre el subtotal sin descuento) y 15% OFF en los productos desde $200.000 (`descuento` en productos.js; la cuenta está en `aplicarAjustes.conDescuento`, la usan página y servidor). El carrito muestra una barra de progreso con las dos metas.
 - Se sacó la guía de talles (pedido del dueño). El botón de arrepentimiento se mantiene: es obligatorio por ley en Argentina (Res. 424/2020, Ley 24.240 art. 34).
 - SEO: título y descripción para Google, `canonical` y `og:*` con el dominio propio, ficha de negocio (JSON-LD `ShoeStore`), `sitemap.xml` y `robots.txt`. Imagen para compartir el link (WhatsApp/Facebook): `img/compartir.jpg` (1200×630, solo el logo sobre blanco: pedido del dueño, sin fotos ni promos). Si cambia el dominio, actualizarlos.
+- Píxel de Meta: `META_PIXEL_ID` en Vercel (lo entrega `api/config.js`; sin número no carga nada). Eventos en `tienda.js` (`medir`): PageView, ViewContent, AddToCart, InitiateCheckout y Purchase (al volver con `?pago=aprobado`, `eventID` = número de pedido).
 - Vercel Web Analytics: script en `index.html` (no en el editor); se activa en Vercel → proyecto → Analytics → Enable.
 - WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
 - Instagram: https://www.instagram.com/nacireinacalzados/ (link en el pie de página y en `sameAs` del JSON-LD). Facebook no se usa.

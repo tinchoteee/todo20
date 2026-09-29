@@ -61,6 +61,15 @@ Mientras no esté Zipnova, la tienda cobra el envío con precios fijos por zona 
 
 En Vercel agregá `ADMIN_CLAVE` con una contraseña larga que solo sepas vos (por ejemplo, tres palabras y un número).
 
+## Paso 7 · Píxel de Meta (medir ventas de Instagram) · opcional
+
+1. Entrá a **business.facebook.com/events_manager** con la cuenta que maneja el Instagram de la tienda.
+2. **Conectar orígenes de datos → Web → Conectar** y ponele de nombre "Nací Reina".
+3. Cuando pregunte cómo instalarlo, elegí **"Instalar el código manualmente"** o cerrá esa ventana: no hace falta copiar el código.
+4. Copiá el **identificador del píxel** (un número de 15 o 16 cifras) y cargalo en Vercel como `META_PIXEL_ID`. Después, Redeploy.
+
+La tienda le avisa a Meta cuando alguien: entra, mira un producto, agrega al carrito, empieza a pagar y compra (con el monto).
+
 ---
 
 ## Dónde se pegan las claves en Vercel
@@ -77,6 +86,7 @@ Proyecto → **Settings → Environment Variables**. Después de agregarlas: **D
 | `ZIPNOVA_ORIGIN_ID` | Dirección de origen en Zipnova | No |
 | `ZIPNOVA_CREAR_ENVIOS` | Poné `no` si preferís crear los envíos a mano | No |
 | `RESEND_API_KEY`, `AVISOS_EMAIL` | Email con cada venta | Recomendado |
+| `META_PIXEL_ID` | Píxel de Meta: medir visitas y ventas que vienen de Instagram | No |
 | `RESEND_FROM` | Email de confirmación al cliente (dominio propio) | No |
 
 **Nunca** compartas estas claves por WhatsApp ni las pegues en la página: solo van en Vercel.
