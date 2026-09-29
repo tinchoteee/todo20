@@ -4,7 +4,9 @@ from rembg import remove, new_session
 import os
 S=new_session(os.environ.get("MODELO","isnet-general-use"))
 U="/root/.claude/uploads/e655eb29-b6eb-556d-bbbf-6a2d4941695c/"
+BLANCO=os.environ.get("FONDO")=="blanco"   # FONDO=blanco: fondo blanco liso (pedido del dueño para las zapatillas retro)
 def fondo(W,H):
+    if BLANCO: return Image.new("RGB",(W,H),(255,255,255))
     # fondo de estudio: crema rosado con luz suave arriba y piso apenas más oscuro
     y=np.linspace(0,1,H)[:,None]; x=np.linspace(-1,1,W)[None,:]
     top=np.array([252,246,248.]); bot=np.array([238,226,231.])
@@ -61,7 +63,7 @@ def procesar(src, box, out, lado=1400, borrar=(), claros=(), libre=False, rellen
     sh=Image.new("L",(lado,lado),0)
     m=cut.split()[3].point(lambda v:255 if v>100 else 0)
     sh.paste(m,(x+10,y+18)); sh=sh.filter(ImageFilter.GaussianBlur(26)).point(lambda v:int(v*0.28))
-    bg=Image.composite(Image.new("RGB",(lado,lado),(120,90,100)),bg,sh)
+    bg=Image.composite(Image.new("RGB",(lado,lado),(110,110,110) if BLANCO else (120,90,100)),bg,sh)
     bg.paste(cut,(x,y),cut)
     bg=ImageEnhance.Contrast(bg).enhance(1.03)
     bg.save(out,quality=90,optimize=True,progressive=True)
