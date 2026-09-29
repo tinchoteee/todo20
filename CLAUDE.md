@@ -30,7 +30,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Vercel Web Analytics: script en `index.html` (no en el editor); se activa en Vercel → proyecto → Analytics → Enable.
 - WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
 - Instagram: https://www.instagram.com/nacireinacalzados/ (link en el pie de página y en `sameAs` del JSON-LD). Facebook no se usa.
-- Bota texana con tachas negra: foto recoloreada digitalmente a partir de la blanca (a pedido del dueño); reemplazar por una foto real cuando haya.
+- Bota texana con tachas negra: foto real del local (2026-09-29) sobre el fondo de estudio; reemplazó a la recoloreada.
 - Cajas de envío: tamaño caja de Nike, 35 × 24 × 13 cm y 800 g (dato del dueño). Botas de caña alta: 45 × 32 × 14 cm, 800 g.
 - Nunca pedir ni pegar claves ni datos bancarios en el chat: el usuario los carga directo en Vercel y en Mercado Pago.
 - Nombres sin marcas ajenas (2026-09-29): Campus → "Zapatillas retro de gamuza" (id 7), Samba → "Zapatillas retro suela caramelo" (id 8; después se unió a la id 31 a pedido del dueño: quedó `oculto` y su color marrón pasó a la 31 como "Caramelo y negro" a $30.000; su negro era el mismo que el de la 31), estilo Samba → "Zapatillas retro Reina" (id 31), Samba sin talón → "Zapatillas retro sin talón" (id 15, oculto). No usar Samba, Campus ni "tres tiras" en textos para clientes (los archivos de fotos conservan el nombre viejo).
