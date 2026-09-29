@@ -30,6 +30,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Vercel Web Analytics: script en `index.html` (no en el editor); se activa en Vercel → proyecto → Analytics → Enable.
 - WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
 - Instagram: https://www.instagram.com/nacireinacalzados/ (link en el pie de página y en `sameAs` del JSON-LD). Facebook no se usa.
+- Zapato acordonado con tachas (id 6): color Negro agregado con foto real (2026-09-29), mismo precio.
 - Bota texana con tachas negra: foto real del local (2026-09-29) sobre el fondo de estudio; reemplazó a la recoloreada.
 - Cajas de envío: tamaño caja de Nike, 35 × 24 × 13 cm y 800 g (dato del dueño). Botas de caña alta: 45 × 32 × 14 cm, 800 g.
 - Nunca pedir ni pegar claves ni datos bancarios en el chat: el usuario los carga directo en Vercel y en Mercado Pago.
