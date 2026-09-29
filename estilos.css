@@ -287,3 +287,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 }
 @media (min-width:761px){ .hero .wrap{grid-template-columns:1fr auto} }
 @media (max-width:420px){ .fila2{grid-template-columns:1fr} }
+
+/* Aviso de pocos pares en la página del producto */
+.quedan{margin:8px 0 0;font-size:14px;font-weight:700;color:var(--rosa)}
+.quedan:empty{display:none}

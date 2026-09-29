@@ -5,9 +5,14 @@ const db = require("./_db.js");
 
 let cache = null, cacheHasta = 0;
 
+// Precios y agotados del editor + los pares que hay de cada talle
 async function leerAjustes() {
-  try { return await db.leer("nacireina:ajustes", {}) || {}; }
-  catch (e) { console.error("No se pudieron leer los ajustes", e.message); return {}; }
+  let ajustes = {}, pares = {};
+  try { ajustes = await db.leer("nacireina:ajustes", {}) || {}; }
+  catch (e) { console.error("No se pudieron leer los ajustes", e.message); }
+  try { pares = await db.leerPares(); }
+  catch (e) { console.error("No se pudieron leer los pares", e.message); }
+  return { ...ajustes, pares };
 }
 
 async function productosActuales() {

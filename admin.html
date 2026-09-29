@@ -39,7 +39,11 @@
   .color-box.off .chips{opacity:.35;pointer-events:none}
   .color-nom{display:flex;align-items:center;gap:8px}
   .color-nom i{width:18px;height:18px;border-radius:50%;background:var(--sw);box-shadow:0 0 0 1px var(--borde)}
-  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px 6px}
+  .talle-box{display:grid;gap:4px;justify-items:center}
+  .pares{width:48px;height:30px;text-align:center;border:1.5px solid var(--borde);border-radius:8px;font:inherit;font-weight:700;font-size:14px;background:var(--blanco);color:var(--tinta)}
+  .pares:focus{outline:2px solid var(--rosa);outline-offset:1px}
+  .pares::placeholder{color:#C9BAC2}
   .chip{min-width:48px;height:40px;border-radius:10px;border:1.5px solid var(--ok);background:#EAF6EF;color:var(--ok);font-weight:700}
   .chip[aria-pressed="false"]{border-color:var(--borde);background:var(--gris) linear-gradient(to top right,transparent calc(50% - 1px),#CDBFC6 50%,transparent calc(50% + 1px));color:#B9A9B2}
   .ficha.off .color-box{opacity:.4;pointer-events:none}
@@ -95,7 +99,7 @@
     </div>
 
     <section id="tab-stock">
-      <p class="ayuda" style="margin-bottom:12px">Tocá un talle para marcarlo <b>agotado</b> (queda tachado) o <b>disponible</b> (verde). Los cambios se ven en la tienda en unos segundos después de guardar.</p>
+      <p class="ayuda" style="margin-bottom:12px">En el cuadradito de abajo de cada talle poné <b>cuántos pares hay</b>: con cada venta se descuentan solos y, cuando llegan a 0, el talle aparece <b>agotado</b> en la tienda. Si lo dejás vacío (–), no se lleva la cuenta y podés tocar el talle para marcarlo agotado (tachado) o disponible (verde). Los cambios se ven en la tienda unos segundos después de guardar.</p>
       <input class="in" id="buscar" placeholder="Buscar producto…" aria-label="Buscar producto" style="margin-bottom:12px">
       <div class="lista-prod" id="listaProd"></div>
     </section>

@@ -53,4 +53,30 @@ async function actualizarPedido(numero, cambios) {
   return false;
 }
 
-module.exports = { hayDB, comando, leer, guardar, guardarSiNoExiste, agregarPedido, listarPedidos, actualizarPedido };
+// Pares por talle: un "hash" de Redis con claves "id|color|talle" → cantidad.
+// Va aparte de los ajustes para que una venta y el editor no se pisen.
+const PARES = "nacireina:pares";
+async function leerPares() {
+  if (!hayDB()) return {};
+  const plano = await comando("HGETALL", PARES) || [];
+  const out = {};
+  if (Array.isArray(plano)) for (let i = 0; i < plano.length; i += 2) out[plano[i]] = Number(plano[i + 1]);
+  else Object.assign(out, plano);
+  return out;
+}
+// cambios: { "id|color|talle": número o null (null = dejar de llevar la cuenta) }
+async function cambiarPares(cambios) {
+  const poner = [], sacar = [];
+  for (const [k, v] of Object.entries(cambios)) v == null ? sacar.push(k) : poner.push(k, String(v));
+  if (poner.length) await comando("HSET", PARES, ...poner);
+  if (sacar.length) await comando("HDEL", PARES, ...sacar);
+}
+// Descuenta pares vendidos (nunca baja de 0). Si ese talle no lleva la cuenta, no hace nada y devuelve null.
+const DESCONTAR = "local v=redis.call('HGET',KEYS[1],ARGV[1]) if not v then return -1 end " +
+  "local n=tonumber(v)-tonumber(ARGV[2]) if n<0 then n=0 end redis.call('HSET',KEYS[1],ARGV[1],n) return n";
+async function descontarPares(clave, cant) {
+  const n = await comando("EVAL", DESCONTAR, 1, PARES, clave, String(cant));
+  return n === -1 ? null : n;
+}
+
+module.exports = { hayDB, leerPares, cambiarPares, descontarPares, comando, leer, guardar, guardarSiNoExiste, agregarPedido, listarPedidos, actualizarPedido };

@@ -11,6 +11,8 @@ let permiso = sessionStorage.getItem("nr-permiso") || "";
 let guardado = { productos: {} };   // lo que está en la base de datos
 let ajustes = { productos: {} };    // lo que se está editando
 let pedidos = [];
+let paresGuardado = {};             // pares por talle en la base de datos ("id|color|talle" → número)
+let pares = {};                     // lo que se está editando (sin clave = no se lleva la cuenta)
 
 async function api(metodo, datos) {
   let r;
@@ -49,6 +51,8 @@ async function cargar() {
   const d = await api("GET");
   guardado = d.ajustes && d.ajustes.productos ? d.ajustes : { productos: {} };
   ajustes = structuredClone(guardado);
+  paresGuardado = (d.ajustes && d.ajustes.pares) || {};
+  pares = { ...paresGuardado };
   pedidos = d.pedidos || [];
   $("#pantallaLogin").hidden = true; $("#pantallaEditor").hidden = false;
   pintarStock(); pintarPedidos(); pintarEstado(d.config || {});
@@ -66,8 +70,20 @@ document.querySelector(".tabs").addEventListener("click", e => { const b = e.tar
 // ---------- Stock y precios ----------
 const aj = id => (ajustes.productos[id] = ajustes.productos[id] || {});
 const ajColor = (id, cid) => { const a = aj(id); a.colores = a.colores || {}; return (a.colores[cid] = a.colores[cid] || {}); };
-const hayCambios = () => JSON.stringify(limpio(ajustes)) !== JSON.stringify(limpio(guardado));
-const cambiado = id => JSON.stringify(limpio({ productos: { [id]: ajustes.productos[id] } })) !== JSON.stringify(limpio({ productos: { [id]: guardado.productos[id] } }));
+const clavePar = (id, cid, t) => `${id}|${cid}|${t}`;
+// Talles cuyo número de pares cambió (null = se borró el número y deja de llevar la cuenta)
+function paresCambiados(id) {
+  const out = {};
+  for (const k of new Set([...Object.keys(pares), ...Object.keys(paresGuardado)])) {
+    if (id != null && !k.startsWith(id + "|")) continue;
+    const a = pares[k] ?? null, b = paresGuardado[k] ?? null;
+    if (a !== b) out[k] = a;
+  }
+  return out;
+}
+const hayCambios = () => JSON.stringify(limpio(ajustes)) !== JSON.stringify(limpio(guardado)) || Object.keys(paresCambiados()).length > 0;
+const cambiado = id => JSON.stringify(limpio({ productos: { [id]: ajustes.productos[id] } })) !== JSON.stringify(limpio({ productos: { [id]: guardado.productos[id] } }))
+  || Object.keys(paresCambiados(id)).length > 0;
 
 // Saca lo vacío para poder comparar
 function limpio(a) {
@@ -106,7 +122,9 @@ function ficha(p) {
           <span style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:14px">Color agotado <input type="checkbox" class="sw" data-color-agotado${ac.agotado ? " checked" : ""}></span></label>
         <label class="fila-precio" style="font-size:14px"><span>Precio de este color $</span>
           <input class="in" inputmode="numeric" data-precio-color value="${precioColor}" placeholder="igual al modelo" aria-label="Precio de ${esc(p.nombre)} en ${esc(c.nombre)}" style="padding:8px 10px"></label>
-        <div class="chips">${p.talles.map(t => `<button class="chip" data-talle="${t}" aria-pressed="${!sin.includes(t)}" aria-label="Talle ${t} ${sin.includes(t) ? "agotado" : "disponible"}">${t}</button>`).join("")}</div>
+        <div class="chips">${p.talles.map(t => { const n = pares[clavePar(p.id, c.id, t)]; const hay = !sin.includes(t) && !(n != null && n <= 0);
+          return `<div class="talle-box"><button class="chip" data-talle="${t}" aria-pressed="${hay}" aria-label="Talle ${t} ${hay ? "disponible" : "agotado"}">${t}</button>
+            <input class="pares" inputmode="numeric" data-pares="${t}" value="${n != null ? n : ""}" placeholder="–" aria-label="Pares del talle ${t} en ${esc(c.nombre)}"></div>`; }).join("")}</div>
       </div>`; }).join("")}
   </article>`;
 }
@@ -132,13 +150,31 @@ $("#buscar").addEventListener("input", pintarStock);
 $("#listaProd").addEventListener("click", e => {
   const chip = e.target.closest(".chip"); if (!chip) return;
   const id = +chip.closest(".ficha").dataset.id, cid = chip.closest(".color-box").dataset.cid, t = +chip.dataset.talle;
+  // Si ese talle lleva la cuenta de pares, manda el número: se cambia en el cuadradito
+  if (pares[clavePar(id, cid, t)] != null) { chip.nextElementSibling.focus(); chip.nextElementSibling.select(); return; }
   const c = ajColor(id, cid);
   const sin = new Set(c.sinTalle || []);
   sin.has(t) ? sin.delete(t) : sin.add(t);
   c.sinTalle = [...sin];
   repintarFicha(id);
 });
+// Pares por talle: se actualiza mientras escribe, sin redibujar (para poder pasar de un cuadradito al otro)
+$("#listaProd").addEventListener("input", e => {
+  const inp = e.target.closest("[data-pares]"); if (!inp) return;
+  const f = inp.closest(".ficha"), id = +f.dataset.id, cid = inp.closest(".color-box").dataset.cid, t = +inp.dataset.pares;
+  const v = inp.value.replace(/\D/g, "").slice(0, 4);
+  if (inp.value !== v) inp.value = v;
+  const k = clavePar(id, cid, t);
+  if (v === "") delete pares[k]; else pares[k] = parseInt(v, 10);
+  const sin = (((ajustes.productos[id] || {}).colores || {})[cid] || {}).sinTalle || [];
+  const hay = !sin.includes(t) && !(pares[k] != null && pares[k] <= 0);
+  const chip = inp.previousElementSibling;
+  chip.setAttribute("aria-pressed", hay); chip.setAttribute("aria-label", `Talle ${t} ${hay ? "disponible" : "agotado"}`);
+  f.classList.toggle("cambiada", cambiado(id));
+  actualizarBarra();
+});
 $("#listaProd").addEventListener("change", e => {
+  if (e.target.matches("[data-pares]")) return;
   const f = e.target.closest(".ficha"); if (!f) return;
   const id = +f.dataset.id;
   if (e.target.matches("[data-agotado]")) aj(id).agotado = e.target.checked;
@@ -156,12 +192,13 @@ $("#listaProd").addEventListener("change", e => {
   repintarFicha(id);
 });
 
-$("#descartar").addEventListener("click", () => { ajustes = structuredClone(guardado); pintarStock(); });
+$("#descartar").addEventListener("click", () => { ajustes = structuredClone(guardado); pares = { ...paresGuardado }; pintarStock(); });
 $("#guardar").addEventListener("click", async () => {
   const b = $("#guardar"); b.disabled = true; b.textContent = "Guardando…";
   try {
-    const d = await api("POST", { accion: "guardar", ajustes: limpio(ajustes) });
+    const d = await api("POST", { accion: "guardar", ajustes: limpio(ajustes), pares: paresCambiados() });
     guardado = d.ajustes; ajustes = structuredClone(guardado);
+    paresGuardado = d.pares || {}; pares = { ...paresGuardado };
     pintarStock();
     avisar("✓ Guardado. La tienda ya muestra los cambios.");
   } catch (err) { alert(err.message); }

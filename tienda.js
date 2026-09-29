@@ -22,6 +22,7 @@ const pesos = n => "$" + Math.round(n).toLocaleString("es-AR");
 const producto = id => PRODUCTOS.find(p => p.id === id);
 const precioDe = aplicarAjustes.precioDe;   // precio del color elegido (o del modelo)
 const rangoDe = aplicarAjustes.rangoDe;     // { min, max } entre todos los colores, o null si es a consultar
+const paresDe = aplicarAjustes.paresDe;     // pares que quedan de un talle (null = no se lleva la cuenta)
 const precioTxt = p => { const r = rangoDe(p); return !r ? "Consultar precio" : r.min !== r.max ? "Desde " + pesos(r.min) : pesos(r.min); };
 const colorDe = (p, cid) => (p.colores || []).find(c => c.id === cid);
 const nombreCat = id => (CATS.find(c => c.id === id) || { nombre: id }).nombre;
@@ -66,6 +67,8 @@ function talleDisponible(p, cid, t) {
   if (!cols.length) return true;
   return (cid ? cols.filter(c => c.id === cid) : cols).some(c => !c.agotado && !c.sinTalle.includes(t));
 }
+// Máximo que se puede llevar de un talle: los pares que quedan (si se lleva la cuenta), hasta 10
+const maxCant = (p, cid, t) => Math.min(10, paresDe(p, cid, t) ?? 10);
 function problemaItem(i) {
   const p = producto(i.id);
   if (!(precioDe(p, i.color) > 0)) return "Precio a consultar";
@@ -93,7 +96,7 @@ function guardarCarrito() {
 }
 function agregar(id, color, talle) {
   const ex = carrito.find(i => i.id === id && i.talle === talle && i.color === color);
-  ex ? ex.cant++ : carrito.push({ id, color, talle, cant: 1 });
+  if (ex) ex.cant = Math.min(maxCant(producto(id), color, talle), ex.cant + 1); else carrito.push({ id, color, talle, cant: 1 });
   guardarCarrito();
   const p = producto(id);
   medir("AddToCart", { content_ids: [String(id)], content_name: p.nombre, content_type: "product", value: precioDe(p, color) || 0 });
@@ -163,7 +166,7 @@ $("#cerrarCarrito").addEventListener("click", cerrarCarrito);
 $("#velo").addEventListener("click", cerrarCarrito);
 $("#items").addEventListener("click", e => {
   const m = e.target.closest("[data-mas]"), n = e.target.closest("[data-menos]");
-  if (m) { const i = carrito[+m.dataset.mas]; i.cant = Math.min(10, i.cant + 1); guardarCarrito(); }
+  if (m) { const i = carrito[+m.dataset.mas]; i.cant = Math.min(maxCant(producto(i.id), i.color, i.talle), i.cant + 1); guardarCarrito(); }
   if (n) { const k = +n.dataset.menos; carrito[k].cant--; if (carrito[k].cant <= 0) carrito.splice(k, 1); guardarCarrito(); }
   const q = e.target.closest("[data-quitar]");
   if (q) { carrito.splice(+q.dataset.quitar, 1); guardarCarrito(); }
@@ -245,6 +248,9 @@ function pintarProducto() {
   $("#pColores").innerHTML = cols.map(c => `<button class="swatch${colAgotado(c) ? " sin-stock" : ""}" data-c="${c.id}" aria-pressed="${sel.color === c.id}" aria-label="${esc(c.nombre)}${colAgotado(c) ? " (agotado)" : ""}" title="${esc(c.nombre)}${colAgotado(c) ? " · agotado" : ""}" style="--sw:${esc(c.hex)}"></button>`).join("");
   $("#pTalles").innerHTML = p.talles.map(t => { const hay = talleDisponible(p, sel.color, t);
     return `<button class="talle" data-t="${t}" aria-pressed="${sel.talle === t}"${hay ? "" : ` disabled aria-label="Talle ${t}, agotado"`}>${t}</button>`; }).join("");
+  // Pocos pares del talle elegido: se avisa (empuja a comprar y evita sorpresas)
+  const quedan = sel.color && sel.talle ? paresDe(p, sel.color, sel.talle) : null;
+  $("#pQuedan").textContent = quedan > 0 && quedan <= 3 ? (quedan === 1 ? "¡Queda el último par de este talle!" : `¡Quedan solo ${quedan} pares de este talle!`) : "";
 
   // Precio: el del color elegido; si todavía no eligió color, "Desde $X" cuando los colores cuestan distinto
   const precioSel = colSel ? precioDe(p, colSel.id) : 0;
@@ -647,6 +653,10 @@ async function actualizarStock() {
     const ajustes = await r.json();
     escribir("nacireina-stock", ajustes);
     PRODUCTOS = aplicarAjustes(CATALOGO.productos, ajustes);
+    // Si en el carrito hay más pares de los que quedan, se baja a los que hay
+    let bajo = false;
+    for (const i of carrito) { const p = producto(i.id); const m = p ? maxCant(p, i.color, i.talle) : 10; if (m > 0 && i.cant > m) { i.cant = m; bajo = true; } }
+    if (bajo) escribir("nacireina-carrito", carrito);
     refrescarVista();
   } catch (e) { /* sin conexión: se usa el último stock conocido */ }
 }

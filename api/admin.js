@@ -1,7 +1,7 @@
 // Editor de la tienda (lo usa admin.html). Todo, menos "entrar", necesita el permiso de login.
 //   POST { accion: "entrar", clave }                → { permiso }
 //   GET                                               → { ajustes, pedidos, config }
-//   POST { accion: "guardar", ajustes }              → guarda precios y agotados
+//   POST { accion: "guardar", ajustes, pares }       → guarda precios, agotados y los pares por talle que cambiaron
 //   POST { accion: "estado", numero, estado }        → marca un pedido (ej: "entregado")
 const CATALOGO = require("../productos.js");
 const db = require("./_db.js");
@@ -37,6 +37,20 @@ function limpiarAjustes(entrada) {
   return salida;
 }
 
+// Pares por talle: solo claves "id|color|talle" que existen; número de 0 a 9999, o null para dejar de contar
+function limpiarPares(entrada) {
+  const salida = {};
+  for (const [k, v] of Object.entries(entrada || {}).slice(0, 2000)) {
+    const [id, cid, t] = String(k).split("|");
+    const p = CATALOGO.productos.find(x => x.id === Number(id));
+    if (!p || !(p.colores || []).some(c => c.id === cid) || !p.talles.includes(Number(t))) continue;
+    if (v == null || v === "") { salida[`${p.id}|${cid}|${Number(t)}`] = null; continue; }
+    const n = parseInt(v, 10);
+    if (n >= 0 && n <= 9999) salida[`${p.id}|${cid}|${Number(t)}`] = n;
+  }
+  return salida;
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   try {
@@ -67,8 +81,9 @@ module.exports = async function handler(req, res) {
     if (body.accion === "guardar") {
       const ajustes = limpiarAjustes(body.ajustes);
       await db.guardar("nacireina:ajustes", ajustes);
+      await db.cambiarPares(limpiarPares(body.pares));   // solo los talles que se tocaron: no pisa ventas recientes
       olvidarCache();
-      return res.status(200).json({ ok: true, ajustes });
+      return res.status(200).json({ ok: true, ajustes, pares: await db.leerPares() });
     }
     if (body.accion === "estado") {
       if (!ESTADOS.includes(body.estado)) return res.status(400).json({ error: "Estado desconocido." });

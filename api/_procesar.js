@@ -84,6 +84,22 @@ async function procesarPagoAprobado(pago) {
   };
   console.log("Pago aprobado", numero, pago.id, pago.transaction_amount);
 
+  // Descuenta los pares vendidos (solo de los talles que llevan la cuenta) y arma el aviso de stock
+  const stock = [];
+  if (db.hayDB()) {
+    for (const it of Array.isArray(m.productos) ? m.productos : []) {
+      if (it.talle == null || it.talle === "") continue;
+      try {
+        const quedan = await db.descontarPares(`${Number(it.id)}|${it.color || ""}|${Number(it.talle)}`, Math.max(1, Number(it.cant) || 1));
+        if (quedan == null) continue;
+        const p = CATALOGO.productos.find(x => x.id === Number(it.id)) || {};
+        const c = (p.colores || []).find(x => x.id === it.color);
+        stock.push(`${p.nombre || "Producto " + it.id}${c ? " " + c.nombre : ""}, talle ${it.talle}: ${quedan === 0 ? "se agotó" : quedan === 1 ? "queda 1 par" : `quedan ${quedan} pares`}`);
+      } catch (err) { console.error("No se pudo descontar el stock", numero, it, err.message); }
+    }
+    if (stock.length) require("./_catalogo.js").olvidarCache();
+  }
+
   // Envío automático (solo con base de datos, para no crear nunca dos envíos del mismo pedido)
   const conZipnova = process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID;
   if (entrega.tipo !== "local" && entrega.zipnova && conZipnova && db.hayDB() && process.env.ZIPNOVA_CREAR_ENVIOS !== "no") {
@@ -115,6 +131,7 @@ async function procesarPagoAprobado(pago) {
           <p><b>Cobrado:</b> ${pesos(pago.transaction_amount)} · Pago de Mercado Pago N° ${esc(pago.id)}</p>
           ${aviso}
           <h3>Productos</h3>${lista}
+          ${stock.length ? `<h3>Stock después de esta venta</h3><ul>${stock.map(t => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
           <h3>Cliente</h3><p>${esc(cliente.nombre)}${cliente.dni ? " · DNI " + esc(cliente.dni) : ""}<br>Tel: ${esc(cliente.telefono)}${cliente.email ? "<br>" + esc(cliente.email) : ""}</p>
           <h3>Entrega</h3><p>${textoEntrega(entrega)}</p>`
       });

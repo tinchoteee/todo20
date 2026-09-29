@@ -3,13 +3,16 @@
 //
 // Forma de los ajustes guardados:
 // { productos: { "7": { precio: 32000, agotado: false,
-//                       colores: { "verde": { precio: 34000, agotado: false, sinTalle: [35, 44] } } } } }
+//                       colores: { "verde": { precio: 34000, agotado: false, sinTalle: [35, 44] } } } },
+//   pares: { "7|verde|38": 3 } }   ← pares que hay de cada talle (se descuentan solos con cada venta).
+//                                   Un talle sin número no lleva la cuenta; con 0 queda agotado.
 (function (fn) {
   if (typeof module !== "undefined" && module.exports) module.exports = fn;
   else window.aplicarAjustes = fn;
 })((function () {
   function aplicarAjustes(productos, ajustes) {
     const aj = (ajustes && ajustes.productos) || {};
+    const pares = (ajustes && ajustes.pares) || {};
     // Los productos o colores con oculto:true están desactivados: no se muestran ni se pueden comprar
     return productos.filter(p => !p.oculto).map(original => {
       const a = aj[original.id] || {};
@@ -21,6 +24,13 @@
         if (ac.precio > 0) c.precio = ac.precio;
         c.agotado = Boolean(ac.agotado);
         c.sinTalle = Array.isArray(ac.sinTalle) ? ac.sinTalle.map(Number) : [];
+        c.pares = {};
+        for (const t of p.talles) {
+          const n = pares[`${p.id}|${c.id}|${t}`];
+          if (n == null || n === "") continue;
+          c.pares[t] = Math.max(0, parseInt(n, 10) || 0);
+          if (c.pares[t] === 0 && !c.sinTalle.includes(t)) c.sinTalle.push(t);
+        }
       }
       // Si todos los colores están agotados, o todos sus talles, el modelo queda agotado
       if (p.colores.length && p.colores.every(c => c.agotado || p.talles.every(t => c.sinTalle.includes(t)))) p.agotado = true;
@@ -31,6 +41,11 @@
   aplicarAjustes.precioDe = function (p, colorId) {
     const c = (p.colores || []).find(x => x.id === colorId);
     return (c && c.precio > 0 ? c.precio : p.precio) || 0;
+  };
+  // Pares que quedan de un talle en un color (null = no se lleva la cuenta)
+  aplicarAjustes.paresDe = function (p, colorId, talle) {
+    const c = (p.colores || []).find(x => x.id === colorId);
+    return c && c.pares && c.pares[talle] != null ? c.pares[talle] : null;
   };
   // Rango de precios del modelo (para mostrar "Desde $X" cuando los colores tienen precios distintos)
   aplicarAjustes.rangoDe = function (p) {

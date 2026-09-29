@@ -132,6 +132,7 @@ async function cotizar({ cp, provincia, localidad, lineas, subtotal }) {
 // (productos: el catálogo con los ajustes del editor, de _catalogo.js)
 function lineasDelPedido(items, productos, { exigirPrecio = true, exigirTalle = true } = {}) {
   const lineas = [];
+  const pedidos = {};   // pares pedidos de cada talle (para no vender más de los que hay)
   for (const it of (Array.isArray(items) ? items : []).slice(0, 30)) {
     const producto = productos.find(x => x.id === Number(it.id));
     if (!producto) throw new Error("Hay un producto que ya no está disponible. Actualizá la página.");
@@ -149,6 +150,10 @@ function lineasDelPedido(items, productos, { exigirPrecio = true, exigirTalle = 
       if ((producto.colores || []).length && !color) throw new Error(`Elegí un color para “${producto.nombre}”.`);
       if (color && color.agotado) throw new Error(`“${producto.nombre}” en ${color.nombre} se agotó. Sacalo del carrito para seguir.`);
       if (color && color.sinTalle.includes(talle)) throw new Error(`El talle ${talle} de “${producto.nombre}”${color ? " en " + color.nombre : ""} se agotó. Sacalo del carrito para seguir.`);
+      const quedan = color ? aplicarAjustes.paresDe(producto, color.id, talle) : null;
+      const clave = `${producto.id}|${color ? color.id : ""}|${talle}`;
+      pedidos[clave] = (pedidos[clave] || 0) + cant;
+      if (quedan != null && pedidos[clave] > quedan) throw new Error(`Del talle ${talle} de “${producto.nombre}”${color ? " en " + color.nombre : ""} ${quedan === 1 ? "queda 1 solo par" : `quedan ${quedan} pares`}. Cambiá la cantidad en el carrito.`);
       linea.talle = talle;
     }
     lineas.push(linea);

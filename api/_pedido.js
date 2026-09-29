@@ -54,7 +54,7 @@ async function armarPedido(body, base) {
     // Todo el pedido viaja con el pago: el aviso por email y el envío lo leen de acá
     metadata: { pedido: numero, cliente, entrega,
       detalle: items.filter(i => i.id !== "envio").map(i => `${i.quantity} x ${i.title} ($${i.unit_price})`),
-      productos: lineas.map(l => ({ id: l.producto.id, cant: l.cant })), subtotal: cuenta.total,
+      productos: lineas.map(l => ({ id: l.producto.id, color: l.color ? l.color.id : "", talle: l.talle, cant: l.cant })), subtotal: cuenta.total,
       ...(cuenta.porcentaje ? { descuento: `${cuenta.porcentaje}% OFF: -$${cuenta.descuento.toLocaleString("es-AR")}` } : {}) }
   };
 }
