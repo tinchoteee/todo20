@@ -26,7 +26,8 @@ async function armarPedido(body, base, { transferencia = false } = {}) {
   const opcion = cot.opciones.find(o => o.id === e.opcion);
   if (!opcion) throw new Error("La opción de envío cambió. Volvé a elegir cómo lo recibís.");
 
-  const entrega = { tipo: opcion.tipo, opcion: opcion.nombre, precio: opcion.precio };
+  // precio: lo que paga el cliente; costo: lo que cobra Zipnova (distinto cuando el envío es gratis)
+  const entrega = { tipo: opcion.tipo, opcion: opcion.nombre, precio: opcion.precio, costo: opcion.precioOriginal ?? opcion.precio };
   if (opcion.tipo === "domicilio") {
     Object.assign(entrega, { calle: texto(e.calle, 120), numero: texto(e.numero, 10), piso: texto(e.piso, 30),
       localidad: texto(e.localidad, 80), provincia: cot.provincia, cp: cot.cp });

@@ -218,7 +218,27 @@ function avisar(texto) {
 const ESTADOS = { "esperando-transferencia": "Esperando transferencia", "pagado": "Pagado · preparar", "envio-creado": "Envío creado", "despachado": "Despachado", "listo-para-retirar": "Listo para retirar", "entregado": "Entregado", "cancelado": "Cancelado" };
 const telWa = t => { let d = String(t || "").replace(/\D/g, ""); if (d.startsWith("549")) return d; if (d.startsWith("54")) d = d.slice(2); if (d.startsWith("0")) d = d.slice(1); d = d.replace(/^(\d{2,4})15/, "$1"); return "549" + d; };
 
+// Resumen de envíos por mes: cuánto se les cobró a los clientes y cuánto cobra Zipnova (para cargar saldo de una vez)
+function pintarResumenEnvios() {
+  const cuentan = pedidos.filter(p => p.entrega && p.entrega.tipo && p.entrega.tipo !== "local" && !["cancelado", "esperando-transferencia"].includes(p.estado));
+  const hoy = new Date();
+  const meses = [0, 1].map(atras => {
+    const d = new Date(hoy.getFullYear(), hoy.getMonth() - atras, 1);
+    const lista = cuentan.filter(p => { const f = new Date(p.fecha); return f.getFullYear() === d.getFullYear() && f.getMonth() === d.getMonth(); });
+    const cobrado = lista.reduce((a, p) => a + (Number(p.entrega.precio) || 0), 0);
+    const costo = lista.reduce((a, p) => a + (Number(p.entrega.costo ?? p.entrega.precio) || 0), 0);
+    const gratis = lista.filter(p => !(Number(p.entrega.precio) > 0)).length;
+    return { nombre: d.toLocaleDateString("es-AR", { month: "long", year: "numeric" }), n: lista.length, cobrado, costo, gratis };
+  });
+  $("#resumenEnvios").innerHTML = `<div class="resumen-envios"><h3>🚚 Plata de envíos (para cargar en Zipnova)</h3>
+    <div class="meses">${meses.map((m, i) => `<div class="mes"><span>${i ? "Mes pasado" : "Este mes"} · ${esc(m.nombre.charAt(0).toUpperCase() + m.nombre.slice(1))}</span>
+      ${m.n ? `<span>Cobraste a clientes: <b class="grande">${pesos(m.cobrado)}</b></span>
+      <span>Costo aproximado en Zipnova: <b>${pesos(m.costo)}</b> (${m.n} ${m.n === 1 ? "envío" : "envíos"}${m.gratis ? `, ${m.gratis} con envío gratis que pagás vos` : ""})</span>` : `<span>Sin envíos por correo.</span>`}</div>`).join("")}</div>
+    <p class="ayuda">Lo cobrado por envío entra a Mercado Pago junto con la venta. Cargá en Zipnova el costo aproximado de una vez. Los pedidos cancelados o esperando transferencia no cuentan.</p></div>`;
+}
+
 function pintarPedidos() {
+  pintarResumenEnvios();
   if (!pedidos.length) { $("#listaPedidos").innerHTML = `<p class="ayuda">Todavía no hay ventas online. Cuando alguien pague, el pedido aparece acá (y te llega por email).</p>`; return; }
   $("#listaPedidos").innerHTML = pedidos.map(p => {
     const e = p.entrega || {}, c = p.cliente || {};

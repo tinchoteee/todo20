@@ -60,6 +60,11 @@
   .pedido select{width:auto}
   .estado-pill{font-size:13px;font-weight:700;border-radius:99px;padding:3px 10px;background:var(--gris)}
   .estado-pill.pagado{background:#FFF1C2;color:#7A5A00}
+  .resumen-envios{background:var(--blanco);border-radius:16px;padding:14px 16px;margin-bottom:12px;display:grid;gap:10px}
+  .resumen-envios h3{margin:0;font-size:16px}
+  .resumen-envios .meses{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+  .resumen-envios .mes{background:var(--gris);border-radius:12px;padding:10px 12px;display:grid;gap:2px;font-size:14px}
+  .resumen-envios .mes b.grande{font-size:20px}
   .estado-pill.esperando-transferencia{background:#FDE3EF;color:var(--rosa-osc)}
   .estado-pill.envio-creado,.estado-pill.despachado,.estado-pill.listo-para-retirar{background:#E1EEFF;color:#1C4E9A}
   .estado-pill.entregado{background:#EAF6EF;color:var(--ok)}
@@ -106,6 +111,7 @@
     </section>
 
     <section id="tab-pedidos" hidden>
+      <div id="resumenEnvios"></div>
       <div id="listaPedidos" style="display:grid;gap:12px;padding-bottom:40px"></div>
     </section>
 
