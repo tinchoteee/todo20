@@ -306,3 +306,4 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 .dato-transf span{color:var(--tinta-2);min-width:70px}
 .dato-transf b{word-break:break-all}
 .dato-transf .link{margin-left:auto}
+.aviso-transf{margin:0;background:#F2FAF5;border:1.5px dashed var(--ok);color:var(--tinta);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.4}

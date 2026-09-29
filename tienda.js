@@ -90,7 +90,14 @@ configPublica.then(c => {
   if (faq && transf && transf.porcentaje) faq.textContent = `También podés pagar con transferencia bancaria y tenés ${transf.porcentaje}% OFF en los productos.`;
   if (!$("#vista-producto").hidden && sel.id) pintarProducto();
   if (!$("#vista-checkout").hidden) pintarCheckout();
+  pintarAvisoTransf();
 });
+// Cartelito en el carrito y en el resumen del checkout: "con transferencia pagás $X (5% OFF)"
+function pintarAvisoTransf() {
+  const hay = transf && transf.porcentaje && carrito.length && !hayConsultar();
+  const txt = hay ? `💸 <b>${transf.porcentaje}% OFF pagando con transferencia bancaria</b>: tus productos te quedan en <b>${pesos(cuenta(transf.porcentaje).total)}</b>${$("#vista-checkout").hidden ? "" : ". Elegilo en el paso 3 (Pago)"}.` : "";
+  document.querySelectorAll("[data-aviso-transf]").forEach(el => { el.hidden = !hay; el.innerHTML = txt; });
+}
 const totalProductos = () => cuenta().total;
 const hayConsultar = () => carrito.some(problemaItem);
 const detalleItem = i => { const p = producto(i.id), c = colorDe(p, i.color); return `${c ? c.nombre + " · " : ""}Talle ${i.talle}`; };
@@ -116,6 +123,7 @@ function pintarCarrito() {
   $("#contador").textContent = cant || "";
   $("#abrirCarrito").setAttribute("aria-label", `Ver carrito (${cant} ${cant === 1 ? "producto" : "productos"})`);
   $("#panelF").hidden = !carrito.length;
+  if (typeof pintarAvisoTransf === "function") pintarAvisoTransf();
   $("#items").innerHTML = carrito.length ? carrito.map((i, n) => { const p = producto(i.id); const prob = problemaItem(i); return `
     <div class="item">
       <a class="mini" href="#p/${p.id}">${img(fotoDe(p, i.color), p.nombre)}</a>
@@ -354,6 +362,7 @@ function pintarCheckout() {
     <div><span>Envío</span><span>${envio == null ? '<span style="color:var(--tinta-2)">Se calcula en el paso 2</span>' : envio ? pesos(envio) : '<span class="gratis">Gratis</span>'}</span></div>
     <div class="tot"><span>Total</span><span>${pesos(cta.total + (envio || 0))}</span></div>`;
   $("#pagarTxt").textContent = `Pagar ${pesos(cta.total + (envio || 0))} con Mercado Pago`;
+  pintarAvisoTransf();
   // Transferencia: mismo pedido con el descuento extra (sobre los productos, no sobre el envío)
   $("#conTransf").hidden = !(transf && transf.porcentaje);
   if (transf && transf.porcentaje) {
