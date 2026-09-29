@@ -11,6 +11,7 @@ const PROVINCIAS = ["CABA", "Buenos Aires", "Catamarca", "Chaco", "Chubut", "Có
   "Santa Cruz", "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán"];
 const CATS = [
   { id: "todo", nombre: "Todo" }, { id: "botas", nombre: "Botas" }, { id: "borcegos", nombre: "Borcegos" },
+  { id: "chavitos", nombre: "Chavitos" },
   { id: "zapatos", nombre: "Zapatos" }, { id: "zapatillas", nombre: "Zapatillas" },
   { id: "sandalias", nombre: "Sandalias" }, { id: "suecos", nombre: "Suecos" }
 ].filter(c => c.id === "todo" || PRODUCTOS.some(p => p.cat === c.id));
