@@ -166,6 +166,7 @@ td:first-child,th:first-child{text-align:left;font-weight:700}
 .card-l h3{margin:0 0 6px;font-size:18px}
 .card-l p{margin:0;color:var(--tinta-2)}
 footer{margin-top:56px;background:var(--tinta);color:#F6E6DA;padding-block:26px;font-size:14px}
+footer .pie-ig{display:inline-flex;align-items:center;gap:6px}
 footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px}
 .pie-marca{display:flex;align-items:center;gap:12px}
 .pie-links{display:flex;flex-wrap:wrap;gap:6px 18px}

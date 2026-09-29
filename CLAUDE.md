@@ -28,6 +28,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - SEO: título y descripción para Google, `canonical` y `og:*` con el dominio propio, ficha de negocio (JSON-LD `ShoeStore`), `sitemap.xml` y `robots.txt`. Imagen para compartir el link (WhatsApp/Facebook): `img/compartir.jpg` (1200×630, solo el logo sobre blanco: pedido del dueño, sin fotos ni promos). Si cambia el dominio, actualizarlos.
 - Vercel Web Analytics: script en `index.html` (no en el editor); se activa en Vercel → proyecto → Analytics → Enable.
 - WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
+- Instagram: https://www.instagram.com/nacireinacalzados/ (link en el pie de página y en `sameAs` del JSON-LD). Facebook no se usa.
 - Bota texana con tachas negra: foto recoloreada digitalmente a partir de la blanca (a pedido del dueño); reemplazar por una foto real cuando haya.
 - Cajas de envío: tamaño caja de Nike, 35 × 24 × 13 cm y 800 g (dato del dueño). Botas de caña alta: 45 × 32 × 14 cm, 800 g.
 - Nunca pedir ni pegar claves ni datos bancarios en el chat: el usuario los carga directo en Vercel y en Mercado Pago.
