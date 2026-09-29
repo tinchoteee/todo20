@@ -108,6 +108,6 @@
     {id:68,oculto:true,cat:"zapatillas",nombre:"Zapatillas deportivas California",desc:"Combinan gamuza negra, cuero blanco y detalles metalizados, con suela dentada.",precio:0,talles:[35,36,37,38,39,40],colores:[{id:"negroblanco",nombre:"Negro, blanco y plata",hex:"#1C1C1C",foto:"fotos/zapatilla-california.jpg"}]},
     {id:69,cat:"zapatillas",nombre:"Zapatillas leopardo clásicas",desc:"Animal print, talón naranja y suela de goma caramelo.",precio:0,talles:[35,36,37,38,39,40],colores:[{id:"leopardo",nombre:"Leopardo",hex:"#B07A3C",foto:"fotos/zapatilla-leopardo-clasica.jpg"}]},
     {id:70,cat:"zapatillas",nombre:"Zapatillas leopardo con plataforma",desc:"Animal print, talón naranja y plataforma con textura de yute.",precio:0,talles:[35,36,37,38,39,40],colores:[{id:"leopardo",nombre:"Leopardo",hex:"#B07A3C",foto:"fotos/zapatilla-leopardo-plataforma.jpg"}]},
-    {id:71,cat:"zapatos",nombre:"Zapatos Panchas",desc:"Sin cordones, fáciles de calzar, con elásticos a los costados y suela blanca liviana.",precio:0,talles:[35,36,37,38,39,40],colores:[{id:"suela",nombre:"Suela",hex:"#C8955F",foto:"fotos/pancha-suela.jpg"}]}
+    {id:71,cat:"zapatos",nombre:"Zapatos Panchas",desc:"Sin cordones, fáciles de calzar, con elásticos a los costados y suela blanca liviana.",precio:0,talles:[35,36,37,38,39,40],colores:[{id:"suela",nombre:"Suela",hex:"#C8955F",foto:"fotos/pancha-suela.jpg"},{id:"negro",nombre:"Negro",hex:"#1C1C1C",foto:"fotos/pancha-negro.jpg"}]}
   ]
 });
