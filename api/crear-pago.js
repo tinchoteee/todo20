@@ -37,7 +37,7 @@ module.exports = async function handler(req, res) {
       if (!entrega.calle || !entrega.numero || !entrega.localidad) throw new Error("Completá la dirección de envío.");
     } else if (opcion.tipo === "sucursal") {
       const s = opcion.sucursales.find(x => x.id === String(e.sucursal));
-      if (!s) throw new Error("Elegí la sucursal de Andreani donde vas a retirar.");
+      if (!s) throw new Error("Elegí la sucursal del correo donde vas a retirar.");
       Object.assign(entrega, { sucursal: `${s.nombre} (${s.direccion})`, sucursal_id: s.id, localidad: texto(e.localidad, 80), provincia: cot.provincia, cp: cot.cp });
     }
     if (opcion.zipnova) entrega.zipnova = opcion.zipnova;

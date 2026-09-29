@@ -394,7 +394,7 @@ $("#continuar2").addEventListener("click", () => {
   }
   if (o.tipo === "sucursal") {
     if (!val("ckLoc")) marcar("ckLoc", "la localidad");
-    if (!ck.sucursal && !faltan.length) { $("#falta2").textContent = "Elegí la sucursal de Andreani donde vas a retirar."; return; }
+    if (!ck.sucursal && !faltan.length) { $("#falta2").textContent = "Elegí la sucursal del correo donde vas a retirar."; return; }
   }
   if (faltan.length) { $("#falta2").textContent = "Completá " + juntar(faltan) + "."; return; }
   $("#falta2").textContent = "";
@@ -453,7 +453,7 @@ document.addEventListener("keydown", e => {
 
 // ---------- Textos que dependen de la configuración ----------
 if (ENVIO.gratisDesde > 0) {
-  $("#aviso").innerHTML = `<b>Envío gratis</b> en compras desde ${pesos(ENVIO.gratisDesde)} · Envíos con Andreani a todo el país`;
+  $("#aviso").innerHTML = `<b>Envío gratis</b> en compras desde ${pesos(ENVIO.gratisDesde)} · Envíos a todo el país`;
   $("#pGratis").textContent = `Envío gratis en compras desde ${pesos(ENVIO.gratisDesde)}.`;
   $("#ventajaEnvio").textContent = `Gratis desde ${pesos(ENVIO.gratisDesde)}. A domicilio o a sucursal.`;
 }
@@ -495,7 +495,7 @@ $("#formArr").addEventListener("submit", async e => {
   }
   if (estado === "aprobado") {
     tit = "¡Gracias por tu compra!";
-    cuerpo = `<img class="isotipo-grande" src="img/isotipo.svg" alt="" style="margin:0"><p style="margin:0">Recibimos tu pago${ult ? ` del pedido <b>${esc(ult.numero)}</b>` : ""}. ${ult && ult.local ? "Te avisamos por WhatsApp cuando esté listo para retirar." : "Te avisamos por WhatsApp cuando lo despachemos con Andreani, con el número de seguimiento."}</p>${lista}`;
+    cuerpo = `<img class="isotipo-grande" src="img/isotipo.svg" alt="" style="margin:0"><p style="margin:0">Recibimos tu pago${ult ? ` del pedido <b>${esc(ult.numero)}</b>` : ""}. ${ult && ult.local ? "Te avisamos por WhatsApp cuando esté listo para retirar." : "Te avisamos por WhatsApp cuando lo despachemos, con el número de seguimiento."}</p>${lista}`;
     if (WHATSAPP && ult) {
       const t = `¡Hola Nací Reina! Ya pagué el pedido ${ult.numero}:\n\n${ult.lineas.map(l => "• " + l).join("\n")}\n\nTotal: ${pesos(ult.total)}\nNombre: ${ult.cliente.nombre}\nEntrega: ${ult.entrega}`;
       cuerpo += `<a class="btn btn-wa lleno" href="${wa(t)}" target="_blank" rel="noopener">Avisar por WhatsApp</a>`;

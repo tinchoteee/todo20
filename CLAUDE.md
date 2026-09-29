@@ -9,7 +9,7 @@ Tienda online del local de calzado Nací Reina (Av. de Mayo 1614, Ramos Mejía, 
 - `index.html` + `estilos.css` + `tienda.js`: tienda (catálogo, página de producto, carrito, checkout en 3 pasos, FAQ, botón de arrepentimiento).
 - `admin.html` + `admin.js`: editor con contraseña (`ADMIN_CLAVE`): stock, precios y pedidos.
 - Cobros: **Mercado Pago Checkout Pro** (`api/crear-pago.js`, `api/webhook-mp.js`). El servidor siempre recalcula precios y envío.
-- Envíos: **Zipnova** como intermediario de **Andreani** (el cliente no tiene contrato propio con Andreani). Cotiza por código postal y crea el envío solo cuando entra el pago. Andreani retira en el local.
+- Envíos: **Zipnova**, con los transportes de "servicio completo" (Correo Argentino y OCA; Andreani no está disponible sin contrato propio, que es un plan pago que el dueño NO quiere). `envio.transportista` vacío = se muestran todos. Cotiza por código postal y crea el envío solo cuando entra el pago. El correo retira en el local.
 - Base de datos: **Upstash Redis** (stock, precios, pedidos, que un pago no se procese dos veces). Emails: **Resend**.
 - Guía para configurar todo: `CONFIGURACION.md`.
 

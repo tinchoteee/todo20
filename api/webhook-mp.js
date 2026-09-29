@@ -1,6 +1,6 @@
 // Mercado Pago llama a esta dirección cada vez que cambia un pago. Cuando un pago queda aprobado:
 //   1. Guarda el pedido (se ve en el editor, pestaña Pedidos).
-//   2. Crea el envío de Andreani en Zipnova, que genera la etiqueta y coordina el retiro.
+//   2. Crea el envío en Zipnova (Correo Argentino / OCA), que genera la etiqueta y coordina el retiro.
 //   3. Avisa por email al local (y al cliente, si hay un dominio propio configurado).
 //
 // Variables de entorno en Vercel:
@@ -122,7 +122,7 @@ module.exports = async function handler(req, res) {
     const lista = `<ul>${detalle.map(d => `<li>${esc(d)}</li>`).join("")}</ul>`;
     let aviso = "";
     if (entrega.tipo === "local") aviso = "<p>👉 Prepará el pedido: lo retira en el local.</p>";
-    else if (pedido.envio) aviso = `<p>✅ <b>Envío creado en Zipnova</b>${pedido.envio.seguimiento ? " (seguimiento: " + esc(pedido.envio.seguimiento) + ")" : ""}. Imprimí la etiqueta desde el panel de Zipnova, pegala en la caja y entregala cuando pase Andreani (o llevala a una sucursal).</p>`;
+    else if (pedido.envio) aviso = `<p>✅ <b>Envío creado en Zipnova</b>${pedido.envio.seguimiento ? " (seguimiento: " + esc(pedido.envio.seguimiento) + ")" : ""}. Imprimí la etiqueta desde el panel de Zipnova, pegala en la caja y entregala cuando pase el correo (o llevala a una sucursal).</p>`;
     else aviso = `<p>⚠️ ${esc(pedido.envioError || "Creá el envío desde el panel de Zipnova con estos datos.")}</p>`;
 
     if (process.env.AVISOS_EMAIL) {
@@ -146,7 +146,7 @@ module.exports = async function handler(req, res) {
           <p>Recibimos tu pago de <b>${pesos(pago.transaction_amount)}</b>. Tu número de pedido es <b>${esc(numero)}</b>.</p>
           ${lista}
           <p><b>Entrega:</b> ${textoEntrega(entrega)}</p>
-          <p>${entrega.tipo === "local" ? "Te avisamos cuando esté listo para retirar." : "Te vamos a mandar el número de seguimiento de Andreani cuando lo despachemos."}</p>
+          <p>${entrega.tipo === "local" ? "Te avisamos cuando esté listo para retirar." : "Te vamos a mandar el número de seguimiento del correo cuando lo despachemos."}</p>
           <p>Cualquier consulta, respondé este email o escribinos por WhatsApp.<br>Nací Reina Calzados · ${esc(CATALOGO.local.direccion)}</p>`
       });
     }

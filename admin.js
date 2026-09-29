@@ -188,7 +188,7 @@ function pintarPedidos() {
     const entrega = e.tipo === "local" ? "Retira en el local" : e.tipo === "sucursal" ? `${esc(e.opcion)} · ${esc(e.sucursal)}` : `${esc(e.opcion)} · ${esc(e.calle)} ${esc(e.numero)}${e.piso ? " " + esc(e.piso) : ""}, ${esc(e.localidad)}, ${esc(e.provincia)} (CP ${esc(e.cp)})`;
     const msj = e.tipo === "local"
       ? `¡Hola ${String(c.nombre || "").split(" ")[0]}! Tu pedido ${p.numero} de Nací Reina ya está listo para retirar en ${CATALOGO.local.direccion}.`
-      : `¡Hola ${String(c.nombre || "").split(" ")[0]}! Tu pedido ${p.numero} de Nací Reina ya fue despachado con Andreani.${p.envio && p.envio.seguimiento ? " Seguimiento: " + p.envio.seguimiento : ""}`;
+      : `¡Hola ${String(c.nombre || "").split(" ")[0]}! Tu pedido ${p.numero} de Nací Reina ya fue despachado${e.opcion ? " por " + String(e.opcion).split(" · ")[0] : ""}.${p.envio && p.envio.seguimiento ? " Seguimiento: " + p.envio.seguimiento : ""}`;
     return `<article class="pedido">
       <div class="pedido-h"><b>${esc(p.numero)} · ${pesos(p.total)}</b><span class="estado-pill ${esc(p.estado)}">${esc(ESTADOS[p.estado] || p.estado)}</span></div>
       <small style="color:var(--tinta-2)">${new Date(p.fecha).toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" })} · ${esc(c.nombre)} · ${esc(c.telefono)}${c.dni ? " · DNI " + esc(c.dni) : ""}</small>
@@ -217,7 +217,7 @@ function pintarEstado(cfg) {
   const items = [
     [cfg.mercadoPago, "Mercado Pago", "Cobros online con tarjeta, débito y dinero en cuenta.", "Falta MP_ACCESS_TOKEN en Vercel: sin esto no se puede cobrar."],
     [cfg.baseDeDatos, "Base de datos (Upstash)", "Guarda el stock, los precios y los pedidos.", "Falta conectar Upstash en Vercel: sin esto no se guardan los cambios de este editor ni los pedidos."],
-    [cfg.zipnova, "Zipnova · Andreani", "Cotiza el envío según el código postal.", "Falta configurar Zipnova: mientras tanto el envío se cobra con los precios fijos por zona."],
+    [cfg.zipnova, "Zipnova · envíos por correo", "Cotiza el envío según el código postal.", "Falta configurar Zipnova: mientras tanto el envío se cobra con los precios fijos por zona."],
     [cfg.zipnova && cfg.baseDeDatos && cfg.envioAutomatico, "Envío automático", "Cada venta pagada crea sola el envío en Zipnova.", "Desactivado: los envíos se crean a mano desde el panel de Zipnova."],
     [cfg.emails, "Avisos por email", "Te llega un email con cada venta.", "Falta RESEND_API_KEY y AVISOS_EMAIL: no vas a recibir emails de las ventas."]
   ];

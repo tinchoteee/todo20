@@ -1,7 +1,7 @@
 // Cotización de envíos. Lo usan /api/cotizar-envio (para mostrar precios) y /api/crear-pago
 // (para cobrar el envío correcto: el precio siempre se vuelve a calcular acá, nunca se toma del navegador).
 //
-// Con Zipnova configurado, cotiza Andreani (u otros correos) según código postal, peso y tamaño.
+// Con Zipnova configurado, cotiza los correos activos en Zipnova (Correo Argentino, OCA) según código postal, peso y tamaño.
 // Variables de entorno en Vercel (se sacan del panel de Zipnova → Configuración → API):
 //   ZIPNOVA_API_TOKEN, ZIPNOVA_API_SECRET, ZIPNOVA_ACCOUNT_ID
 //   ZIPNOVA_ORIGIN_ID (opcional: el id de la dirección del local; si falta usa la dirección por defecto)
@@ -102,7 +102,7 @@ async function cotizarZipnova({ cp, provincia, localidad, lineas, valor }) {
 function cotizarPorZona({ provincia }) {
   const z = CATALOGO.envio.zonasDeRespaldo;
   const precio = z[provincia] ?? z.resto;
-  return [{ id: "zona", tipo: "domicilio", nombre: "Envío a domicilio", transportista: "Andreani", precio, dias: { min: null, max: null } }];
+  return [{ id: "zona", tipo: "domicilio", nombre: "Envío a domicilio", transportista: null, precio, dias: { min: null, max: null } }];
 }
 
 // lineas: [{ producto, cant }]; subtotal: suma de los productos (para el envío gratis)

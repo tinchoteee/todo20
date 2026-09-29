@@ -1,4 +1,4 @@
-// Devuelve las opciones de envío (Andreani a domicilio, a sucursal, retiro en el local) para un código postal.
+// Devuelve las opciones de envío (correo a domicilio, a sucursal, retiro en el local) para un código postal.
 // Lo usan el "Calculá tu envío" de la página de producto y el paso de Entrega del checkout.
 const { cotizar, lineasDelPedido } = require("./_envios.js");
 const { productosActuales } = require("./_catalogo.js");

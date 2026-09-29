@@ -7,13 +7,13 @@ La tienda ya está armada. Para que venda sola faltan crear algunas cuentas (son
 ## Qué hace la tienda sola
 
 1. El cliente elige producto, color y talle, y calcula el envío con su código postal.
-2. En el checkout elige: **Andreani a domicilio**, **Andreani a sucursal** o **retiro en el local**.
+2. En el checkout elige: **correo a domicilio**, **correo a sucursal** (Correo Argentino u OCA) o **retiro en el local**.
 3. Paga todo junto con **Mercado Pago** (productos + envío).
 4. Cuando el pago se aprueba:
    - El pedido aparece en el **editor** (pestaña Pedidos).
-   - Se **crea solo el envío en Zipnova**, que le pide a Andreani la etiqueta y el retiro.
+   - Se **crea solo el envío en Zipnova**, que genera la etiqueta y coordina el retiro con el correo.
    - Te llega un **email** con todo el pedido.
-5. **Vos solo tenés que**: imprimir la etiqueta desde el panel de Zipnova, pegarla en la caja y dársela a Andreani cuando pase por el local (o llevarla a una sucursal).
+5. **Vos solo tenés que**: imprimir la etiqueta desde el panel de Zipnova, pegarla en la caja y dársela al correo cuando pase por el local (o llevarla a una sucursal).
 
 ---
 
@@ -36,11 +36,11 @@ Eso crea solo las variables `KV_REST_API_URL` y `KV_REST_API_TOKEN`. No hay que 
 3. Primero usá las **credenciales de prueba** para hacer una compra de prueba. Después cambiás a las **credenciales de producción**.
 4. Copiá el **Access Token** (empieza con `APP_USR-`) y pegalo en Vercel como `MP_ACCESS_TOKEN`.
 
-## Paso 4 · Zipnova (envíos con Andreani)
+## Paso 4 · Zipnova (envíos por correo)
 
-1. Creá una cuenta en **zipnova.com.ar** (no necesitás contrato con Andreani).
+1. Creá una cuenta en **zipnova.com.ar** (no necesitás contrato con ningún correo).
 2. Cargá la dirección del local como **origen**: Av. de Mayo 1614, Ramos Mejía (CP 1704). Elegí que **retiren en el local**.
-3. Activá **Andreani** como transportista.
+3. En **Configuración → Transportes → Transportes con servicio completo** activá **Correo Argentino** y **OCA**. (Andreani solo está con *contrato propio*, que es un plan pago: no hace falta.)
 4. En **Configuración → API** generá un token y copiá:
    - API Token → `ZIPNOVA_API_TOKEN`
    - API Secret → `ZIPNOVA_API_SECRET`
@@ -71,7 +71,7 @@ Proyecto → **Settings → Environment Variables**. Después de agregarlas: **D
 | `MP_ACCESS_TOKEN` | Cobrar con Mercado Pago | Sí |
 | `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Base de datos (se crean solas en el paso 2) | Sí |
 | `ADMIN_CLAVE` | Entrar al editor | Sí |
-| `ZIPNOVA_API_TOKEN`, `ZIPNOVA_API_SECRET`, `ZIPNOVA_ACCOUNT_ID` | Cotizar y crear envíos Andreani | Sí, para Andreani |
+| `ZIPNOVA_API_TOKEN`, `ZIPNOVA_API_SECRET`, `ZIPNOVA_ACCOUNT_ID` | Cotizar y crear envíos por correo | Sí, para envíos automáticos |
 | `ZIPNOVA_ORIGIN_ID` | Dirección de origen en Zipnova | No |
 | `ZIPNOVA_CREAR_ENVIOS` | Poné `no` si preferís crear los envíos a mano | No |
 | `RESEND_API_KEY`, `AVISOS_EMAIL` | Email con cada venta | Recomendado |
@@ -94,10 +94,10 @@ Proyecto → **Settings → Environment Variables**. Después de agregarlas: **D
 **Editor:** entrá a `tu-tienda.vercel.app/admin.html` con tu contraseña.
 
 - **Stock y precios**: tocá un talle para marcarlo agotado (queda tachado) o disponible (verde). También podés marcar un color agotado, el modelo entero agotado, o cambiar el precio. Tocá **Guardar**: la tienda se actualiza en segundos.
-- **Pedidos**: todas las ventas, con el seguimiento de Andreani. Cambiá el estado (despachado, entregado…) y usá **Avisar al cliente** para mandarle un WhatsApp armado.
+- **Pedidos**: todas las ventas, con el seguimiento del correo. Cambiá el estado (despachado, entregado…) y usá **Avisar al cliente** para mandarle un WhatsApp armado.
 - **Estado**: muestra qué está configurado y qué falta.
 
-**Cuando entra una venta con envío:** imprimí la etiqueta desde el panel de Zipnova → pegala en la caja → entregala a Andreani.
+**Cuando entra una venta con envío:** imprimí la etiqueta desde el panel de Zipnova → pegala en la caja → entregala al correo.
 **Cuando entra una venta con retiro:** prepará el pedido y avisale al cliente desde el editor.
 **Si alguien usa el botón de arrepentimiento:** te llega un email. Coordiná la devolución y devolvé el dinero desde Mercado Pago.
 
@@ -105,5 +105,5 @@ Proyecto → **Settings → Environment Variables**. Después de agregarlas: **D
 
 - Tu número de **WhatsApp** (hoy está vacío: el botón de consultas no aparece hasta cargarlo).
 - El monto de **envío gratis** (hoy $150.000).
-- El **peso y tamaño de las cajas**: Andreani cobra según eso. Pesá y medí una caja de cada tipo.
+- El **peso y tamaño de las cajas**: El correo cobra según eso. Pesá y medí una caja de cada tipo.
 - Productos nuevos, fotos, nombres y descripciones.

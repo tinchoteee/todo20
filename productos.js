@@ -15,9 +15,10 @@
   envio: {
     // Envío gratis cuando los productos suman este monto o más. 0 = sin envío gratis.
     gratisDesde: 150000,
-    // Transportista preferido: si Andreani cotiza, se muestran solo sus opciones.
-    transportista: "andreani",
-    // Caja de cada par (peso en gramos, medidas en cm). Andreani cobra según peso y tamaño.
+    // Transportista preferido: si ese correo cotiza, se muestran solo sus opciones. Vacío = todos los activos en Zipnova
+    // (hoy Correo Argentino y OCA; Andreani no está disponible sin contrato propio).
+    transportista: "",
+    // Caja de cada par (peso en gramos, medidas en cm). El correo cobra según peso y tamaño.
     // Un producto puede usar otra caja con  caja: "bota-alta".
     cajas: {
       "botas":      { peso: 1500, alto: 13, ancho: 30, largo: 35 },
