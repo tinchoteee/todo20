@@ -53,7 +53,9 @@ async function mandarEmail({ para, asunto, html, clave }) {
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, "Content-Type": "application/json", "Idempotency-Key": clave },
-    body: JSON.stringify({ from: process.env.RESEND_FROM || "Nací Reina <onboarding@resend.dev>", to: [para], subject: asunto, html })
+    // Si el cliente responde el email, la respuesta le llega al local (AVISOS_EMAIL)
+    body: JSON.stringify({ from: process.env.RESEND_FROM || "Nací Reina <onboarding@resend.dev>", to: [para], subject: asunto, html,
+      ...(process.env.AVISOS_EMAIL && para !== process.env.AVISOS_EMAIL ? { reply_to: process.env.AVISOS_EMAIL } : {}) })
   });
   if (!r.ok) console.error("No se pudo mandar el email", para, r.status, await r.text());
 }
