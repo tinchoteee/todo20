@@ -24,7 +24,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - El código está en GitHub: `tinchoteee/todo20`. Vercel publica la rama `main` en https://nacireina.vercel.app (cada push a `main` se publica solo).
 - Configurado en Vercel (2026-09-28): base de datos Upstash, `ADMIN_CLAVE` y `MP_ACCESS_TOKEN` de producción (app "Nací Reina" en MP developers). La tienda ya cobra. Después (2026-09-29): Resend (`RESEND_API_KEY`, `AVISOS_EMAIL`) y Zipnova (`ZIPNOVA_API_TOKEN/SECRET/ACCOUNT_ID`, sin `ZIPNOVA_ORIGIN_ID`: usa el origen predeterminado de la cuenta) configurados y probados; compra real de prueba OK.
 - WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
-- Falta en `productos.js`: el peso y las medidas reales de las cajas.
+- Cajas de envío (dato del dueño, aproximado): 60 × 40 × 15 cm y 800 g para todos los calzados. Si los envíos salen caros, revisar con una medida real con centímetro (una caja de zapatos común mide ~33 × 22 × 12).
 - Nunca pedir ni pegar claves ni datos bancarios en el chat: el usuario los carga directo en Vercel y en Mercado Pago.
-- Siguiente paso: cargar peso y medidas reales de las cajas (`envio.cajas`); cambiar los nombres Samba/Campus (marcas de Adidas) si el dueño acepta.
+- Siguiente paso: cambiar los nombres Samba/Campus (marcas de Adidas) si el dueño acepta.
 - Ojo: si en Vercel se hace un "Instant Rollback", los pushes a `main` dejan de publicarse hasta hacer "Promote to Production".
