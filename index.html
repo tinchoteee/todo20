@@ -47,13 +47,23 @@
   <!-- INICIO -->
   <div id="vista-inicio">
     <div class="hero">
+      <!-- Carrusel de fotos de fondo: cada foto va con su promo (textos en tienda.js, "Carrusel del inicio") -->
+      <div class="hero-fotos" aria-hidden="true">
+        <img class="on" src="img/hero-1.jpg" alt="" width="1920" height="640" fetchpriority="high">
+        <img src="img/hero-2.jpg" alt="" width="1920" height="640">
+        <img src="img/hero-3.jpg" alt="" width="1920" height="640">
+      </div>
       <div class="wrap">
         <div class="hero-txt">
           <h1>Pisá <em>fuerte.</em></h1>
           <p>Los mejores calzados al mejor precio y calidad. Pagá seguro con Mercado Pago y recibilo en tu casa en todo el país, o retiralo por el local.</p>
-          <a class="btn btn-negro" href="#catalogo">Ver productos</a>
+          <a class="btn btn-rosa" href="#catalogo">Ver productos</a>
         </div>
         <div class="hero-logo"><img src="img/logo.jpg" alt="" width="1221" height="1005"></div>
+        <div class="hero-promo">
+          <div class="promos" id="promos" aria-live="polite"></div>
+          <div class="puntos" id="heroPuntos" role="group" aria-label="Promociones"></div>
+        </div>
       </div>
     </div>
     <div class="wrap">

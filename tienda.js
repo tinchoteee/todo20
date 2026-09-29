@@ -655,6 +655,37 @@ if (ENVIO.gratisDesde > 0) {
   $("#ventajaEnvio").textContent = `Gratis desde ${pesos(ENVIO.gratisDesde)}. A domicilio o a sucursal.`;
 }
 if (WHATSAPP) $("#flotante").href = wa("¡Hola Nací Reina! Tengo una consulta:");
+
+// ---------- Carrusel del inicio: una foto de fondo por promo (los montos salen de productos.js) ----------
+{
+  const pctTransf = Number((CATALOGO.transferencia || {}).porcentaje) || 0;
+  const fotos = [...document.querySelectorAll(".hero-fotos img")];
+  const promos = [
+    ENVIO.gratisDesde > 0 && { b: `<em>Envío gratis</em> desde ${pesos(ENVIO.gratisDesde)}` },
+    DESCUENTO.desde > 0 && DESCUENTO.porcentaje > 0 && { b: `<em>${DESCUENTO.porcentaje}% OFF</em> desde ${pesos(DESCUENTO.desde)}`, s: "Sumá a tu carrito y obtené beneficios" },
+    pctTransf > 0 && { b: `<em>${pctTransf}% OFF</em> con transferencia`, s: "Hacemos envíos a todo el país" }
+  ].map((p, i) => p && { ...p, foto: fotos[i] }).filter(Boolean);
+  fotos.forEach(f => { if (!promos.some(p => p.foto === f)) f.remove(); });
+  $("#promos").innerHTML = promos.map((p, i) => `<p class="promo${i ? "" : " on"}"><b>${p.b}</b>${p.s ? `<span>${p.s}</span>` : ""}</p>`).join("");
+  $("#heroPuntos").innerHTML = promos.length > 1 ? promos.map((p, i) => `<button type="button" aria-label="Promoción ${i + 1}" aria-pressed="${!i}"></button>`).join("") : "";
+  let actual = 0, timer = null;
+  const mostrar = i => {
+    actual = (i + promos.length) % promos.length;
+    promos.forEach((p, j) => p.foto.classList.toggle("on", j === actual));
+    document.querySelectorAll("#promos .promo").forEach((el, j) => el.classList.toggle("on", j === actual));
+    document.querySelectorAll("#heroPuntos button").forEach((b, j) => b.setAttribute("aria-pressed", j === actual));
+  };
+  if (promos.length) mostrar(0);
+  const arrancar = () => {
+    clearInterval(timer);
+    if (promos.length > 1 && !matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(() => { if (!document.hidden) mostrar(actual + 1); }, 5000);
+  };
+  $("#heroPuntos").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    mostrar([...b.parentNode.children].indexOf(b)); arrancar();
+  });
+  arrancar();
+}
 document.querySelectorAll("[data-gratis]").forEach(el => { el.textContent = ENVIO.gratisDesde > 0 ? `En compras desde ${pesos(ENVIO.gratisDesde)} el envío es gratis.` : ""; });
 
 // ---------- Botón de arrepentimiento ----------
