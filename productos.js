@@ -38,7 +38,7 @@
   },
 
   productos: [
-    {id:1,cat:"botas",caja:"bota-alta",nombre:"Bota texana bordada",desc:"Caña alta, bordado western, taco de madera.",precio:45000,talles:[35,36,37,38,39,40],colores:[{id:"marron",nombre:"Chocolate",hex:"#5A2A1E",precio:48000,foto:"fotos/bota-texana-bordada-marron.jpg"},{id:"blanco",nombre:"Blanco",hex:"#F2EFEA",precio:45000,foto:"fotos/bota-texana-bordada-blanca.webp"}]},
+    {id:1,cat:"botas",caja:"bota-alta",nombre:"Bota texana bordada",desc:"Caña alta, bordado western, taco de madera.",precio:45000,talles:[35,36,37,38,39,40],colores:[{id:"marron",nombre:"Chocolate",hex:"#5A2A1E",precio:48000,foto:"fotos/bota-texana-bordada-marron.jpg"},{id:"blanco",nombre:"Blanco",hex:"#F2EFEA",precio:45000,foto:"fotos/bota-texana-bordada-blanca.webp"},{id:"negro",nombre:"Negro",hex:"#1C1C1C",precio:45000,foto:"fotos/bota-texana-bordada-negra.jpg"}]},
     {id:2,cat:"botas",nombre:"Bota texana corta",desc:"Caña corta, cierre lateral, puntera bordada.",precio:28000,talles:[35,36,37,38,39,40],colores:[{id:"suela",nombre:"Suela",hex:"#7B3F1E",foto:"fotos/bota-texana-corta-marron.webp"}]},
     {id:13,cat:"botas",nombre:"Bota texana punta cuadrada",desc:"Caña media, cierre lateral, taco ancho.",precio:28000,talles:[35,36,37,38,39,40],colores:[{id:"marron",nombre:"Marrón",hex:"#7A4A2A",foto:"fotos/bota-texana-punta-cuadrada-marron.jpg"},{id:"negro",nombre:"Negro",hex:"#1C1C1C"}]},
     {id:14,cat:"botas",nombre:"Bota texana con tachas",desc:"Tachas doradas y plateadas, cierre lateral.",precio:45000,talles:[35,36,37,38,39,40],colores:[{id:"blanco",nombre:"Blanco",hex:"#F2EFEA",foto:"fotos/bota-texana-tachas-blanca.jpg"},{id:"negro",nombre:"Negro",hex:"#1C1C1C",foto:"fotos/bota-texana-tachas-negra.jpg"}]},
