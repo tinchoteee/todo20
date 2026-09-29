@@ -8,7 +8,7 @@
   else window.CATALOGO = catalogo;
 })({
   // WhatsApp del local: 549 + código de área sin 0 + número sin 15. Ej: 5491123456789
-  whatsapp: "5491169490396",
+  whatsapp: "5491159099386",
   metaPixel: "2157264648210007",   // Píxel de Meta (no es secreto; en Vercel META_PIXEL_ID lo reemplaza)
 
   local: { direccion: "Av. de Mayo 1600, Ramos Mejía", cp: "1704" },
