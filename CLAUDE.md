@@ -30,6 +30,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Vercel Web Analytics: script en `index.html` (no en el editor); se activa en Vercel → proyecto → Analytics → Enable.
 - WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
 - Instagram: https://www.instagram.com/nacireinacalzados/ (link en el pie de página y en `sameAs` del JSON-LD). Facebook no se usa.
+- Zapatos Panchas (id 71, 2026-09-29): Suela, Negro y Negro gamuza, fotos propias. Precio y talles a confirmar (puesto 35–40, precio:0 → "Consultar precio").
 - Bota texana corta (id 2): 2026-09-29 se le unió la "Bota texana punta cuadrada" (id 13, ahora `oculto`) a pedido del dueño. Colores: Suela, Marrón (foto de la ex punta cuadrada) y Negro (foto real). Ya no hay foto pendiente del negro punta cuadrada.
 - Zapatillas leopardo clásicas (id 69) y con plataforma (id 70): fotos propias del local (2026-09-29), talles 35–40. Precio pendiente (precio:0 → "Consultar precio", no se pueden comprar online hasta cargarlo).
 - Bota texana bordada (id 1): color Negro con foto real (2026-09-29), a $45.000 como la blanca (la oreja de atrás se dibujó a mano en la máscara porque la vidriera confundía el recorte).
