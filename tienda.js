@@ -538,7 +538,7 @@ function ruta() {
   $("#flotante").hidden = !WHATSAPP || vista === "checkout";
   if (vista === "producto") { mostrarProducto(+h.slice(2)); window.scrollTo(0, 0); return; }
   if (vista === "checkout") { mostrarCheckout(); window.scrollTo(0, 0); return; }
-  document.title = "Nací Reina Calzados";
+  document.title = "Nací Reina Calzados | Botas, zapatillas y sandalias en Ramos Mejía";
   if (h.startsWith("cat/")) { catActual = h.slice(4); pintarCatalogo(); $("#catalogo").scrollIntoView(); return; }
   pintarCatalogo();
   const destino = h && document.getElementById(h);
