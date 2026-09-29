@@ -21,12 +21,12 @@
     // Caja de cada par (peso en gramos, medidas en cm). El correo cobra según peso y tamaño.
     // Un producto puede usar otra caja con  caja: "bota-alta".
     cajas: {
-      "botas":      { peso: 1500, alto: 13, ancho: 30, largo: 35 },
-      "bota-alta":  { peso: 2000, alto: 14, ancho: 32, largo: 45 },
-      "zapatos":    { peso: 1100, alto: 12, ancho: 21, largo: 32 },
-      "zapatillas": { peso: 1100, alto: 13, ancho: 22, largo: 33 },
-      "sandalias":  { peso: 900,  alto: 12, ancho: 21, largo: 32 },
-      "suecos":     { peso: 900,  alto: 12, ancho: 21, largo: 32 }
+      "botas":      { peso: 800, alto: 13, ancho: 30, largo: 35 },
+      "bota-alta":  { peso: 800, alto: 14, ancho: 32, largo: 45 },
+      "zapatos":    { peso: 800, alto: 12, ancho: 21, largo: 32 },
+      "zapatillas": { peso: 800, alto: 13, ancho: 22, largo: 33 },
+      "sandalias":  { peso: 800,  alto: 12, ancho: 21, largo: 32 },
+      "suecos":     { peso: 800,  alto: 12, ancho: 21, largo: 32 }
     },
     // Solo se usa mientras Zipnova no esté configurado: costo fijo por zona.
     zonasDeRespaldo: { "CABA": 5000, "Buenos Aires": 6500, "resto": 9500 }
