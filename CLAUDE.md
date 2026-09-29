@@ -39,6 +39,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Suecos Diana (id 80, 2026-09-29, de cuero): Negro y Chocolate, $33.000 ($30.000 + 10%), talles 35–40, fotos propias.
 - Suecos Petty (id 81, 2026-09-29, de cuero): Negro, Oro (símil croco), Bison y Rosa, $33.000 ($30.000 + 10%), talles 35–40, fotos propias.
 - Bota texana de jean con tachas (id 82, 2026-09-29): color Jean, $33.000 ($30.000 + 10%), talles 35–40, foto propia.
+- Zapatillas urbanas blanco y negro (id 83, 2026-09-29): $27.500 ($25.000 + 10%), talles 35–40, foto propia (se borró a mano la etiqueta de precio que colgaba).
 - Bota texana corta (id 2): 2026-09-29 se le unió la "Bota texana punta cuadrada" (id 13, ahora `oculto`) a pedido del dueño. Colores: Suela, Marrón (foto de la ex punta cuadrada), Negro y Blanco (fotos reales). Ya no hay foto pendiente del negro punta cuadrada.
 - Zapatillas animal print (id 69) y animal print con plataforma (id 70) (antes "leopardo", renombradas por el dueño): fotos propias del local (2026-09-29), talles 35–40. Precio cargado por el dueño desde el editor (en la base de datos, no en productos.js).
 - Bota texana bordada (id 1): color Plata a $30.000 (dato del dueño, más barata que las otras) con foto real. Color Negro con foto real (2026-09-29), a $45.000 como la blanca (la oreja de atrás se dibujó a mano en la máscara porque la vidriera confundía el recorte).
