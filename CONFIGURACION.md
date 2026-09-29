@@ -116,6 +116,6 @@ Proyecto → **Settings → Environment Variables**. Después de agregarlas: **D
 ## Cosas que se cambian en `productos.js` (pedíselas a Claude)
 
 - Tu número de **WhatsApp** (hoy está vacío: el botón de consultas no aparece hasta cargarlo).
-- El monto de **envío gratis** (hoy $150.000).
+- El monto de **envío gratis** (hoy $165.000).
 - El **peso y tamaño de las cajas**: El correo cobra según eso. Pesá y medí una caja de cada tipo.
 - Productos nuevos, fotos, nombres y descripciones.

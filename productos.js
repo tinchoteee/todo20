@@ -15,11 +15,11 @@
 
   // Descuento por monto: cuando los productos suman "desde" o más, se descuenta "porcentaje" a cada producto.
   // (No se aplica al envío.) desde: 0 = sin descuento.
-  descuento: { desde: 200000, porcentaje: 15 },
+  descuento: { desde: 220000, porcentaje: 15 },
 
   envio: {
     // Envío gratis cuando los productos suman este monto o más. 0 = sin envío gratis.
-    gratisDesde: 150000,
+    gratisDesde: 165000,
     // Transportista preferido: si ese correo cotiza, se muestran solo sus opciones. Vacío = todos los activos en Zipnova
     // (hoy Correo Argentino y OCA; Andreani no está disponible sin contrato propio).
     transportista: "",

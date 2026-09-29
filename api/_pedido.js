@@ -37,7 +37,7 @@ async function armarPedido(body, base) {
   }
   if (opcion.zipnova) entrega.zipnova = opcion.zipnova;
 
-  // Descuento por monto (15% desde $200.000): se aplica a cada producto, no al envío
+  // Descuento por monto (15% desde $220.000): se aplica a cada producto, no al envío
   const cuenta = aplicarAjustes.conDescuento(lineas.map(l => ({ precio: l.precio, cant: l.cant })), CATALOGO.descuento);
   const items = lineas.map((l, i) => ({
     id: String(l.producto.id),
