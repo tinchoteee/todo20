@@ -66,7 +66,7 @@ En Vercel agregá `ADMIN_CLAVE` con una contraseña larga que solo sepas vos (po
 1. Entrá a **business.facebook.com/events_manager** con la cuenta que maneja el Instagram de la tienda.
 2. **Conectar orígenes de datos → Web → Conectar** y ponele de nombre "Nací Reina".
 3. Cuando pregunte cómo instalarlo, elegí **"Instalar el código manualmente"** o cerrá esa ventana: no hace falta copiar el código.
-4. Copiá el **identificador del píxel** (un número de 15 o 16 cifras) y cargalo en Vercel como `META_PIXEL_ID`. Después, Redeploy.
+4. Ya está cargado en la tienda (`metaPixel` en `productos.js`, píxel 2157264648210007). Si algún día cambia, pasale el número nuevo a Claude o cargalo en Vercel como `META_PIXEL_ID`.
 
 La tienda le avisa a Meta cuando alguien: entra, mira un producto, agrega al carrito, empieza a pagar y compra (con el monto).
 
