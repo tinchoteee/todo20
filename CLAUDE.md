@@ -33,7 +33,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Zapatos Panchas (id 71, 2026-09-29): Suela, Negro y Negro gamuza, fotos propias. Precio y talles a confirmar (puesto 35–40, precio:0 → "Consultar precio").
 - Bota texana corta (id 2): 2026-09-29 se le unió la "Bota texana punta cuadrada" (id 13, ahora `oculto`) a pedido del dueño. Colores: Suela, Marrón (foto de la ex punta cuadrada) y Negro (foto real). Ya no hay foto pendiente del negro punta cuadrada.
 - Zapatillas leopardo clásicas (id 69) y con plataforma (id 70): fotos propias del local (2026-09-29), talles 35–40. Precio pendiente (precio:0 → "Consultar precio", no se pueden comprar online hasta cargarlo).
-- Bota texana bordada (id 1): color Negro con foto real (2026-09-29), a $45.000 como la blanca (la oreja de atrás se dibujó a mano en la máscara porque la vidriera confundía el recorte).
+- Bota texana bordada (id 1): color Plata a $30.000 (dato del dueño, más barata que las otras) con foto real. Color Negro con foto real (2026-09-29), a $45.000 como la blanca (la oreja de atrás se dibujó a mano en la máscara porque la vidriera confundía el recorte).
 - Zapato acordonado con tachas (id 6): color Negro agregado con foto real (2026-09-29), mismo precio.
 - Bota texana con tachas negra: foto real del local (2026-09-29) sobre el fondo de estudio; reemplazó a la recoloreada.
 - Cajas de envío: tamaño caja de Nike, 35 × 24 × 13 cm y 800 g (dato del dueño). Botas de caña alta: 45 × 32 × 14 cm, 800 g.
