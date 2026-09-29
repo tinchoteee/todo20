@@ -179,13 +179,19 @@ let catActual = "todo";
 
 function tarjeta(p) {
   const cols = p.colores || [];
+  // Carrusel: si los colores tienen fotos distintas, la tarjeta las va pasando sola (ver "Carrusel de las tarjetas")
+  const fotos = [...new Set(cols.map(c => c.foto).filter(Boolean))];
+  const carrusel = fotos.length > 1 && !p.agotado;
+  const fotoHtml = carrusel
+    ? fotos.map((f, i) => `<img src="${esc(f)}" alt="${i ? "" : esc(p.nombre)}" loading="lazy"${i ? "" : ' class="on"'}>`).join("")
+    : img(fotoDe(p), p.nombre);
   return `<a class="card${p.agotado ? " agotado" : ""}" href="#p/${p.id}">
-    <div class="foto">${img(fotoDe(p), p.nombre)}${p.agotado ? '<span class="tag">Agotado</span>' : rangoDe(p) ? "" : '<span class="tag">Consultar</span>'}</div>
+    <div class="foto${carrusel ? " carrusel" : ""}">${fotoHtml}${p.agotado ? '<span class="tag">Agotado</span>' : rangoDe(p) ? "" : '<span class="tag">Consultar</span>'}</div>
     <div>
       <h3>${esc(p.nombre)}</h3>
       <div class="meta">${esc(nombreCat(p.cat))}${cols.length > 1 ? ` · ${cols.length} colores` : cols.length ? ` · ${esc(cols[0].nombre)}` : ""}</div>
     </div>
-    ${cols.length > 1 ? `<div class="puntos">${cols.map(c => `<i style="--sw:${esc(c.hex)}" title="${esc(c.nombre)}"></i>`).join("")}</div>` : ""}
+    ${cols.length > 1 ? `<div class="puntos">${cols.map(c => `<i style="--sw:${esc(c.hex)}" title="${esc(c.nombre)}"${carrusel && c.foto ? ` data-foto="${fotos.indexOf(c.foto)}"${c.foto === fotos[0] ? ' class="on"' : ""}` : ""}></i>`).join("")}</div>` : ""}
     <div class="precio">${precioTxt(p)}</div>
   </a>`;
 }
@@ -637,6 +643,25 @@ $("#formArr").addEventListener("submit", async e => {
 })();
 $("#resCerrar").addEventListener("click", () => { $("#resultado").hidden = true; });
 $("#resultado").addEventListener("click", e => { if (e.target === $("#resultado")) $("#resultado").hidden = true; });
+
+// ---------- Carrusel de las tarjetas ----------
+// Cada 2,8 segundos, las tarjetas que se ven en pantalla pasan a la foto del color siguiente
+// (y se marca ese color en los puntitos). No corre si la persona pidió menos movimiento en su celular.
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  setInterval(() => {
+    if (document.hidden) return;
+    document.querySelectorAll(".card .foto.carrusel").forEach(f => {
+      const r = f.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) return;
+      const imgs = f.querySelectorAll("img");
+      const i = [...imgs].findIndex(x => x.classList.contains("on"));
+      const sig = (i + 1) % imgs.length;
+      if (!imgs[sig].complete) return;   // espera a que cargue la próxima foto
+      imgs[i].classList.remove("on"); imgs[sig].classList.add("on");
+      f.closest(".card").querySelectorAll(".puntos i[data-foto]").forEach(p => p.classList.toggle("on", +p.dataset.foto === sig));
+    });
+  }, 2800);
+}
 
 // ---------- Stock actualizado ----------
 // Se pide al abrir la página y cada vez que se vuelve a la pestaña (por si algo se agotó mientras tanto)

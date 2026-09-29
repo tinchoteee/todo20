@@ -291,3 +291,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 /* Aviso de pocos pares en la página del producto */
 .quedan{margin:8px 0 0;font-size:14px;font-weight:700;color:var(--rosa)}
 .quedan:empty{display:none}
+
+/* Carrusel de fotos en las tarjetas del catálogo (una foto por color) */
+.card .foto.carrusel img{position:absolute;inset:0;opacity:0;transition:opacity .7s ease,transform .35s}
+.card .foto.carrusel img.on{opacity:1}
+.card .puntos i{transition:transform .3s,box-shadow .3s}
+.card .puntos i.on{transform:scale(1.35);box-shadow:0 0 0 1.5px var(--blanco),0 0 0 3px var(--tinta)}
