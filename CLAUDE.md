@@ -22,9 +22,9 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Todos los productos activos tienen precio. Zapato acordonado $30.000, zapatillas urbanas gamuza $45.000, Campus y Samba (viejas) $30.000.
 - Faltan las fotos de los colores nuevos: negro (punta cuadrada, texana con tachas, corta con tachas, caña fruncida), blanco (caña alta con flecos) y bordó (caña fruncida). Mientras tanto la página avisa "foto de referencia en otro color".
 - El código está en GitHub: `tinchoteee/todo20`. Vercel publica la rama `main` en https://nacireina.vercel.app (cada push a `main` se publica solo).
-- Configurado en Vercel (2026-09-28): base de datos Upstash, `ADMIN_CLAVE` y `MP_ACCESS_TOKEN` de producción (app "Nací Reina" en MP developers). La tienda ya cobra. Faltan: Resend (emails) y Zipnova (mientras tanto, envío con precios fijos por zona).
+- Configurado en Vercel (2026-09-28): base de datos Upstash, `ADMIN_CLAVE` y `MP_ACCESS_TOKEN` de producción (app "Nací Reina" en MP developers). La tienda ya cobra. Después (2026-09-29): Resend (`RESEND_API_KEY`, `AVISOS_EMAIL`) y Zipnova (`ZIPNOVA_API_TOKEN/SECRET/ACCOUNT_ID`, sin `ZIPNOVA_ORIGIN_ID`: usa el origen predeterminado de la cuenta) configurados y probados; compra real de prueba OK.
 - WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
 - Falta en `productos.js`: el peso y las medidas reales de las cajas.
 - Nunca pedir ni pegar claves ni datos bancarios en el chat: el usuario los carga directo en Vercel y en Mercado Pago.
-- Siguiente paso: Resend (`RESEND_API_KEY`, `AVISOS_EMAIL`), compra real de prueba con tarjeta de otra persona y devolución desde MP, después Zipnova.
+- Siguiente paso: cargar peso y medidas reales de las cajas (`envio.cajas`); cambiar los nombres Samba/Campus (marcas de Adidas) si el dueño acepta.
 - Ojo: si en Vercel se hace un "Instant Rollback", los pushes a `main` dejan de publicarse hasta hacer "Promote to Production".
