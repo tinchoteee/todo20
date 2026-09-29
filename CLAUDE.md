@@ -1,6 +1,6 @@
 # Tienda Nací Reina Calzados
 
-Tienda online del local de calzado Nací Reina (Av. de Mayo 1614, Ramos Mejía, CP 1704). La dueña/el dueño no es técnico/a: hablale en español rioplatense, simple y paso a paso. Quiere una tienda que venda sola, estilo Tiendanube/Nike.
+Tienda online del local de calzado Nací Reina (Av. de Mayo 1614, Ramos Mejía, CP 1704). **En la página se muestra "Av. de Mayo 1600"** (pedido del dueño, por temas legales todavía no puede publicar la altura exacta): no poner 1614 en nada público. En Zipnova sigue la dirección real para que el correo retire. La dueña/el dueño no es técnico/a: hablale en español rioplatense, simple y paso a paso. Quiere una tienda que venda sola, estilo Tiendanube/Nike.
 
 ## Cómo está armada
 - Sitio estático + funciones serverless para **Vercel** (carpeta `api/`, CommonJS, Node 20+, sin dependencias).
@@ -30,7 +30,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Vercel Web Analytics: script en `index.html` (no en el editor); se activa en Vercel → proyecto → Analytics → Enable.
 - WhatsApp del local: 11 6949 0396 (`5491169490396`), botón flotante abajo a la derecha.
 - Instagram: https://www.instagram.com/nacireinacalzados/ (link en el pie de página y en `sameAs` del JSON-LD). Facebook no se usa.
-- Zapatos Panchas (id 71, 2026-09-29): Suela, Negro y Negro gamuza, fotos propias. El dueño cargó precio y talles desde el editor (quedan en la base de datos, no en productos.js).
+- Zapatos Panchas (id 71, 2026-09-29): Suela, Negro y Negro gamuza, fotos propias. Talles 40 a 44 (todas las variantes). El dueño cargó precio y talles desde el editor (quedan en la base de datos, no en productos.js).
 - Bota texana corta (id 2): 2026-09-29 se le unió la "Bota texana punta cuadrada" (id 13, ahora `oculto`) a pedido del dueño. Colores: Suela, Marrón (foto de la ex punta cuadrada) y Negro (foto real). Ya no hay foto pendiente del negro punta cuadrada.
 - Zapatillas animal print (id 69) y animal print con plataforma (id 70) (antes "leopardo", renombradas por el dueño): fotos propias del local (2026-09-29), talles 35–40. Precio cargado por el dueño desde el editor (en la base de datos, no en productos.js).
 - Bota texana bordada (id 1): color Plata a $30.000 (dato del dueño, más barata que las otras) con foto real. Color Negro con foto real (2026-09-29), a $45.000 como la blanca (la oreja de atrás se dibujó a mano en la máscara porque la vidriera confundía el recorte).
