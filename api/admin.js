@@ -54,6 +54,7 @@ module.exports = async function handler(req, res) {
         config: {
           baseDeDatos: db.hayDB(),
           mercadoPago: Boolean(process.env.MP_ACCESS_TOKEN),
+          tarjetaEnPagina: Boolean(process.env.MP_ACCESS_TOKEN && process.env.MP_PUBLIC_KEY),
           zipnova: Boolean(process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID),
           envioAutomatico: process.env.ZIPNOVA_CREAR_ENVIOS !== "no",
           emails: Boolean(process.env.RESEND_API_KEY && process.env.AVISOS_EMAIL)

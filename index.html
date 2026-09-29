@@ -213,10 +213,16 @@
         <div class="paso bloqueado cerrado" id="paso3">
           <div class="paso-h"><h2>3. Pago</h2></div>
           <div class="paso-cuerpo">
-            <p style="margin:0">Vas a pagar en la página segura de Mercado Pago. Podés usar tarjeta de crédito, débito o dinero en cuenta.</p>
+            <div id="conTarjeta" hidden>
+              <p style="margin:0"><b>Pagá con tarjeta de crédito o débito</b>, en cuotas si tu tarjeta lo permite.</p>
+              <div id="tarjetaBrick"></div>
+              <p class="cargando" id="tarjetaCargando">Cargando el formulario de pago…</p>
+              <div class="separador-o"><span>o también</span></div>
+            </div>
+            <p style="margin:0" id="textoMP">Vas a pagar en la página segura de Mercado Pago. Podés usar tarjeta de crédito, débito o dinero en cuenta.</p>
             <p class="aviso-error" id="falta3" aria-live="polite"></p>
             <button class="btn btn-mp" id="pagar"><span id="pagarTxt">Pagar con Mercado Pago</span><small>Se abre Mercado Pago</small></button>
-            <p class="seguro">🔒 Tus datos de tarjeta nunca pasan por esta página.</p>
+            <p class="seguro">🔒 Los pagos los procesa Mercado Pago: los datos de tu tarjeta nunca pasan por esta página.</p>
           </div>
         </div>
       </div>

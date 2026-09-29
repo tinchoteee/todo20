@@ -309,6 +309,7 @@ function pintarCheckout() {
       : `${o.nombre} · ${val("ckCalle")} ${val("ckNum")}${val("ckPiso") ? " " + val("ckPiso") : ""}, ${val("ckLoc")}`;
   }
   pintarOpciones();
+  pintarTarjeta();
 }
 function irPaso(n) { ck.paso = n; pintarCheckout(); $("#paso" + n).scrollIntoView({ behavior: "smooth", block: "start" }); }
 
@@ -403,23 +404,30 @@ $("#continuar2").addEventListener("click", () => {
 });
 
 // Paso 3: pago
-$("#pagar").addEventListener("click", async () => {
+function datosPedido() {
   const o = ck.opcion;
-  if (!o) { irPaso(2); return; }
-  const pedido = {
+  return {
     items: carrito.map(i => ({ id: i.id, talle: i.talle, color: i.color, cant: i.cant })),
     cliente: { nombre: val("ckNombre"), telefono: val("ckTel"), email: val("ckEmail"), dni: val("ckDni") },
     entrega: { opcion: o.id, sucursal: ck.sucursal ? ck.sucursal.id : null, cp: val("ckCP"), provincia: $("#ckProv").value,
       localidad: val("ckLoc"), calle: val("ckCalle"), numero: val("ckNum"), piso: val("ckPiso") }
   };
+}
+function recordarPedido(numero, total, cliente) {
+  escribir("nacireina-ultimo-pedido", {
+    numero, total,
+    lineas: carrito.map(i => `${i.cant} x ${producto(i.id).nombre} - ${detalleItem(i)}`),
+    cliente, entrega: $("#res2").textContent, local: ck.opcion.tipo === "local"
+  });
+}
+$("#pagar").addEventListener("click", async () => {
+  const o = ck.opcion;
+  if (!o) { irPaso(2); return; }
+  const pedido = datosPedido();
   $("#pagar").disabled = true; $("#pagarTxt").textContent = "Conectando con Mercado Pago…"; $("#falta3").textContent = "";
   try {
     const r = await api("/api/crear-pago", pedido);
-    escribir("nacireina-ultimo-pedido", {
-      numero: r.pedido, total: subtotal() + o.precio,
-      lineas: carrito.map(i => `${i.cant} x ${producto(i.id).nombre} - ${detalleItem(i)}`),
-      cliente: pedido.cliente, entrega: $("#res2").textContent, local: o.tipo === "local"
-    });
+    recordarPedido(r.pedido, subtotal() + o.precio, pedido.cliente);
     location.href = r.url;
   } catch (err) {
     $("#pagar").disabled = false; pintarCheckout();
@@ -428,6 +436,76 @@ $("#pagar").addEventListener("click", async () => {
   }
 });
 $("#seguirComprando").addEventListener("click", () => { location.hash = ""; });
+
+// ---------- Pago con tarjeta dentro de la página (formulario de Mercado Pago) ----------
+// Los datos de la tarjeta los carga el formulario de Mercado Pago, que los convierte en un código de un solo uso:
+// a nuestro servidor solo llega ese código. Si falta la clave pública, se paga solo con el botón de Mercado Pago.
+const pagoTarjeta = { clave: undefined, mp: null, brick: null, monto: null, armando: false };
+function cargarScript(src) {
+  return new Promise((ok, mal) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = mal; document.head.appendChild(s); });
+}
+async function prepararTarjeta() {
+  if (pagoTarjeta.clave === undefined) {
+    try { pagoTarjeta.clave = (await (await fetch("/api/config")).json()).mpPublicKey || null; } catch (e) { pagoTarjeta.clave = null; }
+  }
+  if (!pagoTarjeta.clave) return false;
+  if (!window.MercadoPago) { try { await cargarScript("https://sdk.mercadopago.com/js/v2"); } catch (e) { pagoTarjeta.clave = null; return false; } }
+  if (!pagoTarjeta.mp) pagoTarjeta.mp = new MercadoPago(pagoTarjeta.clave, { locale: "es-AR" });
+  return true;
+}
+function sacarTarjeta() {
+  if (pagoTarjeta.brick) { try { pagoTarjeta.brick.unmount(); } catch (e) {} }
+  pagoTarjeta.brick = null; pagoTarjeta.monto = null;
+}
+async function pintarTarjeta() {
+  const enPago = !$("#vista-checkout").hidden && ck.paso === 3 && ck.opcion;
+  if (!enPago) { sacarTarjeta(); return; }
+  const monto = subtotal() + (ck.opcion.precio || 0);
+  if ((pagoTarjeta.brick && pagoTarjeta.monto === monto) || pagoTarjeta.armando) return;
+  pagoTarjeta.armando = true;
+  try {
+    if (!(await prepararTarjeta())) { $("#conTarjeta").hidden = true; return; }
+    sacarTarjeta();
+    $("#conTarjeta").hidden = false; $("#tarjetaCargando").hidden = false;
+    $("#textoMP").textContent = "Pagá con tu cuenta de Mercado Pago (dinero en cuenta o tarjetas guardadas).";
+    $("#pagarTxt").textContent = "Pagar con mi cuenta de Mercado Pago";
+    pagoTarjeta.monto = monto;
+    pagoTarjeta.brick = await pagoTarjeta.mp.bricks().create("cardPayment", "tarjetaBrick", {
+      initialization: { amount: monto, payer: { email: val("ckEmail") } },
+      customization: {
+        visual: { style: { theme: "default", customVariables: { baseColor: "#E0157F", borderRadiusLarge: "14px" } } },
+        paymentMethods: { maxInstallments: 12 }
+      },
+      callbacks: {
+        onReady: () => { $("#tarjetaCargando").hidden = true; },
+        onError: err => { console.error("Formulario de tarjeta", err); },
+        onSubmit: formData => pagarConTarjeta(formData)
+      }
+    });
+  } catch (e) {
+    console.error("No se pudo cargar el formulario de tarjeta", e);
+    $("#conTarjeta").hidden = true;
+  } finally { pagoTarjeta.armando = false; }
+}
+async function pagarConTarjeta(formData) {
+  $("#falta3").textContent = "";
+  const pedido = datosPedido();
+  try {
+    const r = await api("/api/pagar-tarjeta", { ...pedido, tarjeta: formData });
+    if (r.estado === "aprobado" || r.estado === "pendiente") {
+      recordarPedido(r.pedido, r.total, pedido.cliente);
+      location.href = `${location.pathname}?pago=${r.estado}`;
+      return;
+    }
+    $("#falta3").textContent = r.error || "El pago fue rechazado. Probá con otra pagoTarjeta.";
+  } catch (err) {
+    $("#falta3").textContent = err.message;
+    if (/agot/i.test(err.message)) actualizarStock();
+  }
+  // El código de la tarjeta sirve una sola vez: se vuelve a armar el formulario para reintentar
+  sacarTarjeta(); setTimeout(pintarTarjeta, 50);
+  $("#falta3").scrollIntoView({ behavior: "smooth", block: "center" });
+}
 
 // ---------- Navegación entre vistas ----------
 function ruta() {

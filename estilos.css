@@ -245,6 +245,9 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 .cuentas div{display:flex;justify-content:space-between}
 .cuentas .tot{font-weight:700;font-size:20px;border-top:1px solid var(--borde);padding-top:10px;margin-top:4px}
 .seguro{font-size:13px;color:var(--tinta-2);margin:0;text-align:center}
+.separador-o{display:flex;align-items:center;gap:12px;color:var(--tinta-2);font-size:14px;margin:6px 0 2px}
+.separador-o::before,.separador-o::after{content:"";flex:1;height:1px;background:var(--borde)}
+#tarjetaBrick{min-height:0}
 .cargando{color:var(--tinta-2);font-size:14px}
 
 /* Resultado del pago */

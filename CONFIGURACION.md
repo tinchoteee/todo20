@@ -35,6 +35,7 @@ Eso crea solo las variables `KV_REST_API_URL` y `KV_REST_API_TOKEN`. No hay que 
 2. Tipo de pago: **pagos online** con **Checkout Pro**.
 3. Primero usá las **credenciales de prueba** para hacer una compra de prueba. Después cambiás a las **credenciales de producción**.
 4. Copiá el **Access Token** (empieza con `APP_USR-`) y pegalo en Vercel como `MP_ACCESS_TOKEN`.
+5. Copiá también la **Public Key** (también empieza con `APP_USR-`, es otra distinta) y pegala en Vercel como `MP_PUBLIC_KEY`. Con esa, el cliente puede cargar su tarjeta sin salir de la tienda.
 
 ## Paso 4 · Zipnova (envíos por correo)
 
@@ -69,6 +70,7 @@ Proyecto → **Settings → Environment Variables**. Después de agregarlas: **D
 | Variable | Para qué | Obligatoria |
 |---|---|---|
 | `MP_ACCESS_TOKEN` | Cobrar con Mercado Pago | Sí |
+| `MP_PUBLIC_KEY` | Formulario de tarjeta dentro de la tienda | Recomendado |
 | `KV_REST_API_URL`, `KV_REST_API_TOKEN` | Base de datos (se crean solas en el paso 2) | Sí |
 | `ADMIN_CLAVE` | Entrar al editor | Sí |
 | `ZIPNOVA_API_TOKEN`, `ZIPNOVA_API_SECRET`, `ZIPNOVA_ACCOUNT_ID` | Cotizar y crear envíos por correo | Sí, para envíos automáticos |
