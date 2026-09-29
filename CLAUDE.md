@@ -33,7 +33,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Bota texana con tachas negra: foto recoloreada digitalmente a partir de la blanca (a pedido del dueño); reemplazar por una foto real cuando haya.
 - Cajas de envío: tamaño caja de Nike, 35 × 24 × 13 cm y 800 g (dato del dueño). Botas de caña alta: 45 × 32 × 14 cm, 800 g.
 - Nunca pedir ni pegar claves ni datos bancarios en el chat: el usuario los carga directo en Vercel y en Mercado Pago.
-- Nombres sin marcas ajenas (2026-09-29): Campus → "Zapatillas retro de gamuza" (id 7), Samba → "Zapatillas retro suela caramelo" (id 8), estilo Samba → "Zapatillas retro Reina" (id 31), Samba sin talón → "Zapatillas retro sin talón" (id 15, oculto). No usar Samba, Campus ni "tres tiras" en textos para clientes (los archivos de fotos conservan el nombre viejo).
+- Nombres sin marcas ajenas (2026-09-29): Campus → "Zapatillas retro de gamuza" (id 7), Samba → "Zapatillas retro suela caramelo" (id 8; después se unió a la id 31 a pedido del dueño: quedó `oculto` y su color marrón pasó a la 31 como "Caramelo y negro" a $30.000; su negro era el mismo que el de la 31), estilo Samba → "Zapatillas retro Reina" (id 31), Samba sin talón → "Zapatillas retro sin talón" (id 15, oculto). No usar Samba, Campus ni "tres tiras" en textos para clientes (los archivos de fotos conservan el nombre viejo).
 - Privacidad: pregunta "¿Qué hacen con mis datos?" (`#privacidad`) en el FAQ + link en el pie (Ley 25.326, Píxel de Meta y Vercel Analytics). Si se agrega otra herramienta de medición, sumarla ahí.
 - Siguiente paso: fotos de los colores que faltan (punto 5).
 - Ojo: si en Vercel se hace un "Instant Rollback", los pushes a `main` dejan de publicarse hasta hacer "Promote to Production".
