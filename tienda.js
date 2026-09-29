@@ -529,13 +529,17 @@ $("#pagarTransf").addEventListener("click", async () => {
     carrito = []; escribir("nacireina-carrito", carrito); pintarCarrito();
     const c = r.cuenta || {};
     const dato = (t, v, copiar) => v ? `<div class="dato-transf"><span>${t}</span><b>${esc(v)}</b>${copiar ? `<button class="link" data-copiar="${esc(copiar)}">Copiar</button>` : ""}</div>` : "";
-    const msj = `¡Hola Nací Reina! Hice la transferencia del pedido ${r.pedido} por ${pesos(r.total)}. Te mando el comprobante.`;
+    const msj = r.cuenta ? `¡Hola Nací Reina! Hice la transferencia del pedido ${r.pedido} por ${pesos(r.total)}. Te mando el comprobante.`
+      : `¡Hola Nací Reina! Hice el pedido ${r.pedido} para pagar con transferencia (${pesos(r.total)}). ¿Me pasan el alias?`;
     $("#resTit").textContent = "¡Pedido reservado!";
-    $("#resCuerpo").innerHTML = `<p style="margin:0">Tu pedido <b>${esc(r.pedido)}</b> quedó reservado. Para confirmarlo, transferí <b>${pesos(r.total)}</b> a esta cuenta:</p>
-      <div class="datos-transf">${dato("Alias", c.alias, c.alias)}${dato("CBU/CVU", c.cbu, c.cbu)}${dato("Titular", c.titular)}${dato("Banco", c.banco)}${dato("Monto", pesos(r.total), String(r.total).replace(".", ","))}</div>
+    const hayDatos = Boolean(c.alias || c.cbu);
+    $("#resCuerpo").innerHTML = (hayDatos
+      ? `<p style="margin:0">Tu pedido <b>${esc(r.pedido)}</b> quedó reservado. Para confirmarlo, transferí <b>${pesos(r.total)}</b> a esta cuenta:</p>
+      <div class="datos-transf">${dato("Alias", c.alias, c.alias)}${dato("CBU/CVU", c.cbu, c.cbu)}${dato("Titular", c.titular)}${dato("Banco", c.banco)}${dato("Monto", pesos(r.total), String(r.total).replace(".", ","))}</div>`
+      : `<p style="margin:0">Tu pedido <b>${esc(r.pedido)}</b> quedó reservado con el descuento. Tenés que transferir <b>${pesos(r.total)}</b>: escribinos por WhatsApp y te pasamos el alias para hacerlo.</p>`) + `
       <ul>${lineas.map(l => `<li>${esc(l)}</li>`).join("")}</ul>
       <p style="margin:0">Después mandanos el comprobante por WhatsApp. Cuando veamos el pago, te avisamos y preparamos tu pedido.</p>
-      ${WHATSAPP ? `<a class="btn btn-wa lleno" href="${wa(msj)}" target="_blank" rel="noopener">Mandar comprobante por WhatsApp</a>` : ""}`;
+      ${WHATSAPP ? `<a class="btn btn-wa lleno" href="${wa(msj)}" target="_blank" rel="noopener">${r.cuenta ? "Mandar comprobante por WhatsApp" : "Pedir el alias por WhatsApp"}</a>` : ""}`;
     history.pushState(null, "", location.pathname); ruta();   // vuelve al inicio sin cerrar el cartel
     $("#resultado").hidden = false;
   } catch (err) {
@@ -644,7 +648,8 @@ document.addEventListener("keydown", e => {
 
 // ---------- Textos que dependen de la configuración ----------
 if (ENVIO.gratisDesde > 0) {
-  $("#aviso").innerHTML = `<b>Envío gratis</b> desde ${pesos(ENVIO.gratisDesde)}${DESCUENTO.desde > 0 ? ` · <b>${DESCUENTO.porcentaje}% OFF</b> desde ${pesos(DESCUENTO.desde)}` : ""} · Envíos a todo el país`;
+  const pctTransf = Number((CATALOGO.transferencia || {}).porcentaje) || 0;
+  $("#aviso").innerHTML = `<b>Envío gratis</b> desde ${pesos(ENVIO.gratisDesde)}${DESCUENTO.desde > 0 ? ` · <b>${DESCUENTO.porcentaje}% OFF</b> desde ${pesos(DESCUENTO.desde)}` : ""}${pctTransf ? ` · <b>${pctTransf}% OFF</b> con transferencia` : ""} · Envíos a todo el país`;
   $("#pGratis").textContent = `Envío gratis en compras desde ${pesos(ENVIO.gratisDesde)}.`;
   $("#ventajaEnvio").textContent = `Gratis desde ${pesos(ENVIO.gratisDesde)}. A domicilio o a sucursal.`;
 }

@@ -39,7 +39,7 @@ async function armarPedido(body, base, { transferencia = false } = {}) {
   }
   if (opcion.zipnova) entrega.zipnova = opcion.zipnova;
 
-  // Descuento por monto (15% desde $220.000): se aplica a cada producto, no al envío
+  // Descuento por monto (10% desde $220.000): se aplica a cada producto, no al envío
   const pctTransf = transferencia ? Number((CATALOGO.transferencia || {}).porcentaje) || 0 : 0;
   const cuenta = aplicarAjustes.conDescuento(lineas.map(l => ({ precio: l.precio, cant: l.cant })), CATALOGO.descuento, pctTransf);
   const off = [cuenta.porcentaje ? `${cuenta.porcentaje}% OFF` : "", cuenta.porcentajeTransferencia ? `${cuenta.porcentajeTransferencia}% OFF transferencia` : ""].filter(Boolean).join(" + ");

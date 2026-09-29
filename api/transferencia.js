@@ -16,7 +16,7 @@ const datosCuenta = () => {
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).json({ error: "Método no permitido" });
   const cuenta = datosCuenta();
-  if (!cuenta || !(Number((CATALOGO.transferencia || {}).porcentaje) >= 0)) return res.status(400).json({ error: "El pago por transferencia no está disponible. Elegí otro medio de pago." });
+  if (!(Number((CATALOGO.transferencia || {}).porcentaje) > 0)) return res.status(400).json({ error: "El pago por transferencia no está disponible. Elegí otro medio de pago." });
   if (!db.hayDB()) return res.status(503).json({ error: "No pudimos registrar el pedido. Probá con otro medio de pago." });
 
   // Máximo 5 pedidos por transferencia por hora desde la misma conexión (para que nadie reserve todo el stock)
@@ -55,6 +55,7 @@ module.exports = async function handler(req, res) {
         para: process.env.AVISOS_EMAIL, clave: `transf-local-${pedido.numero}`,
         asunto: `Pedido por transferencia ${pedido.numero} - ${pesos(pedido.total)} (esperando pago)`,
         html: `<h2>Nuevo pedido por transferencia: ${esc(pedido.numero)}</h2>
+          ${cuenta ? "" : `<p>⚠️ <b>Todavía no cargaste tu alias en Vercel</b> (TRANSFERENCIA_ALIAS y TRANSFERENCIA_TITULAR): mandale al cliente por WhatsApp los datos para transferir.</p>`}
           <p><b>Tiene que transferir:</b> ${pesos(pedido.total)}. Cuando veas la plata en tu cuenta, entrá al editor → Pedidos y pasalo a <b>"Pagado"</b> (ahí se crea el envío).</p>
           <p>Si en unos días no paga, pasalo a "Cancelado" y los pares vuelven solos al stock.</p>
           <h3>Productos</h3>${lista}
@@ -63,7 +64,7 @@ module.exports = async function handler(req, res) {
           <h3>Entrega</h3><p>${textoEntrega(pedido.entrega)}</p>`
       });
     }
-    if (process.env.RESEND_FROM && c.email) {
+    if (process.env.RESEND_FROM && c.email && cuenta) {
       await mandarEmail({
         para: c.email, clave: `transf-cliente-${pedido.numero}`,
         asunto: `Tu pedido ${pedido.numero} en Nací Reina: datos para transferir`,
