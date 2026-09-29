@@ -8,7 +8,9 @@ const db = require("./_db.js");
 const { login, permisoValido } = require("./_admin.js");
 const { leerAjustes, olvidarCache } = require("./_catalogo.js");
 
-const ESTADOS = ["pagado", "envio-creado", "despachado", "listo-para-retirar", "entregado", "cancelado"];
+const { moverStock, crearEnvioZipnova } = require("./_procesar.js");
+
+const ESTADOS = ["esperando-transferencia", "pagado", "envio-creado", "despachado", "listo-para-retirar", "entregado", "cancelado"];
 
 // Deja solo datos válidos: productos, colores y talles que existen, precios razonables
 function limpiarAjustes(entrada) {
@@ -71,7 +73,8 @@ module.exports = async function handler(req, res) {
           tarjetaEnPagina: Boolean(process.env.MP_ACCESS_TOKEN && process.env.MP_PUBLIC_KEY),
           zipnova: Boolean(process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID),
           envioAutomatico: process.env.ZIPNOVA_CREAR_ENVIOS !== "no",
-          emails: Boolean(process.env.RESEND_API_KEY && process.env.AVISOS_EMAIL)
+          emails: Boolean(process.env.RESEND_API_KEY && process.env.AVISOS_EMAIL),
+          transferencia: Boolean(process.env.TRANSFERENCIA_ALIAS || process.env.TRANSFERENCIA_CBU)
         }
       });
     }
@@ -87,8 +90,40 @@ module.exports = async function handler(req, res) {
     }
     if (body.accion === "estado") {
       if (!ESTADOS.includes(body.estado)) return res.status(400).json({ error: "Estado desconocido." });
-      const ok = await db.actualizarPedido(String(body.numero), { estado: body.estado });
-      return ok ? res.status(200).json({ ok: true }) : res.status(404).json({ error: "No encontré ese pedido." });
+      const numero = String(body.numero);
+      const pedido = await db.buscarPedido(numero);
+      if (!pedido) return res.status(404).json({ error: "No encontré ese pedido." });
+      const cambios = { estado: body.estado };
+      let aviso = "";
+      if (pedido.metodo === "transferencia") {
+        // Cancelado: los pares reservados vuelven al stock (una sola vez)
+        if (body.estado === "cancelado" && pedido.stockReservado) {
+          await moverStock(pedido.datos && pedido.datos.productos, numero, -1);
+          cambios.stockReservado = false;
+          aviso = "Los pares volvieron al stock.";
+        }
+        // Si se reactiva un pedido cancelado, se vuelven a reservar
+        if (body.estado !== "cancelado" && pedido.estado === "cancelado" && pedido.stockReservado === false) {
+          await moverStock(pedido.datos && pedido.datos.productos, numero);
+          cambios.stockReservado = true;
+        }
+        // Pagado: se crea el envío en Zipnova, igual que con Mercado Pago
+        const conZipnova = process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID;
+        const d = pedido.datos || {};
+        if (body.estado === "pagado" && !pedido.envio && d.entrega && d.entrega.tipo !== "local" && d.entrega.zipnova && conZipnova && process.env.ZIPNOVA_CREAR_ENVIOS !== "no") {
+          try {
+            cambios.envio = await crearEnvioZipnova(numero, d);
+            cambios.estado = "envio-creado"; cambios.envioError = undefined;
+            aviso = "Envío creado en Zipnova.";
+          } catch (err) {
+            console.error("No se pudo crear el envío en Zipnova", numero, err.message);
+            cambios.envioError = "No se pudo crear el envío automáticamente: crealo desde el panel de Zipnova.";
+            aviso = cambios.envioError;
+          }
+        }
+      }
+      await db.actualizarPedido(numero, cambios);
+      return res.status(200).json({ ok: true, pedido: { ...pedido, ...cambios }, aviso });
     }
     return res.status(400).json({ error: "Acción desconocida." });
   } catch (e) {

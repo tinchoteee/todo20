@@ -297,3 +297,12 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 .card .foto.carrusel img.on{opacity:1}
 .card .puntos i{transition:transform .3s,box-shadow .3s}
 .card .puntos i.on{transform:scale(1.35);box-shadow:0 0 0 1.5px var(--blanco),0 0 0 3px var(--tinta)}
+
+/* Pago por transferencia */
+.precio-transf{margin:4px 0 0;font-size:15px;color:var(--ok)}
+.transf-box{display:grid;gap:10px;border:1.5px dashed var(--ok);border-radius:14px;padding:14px;background:#F2FAF5}
+.datos-transf{display:grid;gap:6px;background:var(--gris);border-radius:12px;padding:12px}
+.dato-transf{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dato-transf span{color:var(--tinta-2);min-width:70px}
+.dato-transf b{word-break:break-all}
+.dato-transf .link{margin-left:auto}

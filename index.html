@@ -92,7 +92,7 @@
           <details><summary>¿Puedo retirar por el local?</summary>
             <p>Sí, sin costo. Elegí “Retiro en el local” al finalizar la compra y te avisamos cuando esté listo en Av. de Mayo 1600, Ramos Mejía.</p></details>
           <details><summary>¿Qué medios de pago aceptan?</summary>
-            <p>Pagás con Mercado Pago: tarjeta de crédito, débito, dinero en cuenta y otros medios que ofrece Mercado Pago. Las cuotas disponibles las ves al momento de pagar.</p></details>
+            <p>Pagás con Mercado Pago: tarjeta de crédito, débito, dinero en cuenta y otros medios que ofrece Mercado Pago. Las cuotas disponibles las ves al momento de pagar. <span data-transf-faq></span></p></details>
           <details id="cambios"><summary>¿Puedo cambiar el talle o el modelo?</summary>
             <p>Sí. Tenés 30 días desde que recibís el producto para cambiarlo, sin uso y en su caja original. Escribinos por WhatsApp con tu número de pedido. Si el cambio es por talle, el envío de vuelta corre por tu cuenta; si el producto llegó fallado, el cambio no tiene costo.</p></details>
           <details><summary>¿Y si me arrepiento de la compra?</summary>
@@ -121,6 +121,7 @@
             <h1 id="pNombre"></h1>
           </div>
           <div class="precio" id="pPrecio"></div>
+          <p class="precio-transf" id="pTransf" hidden></p>
           <p class="desc" id="pDesc"></p>
           <div id="pColoresBox">
             <div class="lbl">Color <span id="pColorNombre"></span></div>
@@ -222,6 +223,13 @@
             <p style="margin:0" id="textoMP">Vas a pagar en la página segura de Mercado Pago. Podés usar tarjeta de crédito, débito o dinero en cuenta.</p>
             <p class="aviso-error" id="falta3" aria-live="polite"></p>
             <button class="btn btn-mp" id="pagar"><span id="pagarTxt">Pagar con Mercado Pago</span><small>Se abre Mercado Pago</small></button>
+            <div id="conTransf" hidden>
+              <div class="separador-o"><span>o con descuento</span></div>
+              <div class="transf-box">
+                <p style="margin:0"><b>Transferencia bancaria · <span id="pctTransf"></span>% OFF</b><br>Pagás <b id="totalTransf"></b><span id="ahorroTransf"></span>. Al confirmar te mostramos el alias para transferir y nos mandás el comprobante por WhatsApp.</p>
+                <button class="btn btn-negro" id="pagarTransf">Confirmar y pagar con transferencia</button>
+              </div>
+            </div>
             <p class="seguro">🔒 Los pagos los procesa Mercado Pago: los datos de tu tarjeta nunca pasan por esta página.</p>
           </div>
         </div>

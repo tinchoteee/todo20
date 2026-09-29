@@ -81,7 +81,16 @@ let carrito = leer("nacireina-carrito", []).filter(i => producto(i.id) && produc
 const subtotal = () => carrito.reduce((a, i) => a + precioDe(producto(i.id), i.color) * i.cant, 0);
 // Descuento por monto (ver "descuento" en productos.js): misma cuenta que hace el servidor al cobrar
 const DESCUENTO = CATALOGO.descuento || { desde: 0, porcentaje: 0 };
-const cuenta = () => aplicarAjustes.conDescuento(carrito.map(i => ({ precio: precioDe(producto(i.id), i.color), cant: i.cant })), DESCUENTO);
+const cuenta = extra => aplicarAjustes.conDescuento(carrito.map(i => ({ precio: precioDe(producto(i.id), i.color), cant: i.cant })), DESCUENTO, extra);
+// Descuento por transferencia: solo si el servidor tiene cargados los datos de la cuenta (ver /api/config)
+let transf = null;
+configPublica.then(c => {
+  transf = c && c.transferencia ? c.transferencia : null;
+  const faq = document.querySelector("[data-transf-faq]");
+  if (faq && transf && transf.porcentaje) faq.textContent = `También podés pagar con transferencia bancaria y tenés ${transf.porcentaje}% OFF en los productos.`;
+  if (!$("#vista-producto").hidden && sel.id) pintarProducto();
+  if (!$("#vista-checkout").hidden) pintarCheckout();
+});
 const totalProductos = () => cuenta().total;
 const hayConsultar = () => carrito.some(problemaItem);
 const detalleItem = i => { const p = producto(i.id), c = colorDe(p, i.color); return `${c ? c.nombre + " · " : ""}Talle ${i.talle}`; };
@@ -262,6 +271,10 @@ function pintarProducto() {
   const precioSel = colSel ? precioDe(p, colSel.id) : 0;
   $("#pPrecio").textContent = colSel ? (precioSel > 0 ? pesos(precioSel) : "Consultar precio") : precioTxt(p);
   const tienePrecio = colSel ? precioSel > 0 : Boolean(rangoDe(p));
+  // "o $X con transferencia"
+  const base = colSel ? precioSel : (rangoDe(p) || {}).min;
+  $("#pTransf").hidden = !(transf && transf.porcentaje && base > 0);
+  if (!$("#pTransf").hidden) $("#pTransf").innerHTML = `${colSel || !rangoDe(p) || rangoDe(p).min === rangoDe(p).max ? "" : "Desde "}<b>${pesos(Math.round(base * (100 - transf.porcentaje) / 100))}</b> con transferencia (${transf.porcentaje}% OFF)`;
 
   const consulta = `¡Hola Nací Reina! Quiero consultar por ${p.nombre}${colSel ? " color " + colSel.nombre : ""}${sel.talle ? " talle " + sel.talle : ""}.`;
   const botonWa = texto => `<a class="btn btn-wa${tienePrecio ? "" : " lleno"}" href="${wa(consulta)}" target="_blank" rel="noopener">${texto}</a>`;
@@ -341,6 +354,14 @@ function pintarCheckout() {
     <div><span>Envío</span><span>${envio == null ? '<span style="color:var(--tinta-2)">Se calcula en el paso 2</span>' : envio ? pesos(envio) : '<span class="gratis">Gratis</span>'}</span></div>
     <div class="tot"><span>Total</span><span>${pesos(cta.total + (envio || 0))}</span></div>`;
   $("#pagarTxt").textContent = `Pagar ${pesos(cta.total + (envio || 0))} con Mercado Pago`;
+  // Transferencia: mismo pedido con el descuento extra (sobre los productos, no sobre el envío)
+  $("#conTransf").hidden = !(transf && transf.porcentaje);
+  if (transf && transf.porcentaje) {
+    const ct = cuenta(transf.porcentaje);
+    $("#pctTransf").textContent = transf.porcentaje;
+    $("#totalTransf").textContent = pesos(ct.total + (envio || 0));
+    $("#ahorroTransf").textContent = ` (ahorrás ${pesos(ct.descuentoTransferencia)})`;
+  }
 
   // Pasos
   for (let n = 1; n <= 3; n++) {
@@ -486,6 +507,37 @@ $("#pagar").addEventListener("click", async () => {
     $("#falta3").textContent = err.message;
     if (/agot/i.test(err.message)) actualizarStock(); // algo se agotó mientras compraba: se marca en el carrito
   }
+});
+// ---------- Pago por transferencia ----------
+$("#pagarTransf").addEventListener("click", async () => {
+  const o = ck.opcion;
+  if (!o) { irPaso(2); return; }
+  const pedido = datosPedido();
+  const b = $("#pagarTransf"); b.disabled = true; b.textContent = "Registrando tu pedido…"; $("#falta3").textContent = "";
+  try {
+    const r = await api("/api/transferencia", pedido);
+    const lineas = carrito.map(i => `${i.cant} x ${producto(i.id).nombre} - ${detalleItem(i)}`);
+    carrito = []; escribir("nacireina-carrito", carrito); pintarCarrito();
+    const c = r.cuenta || {};
+    const dato = (t, v, copiar) => v ? `<div class="dato-transf"><span>${t}</span><b>${esc(v)}</b>${copiar ? `<button class="link" data-copiar="${esc(copiar)}">Copiar</button>` : ""}</div>` : "";
+    const msj = `¡Hola Nací Reina! Hice la transferencia del pedido ${r.pedido} por ${pesos(r.total)}. Te mando el comprobante.`;
+    $("#resTit").textContent = "¡Pedido reservado!";
+    $("#resCuerpo").innerHTML = `<p style="margin:0">Tu pedido <b>${esc(r.pedido)}</b> quedó reservado. Para confirmarlo, transferí <b>${pesos(r.total)}</b> a esta cuenta:</p>
+      <div class="datos-transf">${dato("Alias", c.alias, c.alias)}${dato("CBU/CVU", c.cbu, c.cbu)}${dato("Titular", c.titular)}${dato("Banco", c.banco)}${dato("Monto", pesos(r.total), String(r.total).replace(".", ","))}</div>
+      <ul>${lineas.map(l => `<li>${esc(l)}</li>`).join("")}</ul>
+      <p style="margin:0">Después mandanos el comprobante por WhatsApp. Cuando veamos el pago, te avisamos y preparamos tu pedido.</p>
+      ${WHATSAPP ? `<a class="btn btn-wa lleno" href="${wa(msj)}" target="_blank" rel="noopener">Mandar comprobante por WhatsApp</a>` : ""}`;
+    history.pushState(null, "", location.pathname); ruta();   // vuelve al inicio sin cerrar el cartel
+    $("#resultado").hidden = false;
+  } catch (err) {
+    $("#falta3").textContent = err.message;
+    if (/agot|quedan|queda 1/i.test(err.message)) actualizarStock();
+  }
+  b.disabled = false; b.textContent = "Confirmar y pagar con transferencia";
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-copiar]"); if (!b) return;
+  navigator.clipboard && navigator.clipboard.writeText(b.dataset.copiar).then(() => { b.textContent = "¡Copiado!"; setTimeout(() => { b.textContent = "Copiar"; }, 1500); });
 });
 $("#seguirComprando").addEventListener("click", () => { location.hash = ""; });
 

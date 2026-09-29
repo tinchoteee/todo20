@@ -8,7 +8,8 @@ const aplicarAjustes = require("../ajustes.js");
 
 const texto = (v, max) => String(v == null ? "" : v).trim().slice(0, max);
 
-async function armarPedido(body, base) {
+// transferencia: true → se suma el descuento por pagar con transferencia bancaria (productos.js → transferencia)
+async function armarPedido(body, base, { transferencia = false } = {}) {
   const lineas = lineasDelPedido(body.items, await productosActuales());
   const subtotal = lineas.reduce((a, l) => a + l.precio * l.cant, 0);
 
@@ -38,10 +39,12 @@ async function armarPedido(body, base) {
   if (opcion.zipnova) entrega.zipnova = opcion.zipnova;
 
   // Descuento por monto (15% desde $220.000): se aplica a cada producto, no al envío
-  const cuenta = aplicarAjustes.conDescuento(lineas.map(l => ({ precio: l.precio, cant: l.cant })), CATALOGO.descuento);
+  const pctTransf = transferencia ? Number((CATALOGO.transferencia || {}).porcentaje) || 0 : 0;
+  const cuenta = aplicarAjustes.conDescuento(lineas.map(l => ({ precio: l.precio, cant: l.cant })), CATALOGO.descuento, pctTransf);
+  const off = [cuenta.porcentaje ? `${cuenta.porcentaje}% OFF` : "", cuenta.porcentajeTransferencia ? `${cuenta.porcentajeTransferencia}% OFF transferencia` : ""].filter(Boolean).join(" + ");
   const items = lineas.map((l, i) => ({
     id: String(l.producto.id),
-    title: `${l.producto.nombre}${l.color ? " - " + l.color.nombre : ""} - Talle ${l.talle}${cuenta.porcentaje ? ` (${cuenta.porcentaje}% OFF)` : ""}`,
+    title: `${l.producto.nombre}${l.color ? " - " + l.color.nombre : ""} - Talle ${l.talle}${off ? ` (${off})` : ""}`,
     quantity: l.cant, unit_price: cuenta.precios[i], currency_id: "ARS"
   }));
   if (opcion.precio > 0) items.push({ id: "envio", title: opcion.nombre, quantity: 1, unit_price: opcion.precio, currency_id: "ARS" });
@@ -55,7 +58,10 @@ async function armarPedido(body, base) {
     metadata: { pedido: numero, cliente, entrega,
       detalle: items.filter(i => i.id !== "envio").map(i => `${i.quantity} x ${i.title} ($${i.unit_price})`),
       productos: lineas.map(l => ({ id: l.producto.id, color: l.color ? l.color.id : "", talle: l.talle, cant: l.cant })), subtotal: cuenta.total,
-      ...(cuenta.porcentaje ? { descuento: `${cuenta.porcentaje}% OFF: -$${cuenta.descuento.toLocaleString("es-AR")}` } : {}) }
+      ...(cuenta.porcentaje || cuenta.porcentajeTransferencia ? { descuento: [
+        cuenta.porcentaje ? `${cuenta.porcentaje}% OFF: -$${cuenta.descuento.toLocaleString("es-AR")}` : "",
+        cuenta.porcentajeTransferencia ? `${cuenta.porcentajeTransferencia}% OFF por transferencia: -$${cuenta.descuentoTransferencia.toLocaleString("es-AR")}` : ""
+      ].filter(Boolean).join(" · ") } : {}) }
   };
 }
 

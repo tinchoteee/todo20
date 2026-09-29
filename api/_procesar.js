@@ -66,6 +66,27 @@ function textoEntrega(e) {
   return `${esc(e.opcion)}:<br>${esc(e.calle)} ${esc(e.numero)}${e.piso ? " " + esc(e.piso) : ""}<br>${esc(e.localidad)}, ${esc(e.provincia)} (CP ${esc(e.cp)})`;
 }
 
+// Descuenta del stock los pares vendidos (solo talles que llevan la cuenta). signo -1 = devolverlos.
+// Devuelve las líneas de texto "X, talle 38: quedan 2 pares" para el email.
+async function moverStock(productos, numero, signo = 1) {
+  const stock = [];
+  if (!db.hayDB()) return stock;
+  for (const it of Array.isArray(productos) ? productos : []) {
+    if (it.talle == null || it.talle === "") continue;
+    try {
+      const clave = `${Number(it.id)}|${it.color || ""}|${Number(it.talle)}`;
+      const cant = Math.max(1, Number(it.cant) || 1);
+      const quedan = signo > 0 ? await db.descontarPares(clave, cant) : await db.devolverPares(clave, cant);
+      if (quedan == null) continue;
+      const p = CATALOGO.productos.find(x => x.id === Number(it.id)) || {};
+      const c = (p.colores || []).find(x => x.id === it.color);
+      stock.push(`${p.nombre || "Producto " + it.id}${c ? " " + c.nombre : ""}, talle ${it.talle}: ${quedan === 0 ? "se agotó" : quedan === 1 ? "queda 1 par" : `quedan ${quedan} pares`}`);
+    } catch (err) { console.error("No se pudo mover el stock", numero, it, err.message); }
+  }
+  if (stock.length) require("./_catalogo.js").olvidarCache();
+  return stock;
+}
+
 async function procesarPagoAprobado(pago) {
   // Mercado Pago puede avisar varias veces del mismo pago: se procesa una sola vez
   if (db.hayDB() && !(await db.guardarSiNoExiste(`nacireina:pago:${pago.id}`, { fecha: new Date().toISOString() }))) {
@@ -85,20 +106,7 @@ async function procesarPagoAprobado(pago) {
   console.log("Pago aprobado", numero, pago.id, pago.transaction_amount);
 
   // Descuenta los pares vendidos (solo de los talles que llevan la cuenta) y arma el aviso de stock
-  const stock = [];
-  if (db.hayDB()) {
-    for (const it of Array.isArray(m.productos) ? m.productos : []) {
-      if (it.talle == null || it.talle === "") continue;
-      try {
-        const quedan = await db.descontarPares(`${Number(it.id)}|${it.color || ""}|${Number(it.talle)}`, Math.max(1, Number(it.cant) || 1));
-        if (quedan == null) continue;
-        const p = CATALOGO.productos.find(x => x.id === Number(it.id)) || {};
-        const c = (p.colores || []).find(x => x.id === it.color);
-        stock.push(`${p.nombre || "Producto " + it.id}${c ? " " + c.nombre : ""}, talle ${it.talle}: ${quedan === 0 ? "se agotó" : quedan === 1 ? "queda 1 par" : `quedan ${quedan} pares`}`);
-      } catch (err) { console.error("No se pudo descontar el stock", numero, it, err.message); }
-    }
-    if (stock.length) require("./_catalogo.js").olvidarCache();
-  }
+  const stock = await moverStock(m.productos, numero);
 
   // Envío automático (solo con base de datos, para no crear nunca dos envíos del mismo pedido)
   const conZipnova = process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID;
@@ -153,4 +161,4 @@ async function procesarPagoAprobado(pago) {
   return true;
 }
 
-module.exports = { procesarPagoAprobado };
+module.exports = { procesarPagoAprobado, moverStock, crearEnvioZipnova, mandarEmail, textoEntrega, esc, pesos };

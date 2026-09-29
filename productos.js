@@ -16,6 +16,9 @@
   // Descuento por monto: cuando los productos suman "desde" o más, se descuenta "porcentaje" a cada producto.
   // (No se aplica al envío.) desde: 0 = sin descuento.
   descuento: { desde: 220000, porcentaje: 15 },
+  // Descuento extra por pagar con transferencia bancaria (sobre los productos, después del de monto).
+  // Los datos de la cuenta (alias, CBU, titular) se cargan en Vercel: TRANSFERENCIA_ALIAS, TRANSFERENCIA_CBU, TRANSFERENCIA_TITULAR.
+  transferencia: { porcentaje: 5 },
 
   envio: {
     // Envío gratis cuando los productos suman este monto o más. 0 = sin envío gratis.

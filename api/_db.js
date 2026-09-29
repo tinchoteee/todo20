@@ -79,4 +79,16 @@ async function descontarPares(clave, cant) {
   return n === -1 ? null : n;
 }
 
-module.exports = { hayDB, leerPares, cambiarPares, descontarPares, comando, leer, guardar, guardarSiNoExiste, agregarPedido, listarPedidos, actualizarPedido };
+// Devuelve pares (pedido cancelado). Solo si ese talle lleva la cuenta.
+const DEVOLVER = "local v=redis.call('HGET',KEYS[1],ARGV[1]) if not v then return -1 end " +
+  "local n=tonumber(v)+tonumber(ARGV[2]) redis.call('HSET',KEYS[1],ARGV[1],n) return n";
+async function devolverPares(clave, cant) {
+  const n = await comando("EVAL", DEVOLVER, 1, PARES, clave, String(cant));
+  return n === -1 ? null : n;
+}
+// Busca un pedido por número (entre los últimos 200)
+async function buscarPedido(numero) {
+  return (await listarPedidos()).find(p => p.numero === numero) || null;
+}
+
+module.exports = { hayDB, leerPares, cambiarPares, descontarPares, devolverPares, buscarPedido, comando, leer, guardar, guardarSiNoExiste, agregarPedido, listarPedidos, actualizarPedido };

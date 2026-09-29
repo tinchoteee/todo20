@@ -215,7 +215,7 @@ function avisar(texto) {
 }
 
 // ---------- Pedidos ----------
-const ESTADOS = { "pagado": "Pagado · preparar", "envio-creado": "Envío creado", "despachado": "Despachado", "listo-para-retirar": "Listo para retirar", "entregado": "Entregado", "cancelado": "Cancelado" };
+const ESTADOS = { "esperando-transferencia": "Esperando transferencia", "pagado": "Pagado · preparar", "envio-creado": "Envío creado", "despachado": "Despachado", "listo-para-retirar": "Listo para retirar", "entregado": "Entregado", "cancelado": "Cancelado" };
 const telWa = t => { let d = String(t || "").replace(/\D/g, ""); if (d.startsWith("549")) return d; if (d.startsWith("54")) d = d.slice(2); if (d.startsWith("0")) d = d.slice(1); d = d.replace(/^(\d{2,4})15/, "$1"); return "549" + d; };
 
 function pintarPedidos() {
@@ -223,13 +223,16 @@ function pintarPedidos() {
   $("#listaPedidos").innerHTML = pedidos.map(p => {
     const e = p.entrega || {}, c = p.cliente || {};
     const entrega = e.tipo === "local" ? "Retira en el local" : e.tipo === "sucursal" ? `${esc(e.opcion)} · ${esc(e.sucursal)}` : `${esc(e.opcion)} · ${esc(e.calle)} ${esc(e.numero)}${e.piso ? " " + esc(e.piso) : ""}, ${esc(e.localidad)}, ${esc(e.provincia)} (CP ${esc(e.cp)})`;
-    const msj = e.tipo === "local"
+    const msj = p.estado === "esperando-transferencia"
+      ? `¡Hola ${String(c.nombre || "").split(" ")[0]}! Te escribimos de Nací Reina por tu pedido ${p.numero}: ¿pudiste hacer la transferencia de ${pesos(p.total)}? Cuando puedas, mandanos el comprobante. ¡Gracias!`
+      : e.tipo === "local"
       ? `¡Hola ${String(c.nombre || "").split(" ")[0]}! Tu pedido ${p.numero} de Nací Reina ya está listo para retirar en ${CATALOGO.local.direccion}.`
       : `¡Hola ${String(c.nombre || "").split(" ")[0]}! Tu pedido ${p.numero} de Nací Reina ya fue despachado${e.opcion ? " por " + String(e.opcion).split(" · ")[0] : ""}.${p.envio && p.envio.seguimiento ? " Seguimiento: " + p.envio.seguimiento : ""}`;
     return `<article class="pedido">
       <div class="pedido-h"><b>${esc(p.numero)} · ${pesos(p.total)}</b><span class="estado-pill ${esc(p.estado)}">${esc(ESTADOS[p.estado] || p.estado)}</span></div>
       <small style="color:var(--tinta-2)">${new Date(p.fecha).toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" })} · ${esc(c.nombre)} · ${esc(c.telefono)}${c.dni ? " · DNI " + esc(c.dni) : ""}</small>
       <ul>${(p.detalle || []).map(d => `<li>${esc(d)}</li>`).join("")}</ul>
+      ${p.metodo === "transferencia" ? `<div>💸 <b>Pago por transferencia</b>${p.estado === "esperando-transferencia" ? " · cuando veas la plata en tu cuenta, pasalo a <b>Pagado</b> (se crea el envío). Si no paga, pasalo a <b>Cancelado</b> y los pares vuelven al stock." : ""}</div>` : ""}
       <div><b>Entrega:</b> ${entrega}</div>
       ${p.envio ? `<div>✅ Envío creado en Zipnova${p.envio.seguimiento ? ` · seguimiento <b>${esc(p.envio.seguimiento)}</b>` : ""}. Imprimí la etiqueta desde el panel de Zipnova.</div>` : ""}
       ${p.envioError ? `<div class="aviso-error">⚠️ ${esc(p.envioError)}</div>` : ""}
@@ -243,9 +246,10 @@ function pintarPedidos() {
 $("#listaPedidos").addEventListener("change", async e => {
   const s = e.target.closest("[data-estado]"); if (!s) return;
   try {
-    await api("POST", { accion: "estado", numero: s.dataset.estado, estado: s.value });
-    const p = pedidos.find(x => x.numero === s.dataset.estado); if (p) p.estado = s.value;
-    pintarPedidos(); avisar("✓ Estado actualizado");
+    const d = await api("POST", { accion: "estado", numero: s.dataset.estado, estado: s.value });
+    const i = pedidos.findIndex(x => x.numero === s.dataset.estado);
+    if (i >= 0) pedidos[i] = d.pedido || { ...pedidos[i], estado: s.value };
+    pintarPedidos(); avisar("✓ Estado actualizado" + (d.aviso ? ". " + d.aviso : ""));
   } catch (err) { alert(err.message); }
 });
 
@@ -257,6 +261,7 @@ function pintarEstado(cfg) {
     [cfg.baseDeDatos, "Base de datos (Upstash)", "Guarda el stock, los precios y los pedidos.", "Falta conectar Upstash en Vercel: sin esto no se guardan los cambios de este editor ni los pedidos."],
     [cfg.zipnova, "Zipnova · envíos por correo", "Cotiza el envío según el código postal.", "Falta configurar Zipnova: mientras tanto el envío se cobra con los precios fijos por zona."],
     [cfg.zipnova && cfg.baseDeDatos && cfg.envioAutomatico, "Envío automático", "Cada venta pagada crea sola el envío en Zipnova.", "Desactivado: los envíos se crean a mano desde el panel de Zipnova."],
+    [cfg.transferencia, "Pago por transferencia (5% OFF)", "El cliente ve tu alias al confirmar el pedido; lo pasás a Pagado cuando llega la plata.", "Falta cargar TRANSFERENCIA_ALIAS (o TRANSFERENCIA_CBU) y TRANSFERENCIA_TITULAR en Vercel: por ahora no aparece la opción."],
     [cfg.emails, "Avisos por email", "Te llega un email con cada venta.", "Falta RESEND_API_KEY y AVISOS_EMAIL: no vas a recibir emails de las ventas."]
   ];
   $("#listaEstado").innerHTML = items.map(([ok, tit, si, no]) => `<div class="check"><span class="ic">${ok ? "✅" : "⚠️"}</span><div><b>${tit}</b><p>${ok ? si : no}</p></div></div>`).join("")
