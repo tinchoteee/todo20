@@ -67,4 +67,5 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Privacidad: pregunta "¿Qué hacen con mis datos?" (`#privacidad`) en el FAQ + link en el pie (Ley 25.326, Píxel de Meta y Vercel Analytics). Si se agrega otra herramienta de medición, sumarla ahí.
 - Fotos de colores (punto 5): terminado.
 - Vercel plan Hobby: máximo 100 deploys por día. El 2026-09-29 se llegó al límite y los últimos cambios no se publicaron hasta el día siguiente. Por eso `vercel.json` desactiva los deploys de ramas `claude/*` (solo publica `main`); agrupar cambios en pocos pushes a `main`.
+- 2026-09-29 (noche) se volvió a llegar al límite: el commit del carrusel del inicio quedó en `main` sin publicarse (Vercel no crea el deploy, no lo encola). Se republicó al día siguiente con un push nuevo. No usar "Redeploy" sobre un deploy viejo (publica ese commit, no el último).
 - Ojo: si en Vercel se hace un "Instant Rollback", los pushes a `main` dejan de publicarse hasta hacer "Promote to Production".
