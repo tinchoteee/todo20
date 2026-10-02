@@ -331,7 +331,8 @@ $("#vista-producto").addEventListener("click", e => {
     const faltaColor = (p.colores || []).length && !sel.color;
     if (faltaColor || !sel.talle) { $("#pFalta").textContent = faltaColor && !sel.talle ? "Elegí el color y tu talle." : faltaColor ? "Elegí un color." : "Elegí tu talle."; return; }
     agregar(p.id, sel.color, sel.talle);
-    abrirCarrito();
+    festejar($("#agregarBtn"));
+    setTimeout(abrirCarrito, SIN_MOVIMIENTO ? 0 : 450);
   }
 });
 
@@ -836,4 +837,68 @@ if (observador) {
     el.classList.add("revelar"); el.style.setProperty("--d", (i % 3) * 80 + "ms"); observador.observe(el);
   });
   animarEntrada($("#grilla"));
+}
+
+// ---------- Efectos "wow" (inspirados en Power Up) ----------
+// Números que cuentan solos al aparecer (modelos y colores salen del catálogo)
+{
+  const valores = {
+    modelos: PRODUCTOS.length,
+    colores: PRODUCTOS.reduce((n, p) => n + (p.colores || []).length, 0)
+  };
+  const contar = el => {
+    const fin = valores[el.dataset.contar] ?? Number(el.dataset.contar), pre = el.dataset.pre || "";
+    if (SIN_MOVIMIENTO) { el.textContent = pre + fin; return; }
+    const t0 = performance.now(), dur = 1600;
+    const paso = t => { const k = Math.min(1, (t - t0) / dur); el.textContent = pre + Math.round(fin * (1 - Math.pow(1 - k, 3))); if (k < 1) requestAnimationFrame(paso); };
+    requestAnimationFrame(paso);
+  };
+  const nums = document.querySelectorAll("[data-contar]");
+  if ("IntersectionObserver" in window) {
+    const o = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { contar(e.target); o.unobserve(e.target); } }), { threshold: .6 });
+    nums.forEach(n => o.observe(n));
+  } else nums.forEach(contar);
+  // El texto del manifiesto entra palabra por palabra
+  document.querySelectorAll(".revelar-pal").forEach(el => {
+    if (SIN_MOVIMIENTO || !observador) return;
+    let i = 0;
+    const partir = nodo => [...nodo.childNodes].forEach(n => {
+      if (n.nodeType === 3) {
+        const f = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(w => {
+          if (!w.trim()) { f.append(w); return; }
+          const s = document.createElement("span"); s.className = "pal"; s.style.setProperty("--d", (i++ * 70) + "ms"); s.textContent = w; f.append(s);
+        });
+        n.replaceWith(f);
+      } else partir(n);
+    });
+    partir(el);
+    observador.observe(el);
+  });
+}
+// Cursor propio en la compu: un círculo rosa que sigue al mouse y se agranda sobre lo que se puede tocar
+if (matchMedia("(hover: hover) and (pointer: fine)").matches && !SIN_MOVIMIENTO) {
+  const cur = $("#cursor"); let x = -100, y = -100, cx = x, cy = y;
+  document.addEventListener("mousemove", e => { x = e.clientX; y = e.clientY; cur.classList.add("on"); });
+  document.addEventListener("mouseleave", () => cur.classList.remove("on"));
+  document.addEventListener("mouseover", e => cur.classList.toggle("grande", !!e.target.closest("a, button, .card, summary, label")));
+  (function mover() { cx += (x - cx) * .2; cy += (y - cy) * .2; cur.style.transform = `translate(${cx}px,${cy}px)`; requestAnimationFrame(mover); })();
+  // Tarjetas que se inclinan en 3D siguiendo el mouse
+  document.addEventListener("mousemove", e => {
+    const f = e.target.closest(".card .foto"); document.querySelectorAll(".card .foto.inclinada").forEach(o => { if (o !== f) { o.classList.remove("inclinada"); o.style.transform = ""; } });
+    if (!f) return;
+    const r = f.getBoundingClientRect(), dx = (e.clientX - r.left) / r.width - .5, dy = (e.clientY - r.top) / r.height - .5;
+    f.classList.add("inclinada"); f.style.transform = `perspective(700px) rotateY(${dx * 10}deg) rotateX(${-dy * 10}deg)`;
+  });
+}
+// Lluvia de coronas y corazones al agregar al carrito
+function festejar(desde) {
+  if (SIN_MOVIMIENTO || !desde) return;
+  const r = desde.getBoundingClientRect(), simbolos = ["♛", "✦", "♥", "✧", "♛"];
+  for (let i = 0; i < 22; i++) {
+    const s = document.createElement("span"); s.className = "chispa"; s.textContent = simbolos[i % simbolos.length];
+    const ang = Math.random() * Math.PI * 2, dist = 70 + Math.random() * 120;
+    s.style.cssText = `left:${r.left + r.width / 2}px;top:${r.top + r.height / 2}px;--x:${Math.cos(ang) * dist}px;--y:${Math.sin(ang) * dist - 60}px;--r:${(Math.random() - .5) * 120}deg;color:${i % 3 ? "#E0157F" : "#D4A017"};font-size:${14 + Math.random() * 16}px`;
+    document.body.append(s); setTimeout(() => s.remove(), 1100);
+  }
 }

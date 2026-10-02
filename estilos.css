@@ -399,3 +399,54 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
   .cinta{width:auto;flex-wrap:wrap;white-space:normal}
   .cinta span+span{display:none!important}
 }
+
+/* ===== Efectos "wow" (inspirados en Power Up, 2026-10) ===== */
+/* Textura de grano sobre las fotos del inicio */
+.hero::before{content:"";position:absolute;inset:-50%;z-index:1;pointer-events:none;opacity:.09;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");animation:grano .8s steps(4) infinite}
+@keyframes grano{0%{transform:translate(0,0)}25%{transform:translate(-4%,3%)}50%{transform:translate(3%,-5%)}75%{transform:translate(-2%,-3%)}100%{transform:translate(0,0)}}
+.hero .wrap{z-index:2}
+/* Cintas gigantes cruzadas */
+.cintas{position:relative;overflow:hidden;padding:46px 0 26px;margin-top:10px}
+.cinta-xl{white-space:nowrap;overflow:hidden;padding:14px 0;border-block:2px solid var(--tinta)}
+.cinta-xl.rosa{background:var(--rosa);color:var(--blanco);transform:rotate(-2.5deg) scale(1.06);position:relative;z-index:2;box-shadow:0 12px 30px rgba(224,21,127,.3)}
+.cinta-xl.negra{background:var(--tinta);color:var(--blanco);transform:rotate(1.8deg) scale(1.06);margin-top:-8px}
+.pista{display:inline-flex;align-items:center;gap:28px;animation:pista 26s linear infinite;padding-right:28px}
+.negra .pista{animation-direction:reverse;animation-duration:32s}
+.pista span{font-family:var(--display);font-size:clamp(34px,6vw,76px);line-height:1;text-transform:uppercase;letter-spacing:.01em}
+.pista i{font-style:normal;font-size:clamp(22px,3.5vw,44px);color:#FFD27A}
+.hueco{color:transparent;-webkit-text-stroke:1.6px currentColor}
+.rosa .hueco{-webkit-text-stroke-color:var(--blanco)}
+.negra .hueco{-webkit-text-stroke-color:#FF7DBE}
+@keyframes pista{to{transform:translateX(-50%)}}
+/* Manifiesto con números */
+.manifiesto{background:var(--tinta);color:var(--blanco);padding:64px 0 56px;margin-top:40px;position:relative;overflow:hidden}
+.manifiesto::after{content:"♛";position:absolute;right:-30px;bottom:-80px;font-size:340px;line-height:1;color:transparent;-webkit-text-stroke:2px rgba(255,125,190,.18);pointer-events:none;animation:flotar 7s ease-in-out infinite}
+.manif-txt{margin:0;font-family:var(--display);font-size:clamp(34px,5.6vw,72px);line-height:1.04;max-width:16ch;letter-spacing:-.02em}
+.manif-txt .hueco{-webkit-text-stroke:1.6px var(--blanco)}
+.manif-txt em{font-style:italic;color:#FF7DBE}
+.pal{display:inline-block;opacity:0;transform:translateY(.6em) rotate(4deg);transition:opacity .6s ease var(--d),transform .7s cubic-bezier(.2,.8,.2,1) var(--d)}
+.visto .pal{opacity:1;transform:none}
+.numeros{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:40px;border-top:1px solid rgba(255,255,255,.18);padding-top:26px}
+.numeros b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(40px,7vw,84px);line-height:1;color:var(--blanco);font-variant-numeric:tabular-nums}
+.numeros span{font-size:14px;color:rgba(255,255,255,.7)}
+/* Cursor propio (solo compu) */
+.cursor{position:fixed;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:var(--rosa);mix-blend-mode:multiply;pointer-events:none;z-index:9999;opacity:0;transition:opacity .2s,width .25s,height .25s,margin .25s,background .25s}
+.cursor.on{opacity:.85}
+.cursor.grande{width:60px;height:60px;margin:-30px 0 0 -30px;background:rgba(224,21,127,.35)}
+/* Tarjetas que se inclinan */
+.card .foto{transition:transform .2s ease-out,box-shadow .25s;transform-style:preserve-3d}
+/* Chispas al agregar al carrito */
+.chispa{position:fixed;z-index:9998;pointer-events:none;transform:translate(-50%,-50%);animation:chispa 1.05s cubic-bezier(.15,.7,.3,1) forwards;text-shadow:0 2px 8px rgba(0,0,0,.15)}
+@keyframes chispa{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}70%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--x)),calc(-50% + var(--y) + 40px)) rotate(var(--r)) scale(1.1)}}
+@media (max-width:760px){
+  .cintas{padding:30px 0 10px}
+  .cinta-xl{padding:10px 0}
+  .manifiesto{padding:44px 0 40px;margin-top:24px}
+  .numeros{margin-top:28px;gap:8px}
+  .numeros span{font-size:12px}
+  .manifiesto::after{font-size:220px;bottom:-50px}
+}
+@media (prefers-reduced-motion:reduce){
+  .hero::before,.pista,.manifiesto::after{animation:none!important}
+  .pal{opacity:1;transform:none}
+}
