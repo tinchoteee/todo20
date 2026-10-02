@@ -352,10 +352,10 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 .revelar.visto{opacity:1;transform:none}
 /* Tarjetas: se levantan al pasar el mouse y se achican un poco al tocar */
 .card{transition:transform .25s}
-.card:hover{transform:translateY(-4px)}
-.card:active{transform:scale(.97)}
+@media (hover:hover){.card:hover{transform:translateY(-4px)}}
+
 .card .foto{transition:box-shadow .25s}
-.card:hover .foto{box-shadow:0 14px 30px rgba(31,10,22,.14)}
+@media (hover:hover){.card:hover .foto{box-shadow:0 14px 30px rgba(31,10,22,.14)}}
 /* Carrito: salta cuando agregás algo */
 .btn-carrito.salto{animation:salto .6s cubic-bezier(.3,1.6,.5,1)}
 .btn-carrito.salto .c{animation:pulso .6s}
@@ -449,4 +449,11 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 @media (prefers-reduced-motion:reduce){
   .hero::before,.pista,.manifiesto::after{animation:none!important}
   .pal{opacity:1;transform:none}
+}
+
+/* Filas deslizables del celular: que se muevan SOLO de costado (sin sacudirse arriba/abajo) */
+@media (max-width:760px){
+  .fila-scroll,.ventajas,.local,.cats{overflow-y:hidden;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+  .fila-scroll .card.revelar{transform:none;transition:opacity .6s ease var(--d,0ms)}
+  .fila-scroll .card .foto{transform:none!important}
 }

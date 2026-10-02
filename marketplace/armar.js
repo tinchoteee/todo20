@@ -7,8 +7,8 @@ const ETIQ = {
   botas: ["botas mujer","botas texanas","botas de moda","botas cuero","botas cortas","botinetas","calzado mujer","botas invierno","botas taco","botas western"],
   borcegos: ["borcegos mujer","borcegos","botas borcego","borcego plataforma","calzado mujer","borcegos de moda","borcego negro","botas invierno","borcego cuero","borcego cordones"],
   chavitos: ["chavitos","chavitos mujer","botitas","botinetas","calzado mujer","botas cortas","gamuza","suela crepe","calzado comodo","botas invierno"],
-  zapatos: ["zapatos mujer","zapatos","mocasines","calzado mujer","zapatos de moda","zapatos cuero","zapatos comodos","zapatos punta","calzado elegante","zapatos casual"],
-  zapatillas: ["zapatillas mujer","zapatillas","zapatillas urbanas","zapatillas plataforma","sneakers","calzado mujer","zapatillas de moda","zapatillas blancas","zapatillas comodas","zapatillas cuero"],
+  zapatos: ["zapatos hombre","zapatos mujer","zapatos","mocasines","calzado mujer","zapatos de moda","zapatos cuero","zapatos comodos","zapatos punta","calzado elegante","zapatos casual"],
+  zapatillas: ["zapatillas unisex","zapatillas hombre","zapatillas mujer","zapatillas","zapatillas urbanas","zapatillas plataforma","sneakers","calzado mujer","zapatillas de moda","zapatillas blancas","zapatillas comodas","zapatillas cuero"],
   sandalias: ["sandalias mujer","sandalias","sandalias plataforma","chinelas","sandalias verano","calzado mujer","sandalias de moda","sandalias taco","sandalias cuero","ojotas"],
   suecos: ["suecos mujer","suecos","zuecos","suecos cuero","calzado mujer","suecos de moda","suecos gamuza","sandalias","calzado comodo","suecos plataforma"]
 };
