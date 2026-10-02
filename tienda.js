@@ -9,6 +9,7 @@ const WHATSAPP = CATALOGO.whatsapp || "";
 const PROVINCIAS = ["CABA", "Buenos Aires", "Catamarca", "Chaco", "Chubut", "Córdoba", "Corrientes", "Entre Ríos", "Formosa",
   "Jujuy", "La Pampa", "La Rioja", "Mendoza", "Misiones", "Neuquén", "Río Negro", "Salta", "San Juan", "San Luis",
   "Santa Cruz", "Santa Fe", "Santiago del Estero", "Tierra del Fuego", "Tucumán"];
+const CELU = matchMedia("(max-width: 760px)");   // vista de celular
 const CATS = [
   { id: "todo", nombre: "Todo" }, { id: "botas", nombre: "Botas" }, { id: "borcegos", nombre: "Borcegos" },
   { id: "chavitos", nombre: "Chavitos" },
@@ -121,7 +122,9 @@ function agregar(id, color, talle) {
 
 function pintarCarrito() {
   const cant = carrito.reduce((a, i) => a + i.cant, 0);
-  $("#contador").textContent = cant || "";
+  const c = $("#contador"), antes = Number(c.textContent) || 0;
+  c.textContent = cant || "";
+  if (cant > antes) { const b = $("#abrirCarrito"); b.classList.remove("salto"); void b.offsetWidth; b.classList.add("salto"); }
   $("#abrirCarrito").setAttribute("aria-label", `Ver carrito (${cant} ${cant === 1 ? "producto" : "productos"})`);
   $("#panelF").hidden = !carrito.length;
   if (typeof pintarAvisoTransf === "function") pintarAvisoTransf();
@@ -217,10 +220,30 @@ function pintarCatalogo() {
   $("#cats").innerHTML = CATS.map(c => `<button class="cat" data-cat="${c.id}" aria-pressed="${c.id === catActual}">${c.nombre}</button>`).join("");
   // Agrupados por categoría; los agotados van al final
   const orden = p => CATS.findIndex(c => c.id === p.cat);
-  $("#grilla").innerHTML = PRODUCTOS.filter(p => catActual === "todo" || p.cat === catActual)
-    .sort((a, b) => a.agotado - b.agotado || orden(a) - orden(b)).map(tarjeta).join("");
+  const grilla = $("#grilla");
+  // En el celular, "Todo" se muestra en filas por categoría que se deslizan de costado (menos scroll hacia abajo)
+  const enFilas = catActual === "todo" && CELU.matches;
+  grilla.classList.toggle("filas", enFilas);
+  grilla.innerHTML = enFilas
+    ? CATS.filter(c => c.id !== "todo").map(c => {
+        const ps = PRODUCTOS.filter(p => p.cat === c.id).sort((a, b) => a.agotado - b.agotado);
+        return ps.length ? `<div class="fila-cat">
+          <div class="fila-tit"><h3>${esc(c.nombre)}</h3><button type="button" class="ver-todos" data-cat="${c.id}">Ver ${ps.length} →</button></div>
+          <div class="fila-scroll">${ps.map(tarjeta).join("")}</div>
+        </div>` : "";
+      }).join("")
+    : PRODUCTOS.filter(p => catActual === "todo" || p.cat === catActual)
+        .sort((a, b) => a.agotado - b.agotado || orden(a) - orden(b)).map(tarjeta).join("");
   document.querySelectorAll("#nav a").forEach(a => a.setAttribute("aria-current", a.dataset.cat === catActual));
+  const activa = $("#cats .cat[aria-pressed=true]");
+  if (activa) activa.scrollIntoView({ block: "nearest", inline: "center" });
+  if (typeof animarEntrada === "function") animarEntrada(grilla);
 }
+CELU.addEventListener("change", () => pintarCatalogo());
+$("#grilla").addEventListener("click", e => {
+  const b = e.target.closest(".ver-todos"); if (!b) return;
+  catActual = b.dataset.cat; pintarCatalogo(); $("#catalogo").scrollIntoView({ behavior: "smooth" });
+});
 $("#nav").innerHTML = CATS.filter(c => c.id !== "todo").map(c => `<a href="#cat/${c.id}" data-cat="${c.id}">${c.nombre}</a>`).join("");
 $("#cats").addEventListener("click", e => {
   const b = e.target.closest(".cat"); if (!b) return;
@@ -654,6 +677,11 @@ if (ENVIO.gratisDesde > 0) {
   $("#pGratis").textContent = `Envío gratis en compras desde ${pesos(ENVIO.gratisDesde)}.`;
   $("#ventajaEnvio").textContent = `Gratis desde ${pesos(ENVIO.gratisDesde)}. A domicilio o a sucursal.`;
 }
+// Franja de arriba: en el celular pasa como cinta (una sola línea en vez de tres)
+{
+  const a = $("#aviso"), txt = a.innerHTML;
+  a.innerHTML = `<div class="cinta"><span>${txt}</span><span aria-hidden="true">${txt}</span></div>`;
+}
 if (WHATSAPP) $("#flotante").href = wa("¡Hola Nací Reina! Tengo una consulta:");
 
 // ---------- Carrusel del inicio: una foto de fondo por promo (los montos salen de productos.js) ----------
@@ -750,7 +778,7 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
     if (document.hidden) return;
     document.querySelectorAll(".card .foto.carrusel").forEach(f => {
       const r = f.getBoundingClientRect();
-      if (r.bottom < 0 || r.top > innerHeight) return;
+      if (r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth) return;
       const imgs = f.querySelectorAll("img");
       const i = [...imgs].findIndex(x => x.classList.contains("on"));
       const sig = (i + 1) % imgs.length;
@@ -788,3 +816,24 @@ document.addEventListener("visibilitychange", () => { if (document.visibilitySta
 pintarCarrito();
 ruta();
 actualizarStock();
+
+// ---------- Animaciones de entrada ----------
+// Las secciones y tarjetas aparecen suavemente (de abajo hacia arriba) cuando entran en pantalla.
+// No corre si la persona pidió menos movimiento en su celular.
+var SIN_MOVIMIENTO = matchMedia("(prefers-reduced-motion: reduce)").matches;
+var observador = !SIN_MOVIMIENTO && "IntersectionObserver" in window
+  ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visto"); observador.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" })
+  : null;
+function animarEntrada(raiz) {
+  if (!observador) return;
+  raiz.querySelectorAll(".card, .fila-tit").forEach((el, i) => {
+    if (el.classList.contains("visto")) return;
+    el.classList.add("revelar"); el.style.setProperty("--d", (i % 4) * 70 + "ms"); observador.observe(el);
+  });
+}
+if (observador) {
+  document.querySelectorAll(".bloque > h2, .bloque > .sub, .ventaja, .card-l, #ayuda details").forEach((el, i) => {
+    el.classList.add("revelar"); el.style.setProperty("--d", (i % 3) * 80 + "ms"); observador.observe(el);
+  });
+  animarEntrada($("#grilla"));
+}

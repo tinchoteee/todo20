@@ -327,3 +327,75 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
 .dato-transf b{word-break:break-all}
 .dato-transf .link{margin-left:auto}
 .aviso-transf{margin:0;background:#F2FAF5;border:1.5px dashed var(--ok);color:var(--tinta);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.4}
+
+/* ===== Estética y animaciones (2026-10) ===== */
+/* Cinta de arriba: en compu queda fija y centrada; en el celular pasa de costado */
+.cinta{display:flex;justify-content:center}
+.cinta span+span{display:none}
+/* Botón de pago: brillo que pasa cada tanto */
+.btn-rosa{position:relative;overflow:hidden;box-shadow:0 8px 22px rgba(224,21,127,.35)}
+.btn-rosa::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-20deg);animation:brillo 3.8s ease-in-out infinite}
+@keyframes brillo{0%,55%{left:-60%}100%{left:130%}}
+/* Inicio: las fotos se acercan despacio y el texto entra de a poco */
+.hero-fotos img.on{animation:acercar 9s ease-out both}
+@keyframes acercar{from{transform:scale(1.12)}to{transform:scale(1)}}
+.hero-txt>*{animation:subir .8s cubic-bezier(.2,.7,.2,1) both}
+.hero-txt>*:nth-child(2){animation-delay:.12s}
+.hero-txt>*:nth-child(3){animation-delay:.24s}
+.hero-logo{animation:flotar 5s ease-in-out infinite}
+@keyframes subir{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes flotar{0%,100%{transform:rotate(2deg) translateY(0)}50%{transform:rotate(-1deg) translateY(-8px)}}
+.hero h1 em{background:linear-gradient(90deg,#FF7DBE,#fff,#FF7DBE);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:destello 4s linear infinite}
+@keyframes destello{to{background-position:-200% 0}}
+/* Aparecer al hacer scroll */
+.revelar{opacity:0;transform:translateY(26px);transition:opacity .7s ease var(--d,0ms),transform .7s cubic-bezier(.2,.7,.2,1) var(--d,0ms)}
+.revelar.visto{opacity:1;transform:none}
+/* Tarjetas: se levantan al pasar el mouse y se achican un poco al tocar */
+.card{transition:transform .25s}
+.card:hover{transform:translateY(-4px)}
+.card:active{transform:scale(.97)}
+.card .foto{transition:box-shadow .25s}
+.card:hover .foto{box-shadow:0 14px 30px rgba(31,10,22,.14)}
+/* Carrito: salta cuando agregás algo */
+.btn-carrito.salto{animation:salto .6s cubic-bezier(.3,1.6,.5,1)}
+.btn-carrito.salto .c{animation:pulso .6s}
+@keyframes salto{0%{transform:scale(1)}35%{transform:scale(1.25) rotate(-8deg)}70%{transform:scale(.95)}100%{transform:scale(1)}}
+@keyframes pulso{50%{transform:scale(1.5);background:var(--tinta)}}
+.ventaja .ic{transition:transform .3s}
+.ventaja:hover .ic{transform:rotate(-10deg) scale(1.1)}
+
+/* ===== Celular: menos scroll hacia abajo ===== */
+@media (max-width:760px){
+  .aviso{padding:7px 0;overflow:hidden;white-space:nowrap}
+  .cinta{justify-content:flex-start;width:max-content;animation:cinta 22s linear infinite}
+  .cinta span{padding-right:48px}
+  .cinta span+span{display:inline}
+  @keyframes cinta{to{transform:translateX(-50%)}}
+  .hero p{font-size:15px}
+  /* Ventajas y "Estamos cerca": tiras que se deslizan de costado */
+  .ventajas,.local{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:10px;margin-inline:-16px;padding:4px 16px 10px;scrollbar-width:none}
+  .ventajas::-webkit-scrollbar,.local::-webkit-scrollbar,.cats::-webkit-scrollbar,.fila-scroll::-webkit-scrollbar{display:none}
+  .ventaja,.card-l{flex:0 0 78%;scroll-snap-align:start}
+  .bloque{padding-block:30px 6px}
+  .bloque h2{font-size:28px}
+  /* Categorías: una sola línea que se desliza, pegada arriba al bajar */
+  .cats{flex-wrap:nowrap;overflow-x:auto;margin-inline:-16px;padding:10px 16px;margin-bottom:8px;position:sticky;top:70px;z-index:5;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);scrollbar-width:none}
+  .cat{flex:none;padding:8px 16px}
+  /* Productos en filas por categoría */
+  .grilla.filas{display:block}
+  .fila-cat{margin-bottom:26px}
+  .fila-tit{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+  .fila-tit h3{margin:0;font-family:var(--display);font-weight:400;font-size:24px}
+  .ver-todos{border:0;background:var(--rosa-suave);color:var(--rosa-osc);font-weight:700;font-size:14px;border-radius:999px;padding:6px 14px}
+  .fila-scroll{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin-inline:-16px;padding:0 16px 6px;scroll-padding-inline:16px;scrollbar-width:none}
+  .fila-scroll .card{flex:0 0 46%;scroll-snap-align:start;gap:6px}
+  .fila-scroll .card h3{font-size:14px}
+  .fila-scroll .card .meta{font-size:12px}
+  .fila-scroll .card .precio{font-size:15px}
+  .fila-scroll .card .puntos i{width:11px;height:11px}
+}
+@media (prefers-reduced-motion:reduce){
+  .cinta,.hero-fotos img.on,.hero-txt>*,.hero-logo,.hero h1 em,.btn-rosa::after,.btn-carrito.salto{animation:none!important}
+  .cinta{width:auto;flex-wrap:wrap;white-space:normal}
+  .cinta span+span{display:none!important}
+}
