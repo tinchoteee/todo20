@@ -51,6 +51,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Sandalia de taco alto con plataforma y tiras cruzadas (id 92, 2026-09-29, en la caja dice "Umma"): Negro, $33.000 ($30.000 + 10%), talles 35–40, foto propia. Distinta de la id 23 (ojalillos).
 - Sandalia de charol con plataforma y taco (id 93, 2026-10-03): Negro, $38.500 ($35.000 + 10%), talles 35–40, foto propia (los reflejos naranjas de la caja en el charol se pasaron a negro/forro).
 - Sandalia de dos tiras anchas (id 94, 2026-10-03): Negro (base negra) y Blanco (base suela), $27.500 ($25.000 + 10%), talles 35–40, fotos propias.
+- Chinela de tiras cruzadas texturada (id 95, 2026-10-03): Negro, $33.000 ($30.000 + 10%), talles 35–40, foto propia. Distinta de la id 18 (lisa, base más baja).
 - Bota texana corta (id 2): 2026-09-29 se le unió la "Bota texana punta cuadrada" (id 13, ahora `oculto`) a pedido del dueño. Colores: Suela, Marrón (foto de la ex punta cuadrada), Negro y Blanco (fotos reales). Ya no hay foto pendiente del negro punta cuadrada.
 - Zapatillas animal print (id 69) y animal print con plataforma (id 70) (antes "leopardo", renombradas por el dueño): fotos propias del local (2026-09-29), talles 35–40. Precio cargado por el dueño desde el editor (en la base de datos, no en productos.js).
 - Bota texana bordada (id 1): color Plata a $30.000 (dato del dueño, más barata que las otras) con foto real. Color Negro con foto real (2026-09-29), a $45.000 como la blanca (la oreja de atrás se dibujó a mano en la máscara porque la vidriera confundía el recorte).
