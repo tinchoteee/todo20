@@ -253,11 +253,12 @@ $("#cats").addEventListener("click", e => {
 // ---------- Página de producto ----------
 const sel = { id: null, color: null, talle: null, foto: null };
 
-function mostrarProducto(id) {
+function mostrarProducto(id, colorPedido) {
   const p = producto(id);
   if (!p) { location.hash = ""; return; }
   if (sel.id !== id) medir("ViewContent", { content_ids: [String(id)], content_name: p.nombre, content_type: "product", value: (rangoDe(p) || {}).min || 0 });
-  if (sel.id !== id) Object.assign(sel, { id, color: p.colores && p.colores.length === 1 ? p.colores[0].id : null, talle: null, foto: null });
+  const pedido = (p.colores || []).some(c => c.id === colorPedido) ? colorPedido : null;
+  if (sel.id !== id) Object.assign(sel, { id, color: pedido || (p.colores && p.colores.length === 1 ? p.colores[0].id : null), talle: null, foto: null });
   document.title = `${p.nombre} · Nací Reina Calzados`;
   $("#migas").innerHTML = `<a href="#">Inicio</a> / <a href="#cat/${p.cat}">${esc(nombreCat(p.cat))}</a> / ${esc(p.nombre)}`;
   $("#pCat").textContent = nombreCat(p.cat);
@@ -655,7 +656,7 @@ function ruta() {
   const vista = h.startsWith("p/") ? "producto" : h === "checkout" ? "checkout" : "inicio";
   ["inicio", "producto", "checkout"].forEach(v => { $("#vista-" + v).hidden = v !== vista; });
   $("#flotante").hidden = !WHATSAPP || vista === "checkout";
-  if (vista === "producto") { mostrarProducto(+h.slice(2)); window.scrollTo(0, 0); return; }
+  if (vista === "producto") { const [pid, col] = h.slice(2).split("/"); mostrarProducto(+pid, col); window.scrollTo(0, 0); return; }
   if (vista === "checkout") { mostrarCheckout(); window.scrollTo(0, 0); return; }
   document.title = "Nací Reina Calzados | Botas, zapatillas y sandalias en Ramos Mejía";
   if (h.startsWith("cat/")) { catActual = h.slice(4); pintarCatalogo(); $("#catalogo").scrollIntoView(); return; }
@@ -815,6 +816,15 @@ async function actualizarStock() {
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") actualizarStock(); });
 
 pintarCarrito();
+// Links de publicidad y catálogos: ?p=84 (y opcional &c=negro) abre ese producto. Se conservan los utm_* para medir.
+{
+  const q = new URLSearchParams(location.search), pid = q.get("p");
+  if (pid && /^\d+$/.test(pid)) {
+    const col = q.get("c"); q.delete("p"); q.delete("c");
+    const resto = q.toString();
+    history.replaceState(null, "", location.pathname + (resto ? "?" + resto : "") + "#p/" + pid + (col ? "/" + encodeURIComponent(col) : ""));
+  }
+}
 ruta();
 actualizarStock();
 
