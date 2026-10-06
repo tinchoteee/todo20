@@ -10,6 +10,6 @@ module.exports = function handler(req, res) {
     // Pago por transferencia (productos.js → transferencia). Si en Vercel están los datos de la cuenta se muestran al confirmar;
     // si no, el pedido se guarda igual y se le avisa al cliente que le pasan los datos por WhatsApp.
     transferencia: Number((CATALOGO.transferencia || {}).porcentaje) > 0 ? { porcentaje: Number(CATALOGO.transferencia.porcentaje), conDatos: Boolean(datosCuenta()) } : null,
-    metaPixelId: String(process.env.META_PIXEL_ID || CATALOGO.metaPixel || "").replace(/\D/g, "") || null  // Píxel de Meta (también es público)
+    metaPixelId: String(CATALOGO.metaPixel || process.env.META_PIXEL_ID || "").replace(/\D/g, "") || null  // Píxel de Meta (público). Manda el de productos.js; META_PIXEL_ID de Vercel solo si ahí está vacío
   });
 };
