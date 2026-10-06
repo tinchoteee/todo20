@@ -28,7 +28,7 @@ Tiene todos los productos activos con foto, precio, link y si están agotados. C
 1. Entrá a **business.facebook.com/commerce** → **Agregar catálogo** → tipo **Comercio electrónico** → "Subir información de productos".
 2. Dentro del catálogo: **Orígenes de datos** → **Agregar artículos** → **Feed de datos** → **Feed programado**.
 3. Pegá el link del catálogo, frecuencia **Diaria**, moneda **ARS**.
-4. En **Orígenes de datos → Eventos**, conectá el Píxel "Nací Reina" (2157264648210007). Así el anuncio le muestra a cada persona el producto que miró.
+4. En **Orígenes de datos → Eventos**, conectá el Píxel "Nací Reina" (1313393520818430). Así el anuncio le muestra a cada persona el producto que miró.
 
 ### Cargarlo en Google (aparecés gratis en Google Shopping)
 1. Entrá a **merchants.google.com** con tu cuenta de Google y creá la cuenta "Nací Reina" (país Argentina, moneda ARS).

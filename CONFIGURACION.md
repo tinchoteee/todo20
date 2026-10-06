@@ -76,7 +76,7 @@ Cómo funciona: el cliente confirma, ve tus datos y el monto, y te manda el comp
 1. Entrá a **business.facebook.com/events_manager** con la cuenta que maneja el Instagram de la tienda.
 2. **Conectar orígenes de datos → Web → Conectar** y ponele de nombre "Nací Reina".
 3. Cuando pregunte cómo instalarlo, elegí **"Instalar el código manualmente"** o cerrá esa ventana: no hace falta copiar el código.
-4. Ya está cargado en la tienda (`metaPixel` en `productos.js`, píxel 2157264648210007). Si algún día cambia, pasale el número nuevo a Claude o cargalo en Vercel como `META_PIXEL_ID`.
+4. Ya está cargado en la tienda (`metaPixel` en `productos.js`, píxel 1313393520818430). Si algún día cambia, pasale el número nuevo a Claude o cargalo en Vercel como `META_PIXEL_ID`.
 
 La tienda le avisa a Meta cuando alguien: entra, mira un producto, agrega al carrito, empieza a pagar y compra (con el monto).
 
