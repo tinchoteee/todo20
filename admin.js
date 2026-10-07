@@ -279,7 +279,9 @@ function pintarEstado(cfg) {
     [cfg.mercadoPago, "Mercado Pago", "Cobros online con tarjeta, débito y dinero en cuenta.", "Falta MP_ACCESS_TOKEN en Vercel: sin esto no se puede cobrar."],
     [cfg.tarjetaEnPagina, "Pago con tarjeta en la página", "El cliente carga su tarjeta sin salir de la tienda (formulario seguro de Mercado Pago).", "Falta MP_PUBLIC_KEY en Vercel: por ahora el cliente paga en la página de Mercado Pago."],
     [cfg.baseDeDatos, "Base de datos (Upstash)", "Guarda el stock, los precios y los pedidos.", "Falta conectar Upstash en Vercel: sin esto no se guardan los cambios de este editor ni los pedidos."],
-    [cfg.zipnova, "Zipnova · envíos por correo", "Cotiza el envío según el código postal.", "Falta configurar Zipnova: mientras tanto el envío se cobra con los precios fijos por zona."],
+    [cfg.zipnova && !cfg.zipnovaError, "Zipnova · envíos por correo", "Cotiza el envío según el código postal.", cfg.zipnova
+      ? `Zipnova no está cotizando: mientras tanto el envío se cobra con los precios fijos por zona y el envío lo creás a mano en Zipnova. Último error (${new Date(cfg.zipnovaError.fecha).toLocaleString("es-AR")}): código ${esc(String(cfg.zipnovaError.estado))} · ${esc(String(cfg.zipnovaError.detalle || "").slice(0, 300))}`
+      : "Falta configurar Zipnova: mientras tanto el envío se cobra con los precios fijos por zona."],
     [cfg.zipnova && cfg.baseDeDatos && cfg.envioAutomatico, "Envío automático", "Cada venta pagada crea sola el envío en Zipnova.", "Desactivado: los envíos se crean a mano desde el panel de Zipnova."],
     [cfg.transferencia, "Pago por transferencia (5% OFF)", "El cliente ve tu alias al confirmar el pedido; lo pasás a Pagado cuando llega la plata.", "Falta cargar TRANSFERENCIA_ALIAS (o TRANSFERENCIA_CBU) y TRANSFERENCIA_TITULAR en Vercel: por ahora no aparece la opción."],
     [cfg.emails, "Avisos por email", "Te llega un email con cada venta.", "Falta RESEND_API_KEY y AVISOS_EMAIL: no vas a recibir emails de las ventas."]

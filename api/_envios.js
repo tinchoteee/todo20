@@ -5,9 +5,21 @@
 // Variables de entorno en Vercel (se sacan del panel de Zipnova → Configuración → API):
 //   ZIPNOVA_API_TOKEN, ZIPNOVA_API_SECRET, ZIPNOVA_ACCOUNT_ID
 //   ZIPNOVA_ORIGIN_ID (opcional: el id de la dirección del local; si falta usa la dirección por defecto)
-// Sin Zipnova, usa los costos fijos de  envio.zonasDeRespaldo  en productos.js.
+// Sin Zipnova, o si Zipnova falla (no responde, rechaza la cotización o no trae opciones), usa los costos fijos
+// de  envio.zonasDeRespaldo  en productos.js, así la venta no se corta. El último error queda guardado y se ve en el editor.
 const CATALOGO = require("../productos.js");
 const aplicarAjustes = require("../ajustes.js");
+const db = require("./_db.js");
+
+const CLAVE_ERROR = "nacireina:zipnova-error";
+// Guarda (o borra) el último error de Zipnova para mostrarlo en el editor. Nunca corta la cotización.
+async function anotarError(error) {
+  if (!db.hayDB()) return;
+  try {
+    if (error) await db.guardar(CLAVE_ERROR, { fecha: new Date().toISOString(), ...error });
+    else await db.comando("DEL", CLAVE_ERROR);
+  } catch (e) { console.error("No se pudo anotar el estado de Zipnova", e.message); }
+}
 
 const ZIPNOVA_URL = "https://api.zipnova.com.ar/v2/shipments/quote";
 
@@ -58,12 +70,13 @@ async function cotizarZipnova({ cp, provincia, localidad, lineas, valor }) {
     });
   } catch (e) {
     console.error("Zipnova no respondió", e.name, e.message);
-    throw new Error("No pudimos conectar con el correo. Probá de nuevo en un momento.");
+    throw Object.assign(new Error("Zipnova no respondió"), { zipnova: { estado: 0, detalle: `${e.name}: ${e.message}` } });
   }
   const data = await r.json().catch(() => ({}));
   if (!r.ok) {
-    console.error("Zipnova no cotizó", r.status, JSON.stringify(data).slice(0, 500));
-    throw new Error("No pudimos calcular el envío para ese código postal. Revisá el código postal y la provincia.");
+    const detalle = JSON.stringify(data).slice(0, 500);
+    console.error("Zipnova no cotizó", r.status, detalle);
+    throw Object.assign(new Error("Zipnova no cotizó"), { zipnova: { estado: r.status, detalle } });
   }
 
   const preferido = (CATALOGO.envio.transportista || "").toLowerCase();
@@ -102,21 +115,30 @@ async function cotizarZipnova({ cp, provincia, localidad, lineas, valor }) {
 function cotizarPorZona({ provincia }) {
   const z = CATALOGO.envio.zonasDeRespaldo;
   const precio = z[provincia] ?? z.resto;
-  return [{ id: "zona", tipo: "domicilio", nombre: "Envío a domicilio", transportista: null, precio, dias: { min: null, max: null } }];
+  return [{ id: "zona", tipo: "domicilio", nombre: "Envío a domicilio por correo", transportista: null, precio, dias: { min: 3, max: 7 } }];
 }
 
 // lineas: [{ producto, cant }]; subtotal: suma de los productos (para el envío gratis)
-async function cotizar({ cp, provincia, localidad, lineas, subtotal }) {
+// soloZona: no consulta Zipnova (para cobrar el precio por zona que el cliente ya eligió)
+async function cotizar({ cp, provincia, localidad, lineas, subtotal, soloZona = false }) {
   const codigo = cpValido(cp);
   if (!codigo) throw new Error("Ingresá un código postal válido (4 números).");
   if (!PROVINCIAS.includes(provincia)) throw new Error("Elegí tu provincia.");
   if (!lineas.length) throw new Error("No hay productos para cotizar.");
 
-  const conZipnova = process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID;
-  const opciones = conZipnova
-    ? await cotizarZipnova({ cp: codigo, provincia, localidad, lineas, valor: subtotal })
-    : cotizarPorZona({ provincia });
-  if (!opciones.length) throw new Error("No hay envíos disponibles para ese código postal.");
+  const conZipnova = !soloZona && process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID;
+  let opciones = [], respaldo = !conZipnova;
+  if (conZipnova) {
+    try {
+      opciones = await cotizarZipnova({ cp: codigo, provincia, localidad, lineas, valor: subtotal });
+      await anotarError(opciones.length ? null : { estado: 200, detalle: `Sin opciones para CP ${codigo} (${provincia})` });
+    } catch (e) {
+      console.error("Zipnova falló, se usa el precio por zona", e.message);
+      await anotarError(e.zipnova || { estado: 0, detalle: e.message });
+    }
+    if (!opciones.length) respaldo = true;
+  }
+  if (respaldo) opciones = cotizarPorZona({ provincia });
 
   const gratisDesde = CATALOGO.envio.gratisDesde || 0;
   const gratis = gratisDesde > 0 && subtotal >= gratisDesde;
@@ -125,7 +147,7 @@ async function cotizar({ cp, provincia, localidad, lineas, subtotal }) {
 
   opciones.push({ id: "local", tipo: "local", nombre: "Retiro en el local", transportista: null, precio: 0, precioOriginal: 0,
     detalle: CATALOGO.local.direccion, dias: { min: null, max: null } });
-  return { cp: codigo, provincia, opciones, gratisDesde, gratis };
+  return { cp: codigo, provincia, opciones, gratisDesde, gratis, respaldo };
 }
 
 // Arma las líneas del pedido a partir de lo que manda el navegador, validando todo contra el catálogo

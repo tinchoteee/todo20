@@ -73,6 +73,7 @@ module.exports = async function handler(req, res) {
           tarjetaEnPagina: Boolean(process.env.MP_ACCESS_TOKEN && process.env.MP_PUBLIC_KEY),
           zipnova: Boolean(process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID),
           envioAutomatico: process.env.ZIPNOVA_CREAR_ENVIOS !== "no",
+          zipnovaError: await db.leer("nacireina:zipnova-error"),   // último error al cotizar (null = anda bien)
           emails: Boolean(process.env.RESEND_API_KEY && process.env.AVISOS_EMAIL),
           transferencia: Boolean(process.env.TRANSFERENCIA_ALIAS || process.env.TRANSFERENCIA_CBU)
         }

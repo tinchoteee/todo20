@@ -20,9 +20,12 @@ async function armarPedido(body, base, { transferencia = false } = {}) {
 
   // Envío: se vuelve a cotizar y se busca la opción elegida
   const e = body.entrega || {};
-  const cot = e.opcion === "local"
+  const datosCot = { cp: e.cp, provincia: e.provincia, localidad: texto(e.localidad, 80), lineas, subtotal };
+  let cot = e.opcion === "local"
     ? { opciones: [{ id: "local", tipo: "local", nombre: "Retiro en el local", precio: 0 }] }
-    : await cotizar({ cp: e.cp, provincia: e.provincia, localidad: texto(e.localidad, 80), lineas, subtotal });
+    : await cotizar(datosCot);
+  // Eligió el precio por zona (Zipnova había fallado) y ahora Zipnova anda: se respeta el precio que vio
+  if (e.opcion === "zona" && !cot.opciones.some(o => o.id === "zona")) cot = await cotizar({ ...datosCot, soloZona: true });
   const opcion = cot.opciones.find(o => o.id === e.opcion);
   if (!opcion) throw new Error("La opción de envío cambió. Volvé a elegir cómo lo recibís.");
 
