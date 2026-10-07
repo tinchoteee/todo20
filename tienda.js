@@ -342,17 +342,18 @@ const opcionesProv = `<option value="">Provincia</option>` + PROVINCIAS.map(p =>
 $("#calcProv").innerHTML = opcionesProv;
 $("#ckProv").innerHTML = opcionesProv;
 const zonaGuardada = leer("nacireina-cp", {});
-$("#calcCP").value = zonaGuardada.cp || ""; $("#calcProv").value = zonaGuardada.provincia || "";
+$("#calcCP").value = zonaGuardada.cp || ""; $("#calcProv").value = zonaGuardada.provincia || ""; $("#calcLoc").value = zonaGuardada.localidad || "";
 const diasTxt = d => d && d.min ? (d.max && d.max !== d.min ? `Llega entre ${d.min} y ${d.max} días hábiles` : `Llega en ${d.min} días hábiles`) : "";
 
 $("#calcForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const cp = $("#calcCP").value.trim(), provincia = $("#calcProv").value;
-  if (!/\d{4}/.test(cp) || !provincia) { $("#calcRes").innerHTML = `<p class="aviso-error">Ingresá tu código postal y provincia.</p>`; return; }
-  escribir("nacireina-cp", { cp, provincia });
+  // El correo cotiza por localidad: sin ella no hay precio real
+  const cp = $("#calcCP").value.trim(), provincia = $("#calcProv").value, localidad = $("#calcLoc").value.trim();
+  if (!/\d{4}/.test(cp) || !provincia || !localidad) { $("#calcRes").innerHTML = `<p class="aviso-error">Ingresá tu código postal, provincia y localidad.</p>`; return; }
+  escribir("nacireina-cp", { cp, provincia, localidad });
   $("#calcRes").innerHTML = `<p class="cargando">Calculando…</p>`;
   try {
-    const r = await api("/api/cotizar-envio", { cp, provincia, items: [{ id: sel.id, color: sel.color, cant: 1 }] });
+    const r = await api("/api/cotizar-envio", { cp, provincia, localidad, items: [{ id: sel.id, color: sel.color, cant: 1 }] });
     $("#calcRes").innerHTML = `<ul class="opciones-envio">${r.opciones.map(o => `<li><span>${esc(o.nombre)}<small>${esc(o.tipo === "local" ? o.detalle : diasTxt(o.dias))}</small></span><b class="${o.precio ? "" : "gratis"}">${o.precio ? pesos(o.precio) : "Gratis"}</b></li>`).join("")}</ul>`;
   } catch (err) {
     $("#calcRes").innerHTML = `<p class="aviso-error">${esc(err.message)}</p>`;
@@ -374,6 +375,7 @@ function mostrarCheckout() {
   // Si ya calculó el envío en la página del producto, se completa solo
   const z = leer("nacireina-cp", {});
   if (!val("ckCP") && z.cp) { $("#ckCP").value = z.cp; $("#ckProv").value = z.provincia || ""; }
+  if (!val("ckLoc") && z.localidad) $("#ckLoc").value = z.localidad;
   pintarCheckout();
 }
 function pintarCheckout() {
@@ -440,7 +442,7 @@ $("#form1").addEventListener("submit", e => {
   $("#falta1").textContent = "";
   guardarDatos();
   irPaso(2);
-  if (!ck.cot && val("ckCP") && $("#ckProv").value) cotizarCheckout();
+  if (!ck.cot && val("ckCP") && $("#ckProv").value && val("ckLoc")) cotizarCheckout();
 });
 const juntar = l => l.length > 1 ? l.slice(0, -1).join(", ") + " y " + l[l.length - 1] : l[0];
 function guardarDatos() {
@@ -450,17 +452,17 @@ function guardarDatos() {
 
 // Paso 2: entrega
 $("#formCP").addEventListener("submit", e => { e.preventDefault(); cotizarCheckout(); });
-["ckCP", "ckProv"].forEach(id => document.getElementById(id).addEventListener("change", () => { ck.cot = null; ck.opcion = null; ck.sucursal = null; pintarCheckout(); }));
+["ckCP", "ckProv", "ckLoc"].forEach(id => document.getElementById(id).addEventListener("change", () => { ck.cot = null; ck.opcion = null; ck.sucursal = null; pintarCheckout(); }));
 
 async function cotizarCheckout() {
-  const cp = val("ckCP"), provincia = $("#ckProv").value;
-  if (!/\d{4}/.test(cp) || !provincia) { $("#falta2").textContent = "Ingresá tu código postal y provincia."; return; }
-  escribir("nacireina-cp", { cp, provincia });
+  const cp = val("ckCP"), provincia = $("#ckProv").value, localidad = val("ckLoc");
+  if (!/\d{4}/.test(cp) || !provincia || !localidad) { $("#falta2").textContent = "Ingresá tu código postal, provincia y localidad."; return; }
+  escribir("nacireina-cp", { cp, provincia, localidad });
   $("#falta2").textContent = "";
   ck.cot = null; ck.opcion = null; ck.sucursal = null;
   $("#opcionesCk").innerHTML = `<p class="cargando">Buscando opciones de envío…</p>`;
   try {
-    ck.cot = await api("/api/cotizar-envio", { cp, provincia, localidad: val("ckLoc"), items: carrito.map(i => ({ id: i.id, color: i.color, cant: i.cant })) });
+    ck.cot = await api("/api/cotizar-envio", { cp, provincia, localidad, items: carrito.map(i => ({ id: i.id, color: i.color, cant: i.cant })) });
   } catch (err) {
     $("#opcionesCk").innerHTML = "";
     // Aunque no se pueda cotizar, siempre se puede retirar en el local

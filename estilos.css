@@ -149,7 +149,8 @@ section.bloque{padding-block:40px 8px}
 .aviso-error:empty{display:none}
 .caja-gris{background:var(--gris);border-radius:16px;padding:16px}
 .calc{display:grid;gap:10px}
-.calc .fila{display:grid;grid-template-columns:1fr 1.3fr auto;gap:8px}
+.calc .fila{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.calc .fila #calcLoc{grid-column:1/2}
 .opciones-envio{display:grid;gap:8px;margin:0;padding:0;list-style:none}
 .opciones-envio li{display:flex;justify-content:space-between;gap:12px;background:var(--blanco);border-radius:10px;padding:10px 12px;font-size:14px}
 .opciones-envio b{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -297,7 +298,7 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
   .grilla{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 12px}
   .card h3{font-size:15px}
   .calc .fila{grid-template-columns:1fr 1fr}
-  .calc .fila .btn{grid-column:1/-1}
+  .calc .fila .btn,.calc .fila #calcLoc{grid-column:1/-1}
   .fila3{grid-template-columns:1fr 1fr}
   .fila3 .campo:first-child{grid-column:1/-1}
 }
