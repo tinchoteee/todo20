@@ -130,3 +130,21 @@ Proyecto → **Settings → Environment Variables**. Después de agregarlas: **D
 - El monto de **envío gratis** (hoy $165.000).
 - El **peso y tamaño de las cajas**: El correo cobra según eso. Pesá y medí una caja de cada tipo.
 - Productos nuevos, fotos, nombres y descripciones.
+
+## Asistente de WhatsApp (IA que contesta sola)
+
+El código está en `api/whatsapp.js`. No hace nada hasta que estén cargadas las claves en Vercel.
+
+1. **YCloud** (conecta el número; plan Free, sin abono): crear la cuenta en https://www.ycloud.com → WhatsApp → conectar el número con la opción **"WhatsApp Business App" (coexistencia)**: se escanea un código desde el WhatsApp Business del celular, que sigue andando igual. Hay que abrir la app al menos una vez cada 13 días.
+2. En YCloud → Developers → **API Keys**: crear una clave → en Vercel: `YCLOUD_API_KEY`.
+3. En YCloud → Developers → **Webhooks**: agregar `https://nacireinacalzados.com/api/whatsapp` con los eventos `whatsapp.inbound_message.received` y `whatsapp.smb.message.echoes` → copiar el secreto (`whsec_…`) → en Vercel: `YCLOUD_WEBHOOK_SECRET`.
+4. **IA**: crear la cuenta en https://console.anthropic.com, cargar saldo y crear una clave → en Vercel: `ANTHROPIC_API_KEY`.
+5. En Vercel: `WHATSAPP_AVISOS_NUMERO` = el celular que recibe los avisos, con 549 adelante (ej. `5491123456789`).
+6. Redeploy (o cualquier push a `main`) para que tome las variables.
+
+Opcional:
+- `WHATSAPP_PLANTILLA_AVISO`: WhatsApp solo deja mandarle un mensaje libre al dueño si él le escribió al número del local en las últimas 24 hs. Para que el aviso llegue siempre, crear en YCloud una plantilla de tipo *Utilidad*, idioma *Español (ARG)*, con el texto `Un cliente necesita que lo atiendas. Cliente: {{1}}. Motivo: {{2}}. Resumen: {{3}}` y poner acá su nombre. Sin plantilla, el aviso llega igual por email (`AVISOS_EMAIL`).
+- `WHATSAPP_BOT` = `no`: apaga el asistente.
+- `asistente.extra` en `productos.js`: texto libre con información extra para la IA (horarios, etc.).
+
+Cómo se comporta: contesta solo mensajes de texto; con audios, fotos, reclamos, pedidos ya hechos o dudas le avisa al dueño y se calla 12 horas en ese chat. Si el dueño contesta desde el celular, también se calla 12 horas en ese chat.
