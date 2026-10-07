@@ -38,7 +38,7 @@
       "chavitos":   { peso: 800,  alto: 13, ancho: 24, largo: 35 }
     },
     // Solo se usa mientras Zipnova no esté configurado: costo fijo por zona.
-    zonasDeRespaldo: { "CABA": 5000, "Buenos Aires": 6500, "resto": 9500 }
+    zonasDeRespaldo: { "CABA": 15000, "Buenos Aires": 18000, "resto": 22000 }
   },
 
   productos: [
