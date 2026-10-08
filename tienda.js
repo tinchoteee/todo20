@@ -512,6 +512,8 @@ $("#form1").addEventListener("submit", e => {
   if (faltan.length) { $("#falta1").textContent = "Completá " + juntar(faltan) + "."; document.querySelector("#form1 .mal").focus(); return; }
   $("#falta1").textContent = "";
   guardarDatos();
+  // Si no termina la compra, a las 2 horas le llega un recordatorio por email (api/carrito.js). Si falla, no pasa nada.
+  api("/api/carrito", { email: val("ckEmail"), nombre: val("ckNombre"), items: carrito.map(i => ({ id: i.id, color: i.color, talle: i.talle, cant: i.cant })) }).catch(() => {});
   irPaso(2);
   if (!ck.cot && val("ckCP") && $("#ckProv").value && val("ckLoc")) cotizarCheckout();
 });
@@ -896,6 +898,21 @@ pintarCarrito();
     const col = q.get("c"); q.delete("p"); q.delete("c");
     const resto = q.toString();
     history.replaceState(null, "", location.pathname + (resto ? "?" + resto : "") + "#p/" + pid + (col ? "/" + encodeURIComponent(col) : ""));
+  }
+  // Link del email de carrito abandonado: ?carrito=id.color.talle.cant,… vuelve a armar el carrito y lo abre
+  const guardado = q.get("carrito");
+  if (guardado) {
+    for (const parte of guardado.split(",").slice(0, 12)) {
+      const [id, color, talle, cant] = parte.split(".");
+      const p = producto(+id), c = color || null;
+      if (!p || !p.talles.includes(+talle) || (c && !colorDe(p, c)) || !talleDisponible(p, c, +talle)) continue;
+      if (!carrito.some(i => i.id === p.id && i.color === c && i.talle === +talle)) carrito.push({ id: p.id, color: c, talle: +talle, cant: Math.max(1, Math.min(maxCant(p, c, +talle), +cant || 1)) });
+    }
+    guardarCarrito();
+    q.delete("carrito");
+    const resto = q.toString();
+    history.replaceState(null, "", location.pathname + (resto ? "?" + resto : "") + location.hash);
+    if (carrito.length) setTimeout(abrirCarrito, 400);
   }
 }
 ruta();

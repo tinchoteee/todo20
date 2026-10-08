@@ -45,6 +45,7 @@ module.exports = async function handler(req, res) {
     await moverStock(m.productos, pedido.numero, -1);
     return res.status(500).json({ error: "No pudimos registrar el pedido. Probá de nuevo en un momento." });
   }
+  await require("./carrito.js").cancelarRecordatorio(pedido.cliente.email, { compro: true });
   console.log("Pedido por transferencia", pedido.numero, pedido.total);
 
   if (process.env.RESEND_API_KEY) {

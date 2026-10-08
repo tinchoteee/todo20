@@ -148,3 +148,9 @@ Opcional:
 - `asistente.extra` en `productos.js`: texto libre con información extra para la IA (horarios, etc.).
 
 Cómo se comporta: contesta solo mensajes de texto; con audios, fotos, reclamos, pedidos ya hechos o dudas le avisa al dueño y se calla 12 horas en ese chat. Si el dueño contesta desde el celular, también se calla 12 horas en ese chat.
+
+## Recordatorio de carrito abandonado
+
+`api/carrito.js`: cuando alguien completa el paso 1 del checkout (email) y no compra, a las 2 horas le llega un email con su carrito y un botón para retomarlo. Si compra antes, se cancela solo. Un recordatorio por persona cada 7 días; cada email tiene link de baja.
+
+Solo funciona si en Vercel están `RESEND_API_KEY` y **`RESEND_FROM`** (ej. `Nací Reina <ventas@nacireinacalzados.com>`, con el dominio verificado en Resend). Para apagarlo: `CARRITO_RECORDATORIO` = `no`.
