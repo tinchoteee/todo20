@@ -154,3 +154,7 @@ Cómo se comporta: contesta solo mensajes de texto; con audios, fotos, reclamos,
 `api/carrito.js`: cuando alguien completa el paso 1 del checkout (email) y no compra, a las 2 horas le llega un email con su carrito y un botón para retomarlo. Si compra antes, se cancela solo. Un recordatorio por persona cada 7 días; cada email tiene link de baja.
 
 Solo funciona si en Vercel están `RESEND_API_KEY` y **`RESEND_FROM`** (ej. `Nací Reina <ventas@nacireinacalzados.com>`, con el dominio verificado en Resend). Para apagarlo: `CARRITO_RECORDATORIO` = `no`.
+
+## Opiniones de compradores
+
+`api/opiniones.js`: 10 días después de cada compra pagada con Mercado Pago (3 si retira en el local) al cliente le llega un email para puntuar su compra. Las opiniones aparecen en la página de cada producto. Al local le llega cada opinión por email (`AVISOS_EMAIL`) con un link para ocultarla si es spam o un insulto. Necesita `RESEND_FROM`. Para no pedir opiniones: `OPINIONES_PEDIR` = `no`.

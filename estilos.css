@@ -481,3 +481,14 @@ body.con-barra .flotante{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   .btn-buscar{margin-left:auto}
   .btn-buscar + .btn-carrito{margin-left:0}
 }
+
+/* Opiniones de compradores */
+.estrellas{color:#E8A400;letter-spacing:1px}
+.estrellas-link{display:inline-flex;gap:6px;align-items:center;font-size:14px;color:var(--tinta-2);text-decoration:none}
+.opiniones{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.opinion{background:var(--gris);border-radius:16px;padding:16px;display:grid;gap:6px;align-content:start}
+.opinion p{margin:0}
+.opinion small{color:var(--tinta-2)}
+.op-estrellas{display:flex;gap:6px}
+.op-estrellas button{font-size:34px;line-height:1;background:none;border:0;padding:2px;color:var(--borde)}
+.op-estrellas button[aria-pressed="true"]{color:#E8A400}

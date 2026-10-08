@@ -1002,3 +1002,62 @@ function festejar(desde) {
     document.body.append(s); setTimeout(() => s.remove(), 1100);
   }
 }
+
+// ---------- Opiniones de compradores ----------
+// Solo de compras reales: el link para opinar llega por email después de la compra (api/opiniones.js).
+let OPINIONES = [];
+const estrellasTxt = n => "★".repeat(Math.round(n)) + "☆".repeat(5 - Math.round(n));
+function pintarOpiniones() {
+  const id = sel.id, lista = OPINIONES.filter(o => (o.productos || []).includes(id));
+  $("#opiniones").hidden = !lista.length;
+  $("#pEstrellas").hidden = !lista.length;
+  if (!lista.length) return;
+  const prom = lista.reduce((a, o) => a + o.estrellas, 0) / lista.length;
+  const resumen = `${prom.toFixed(1).replace(".", ",")} de 5 · ${lista.length} ${lista.length === 1 ? "opinión" : "opiniones"}`;
+  $("#pEstrellas").innerHTML = `<span class="estrellas" aria-hidden="true">${estrellasTxt(prom)}</span> ${resumen}`;
+  $("#opResumen").innerHTML = `<span class="estrellas" aria-hidden="true">${estrellasTxt(prom)}</span> ${resumen} · de personas que compraron en la tienda`;
+  $("#opLista").innerHTML = lista.slice(0, 12).map(o => `<div class="opinion">
+    <span class="estrellas" aria-label="${o.estrellas} de 5 estrellas">${estrellasTxt(o.estrellas)}</span>
+    ${o.texto ? `<p>${esc(o.texto)}</p>` : ""}
+    <small>${esc(o.nombre)} · ${new Date(o.fecha).toLocaleDateString("es-AR", { month: "long", year: "numeric" })}</small>
+  </div>`).join("");
+}
+window.addEventListener("hashchange", () => setTimeout(pintarOpiniones, 0));
+$("#pEstrellas").addEventListener("click", e => { e.preventDefault(); $("#opiniones").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth" }); });
+fetch("/api/opiniones").then(r => r.ok ? r.json() : null).then(d => { if (d && Array.isArray(d.opiniones)) { OPINIONES = d.opiniones; pintarOpiniones(); } }).catch(() => {});
+
+// Link del email "¿Cómo te quedó tu compra?": ?opinar=PEDIDO&ids=2-72&k=firma abre el formulario
+{
+  const q = new URLSearchParams(location.search), numero = q.get("opinar");
+  if (numero) {
+    const ids = q.get("ids") || "", k = q.get("k") || "";
+    const nombres = ids.split("-").map(i => producto(+i)).filter(Boolean).map(p => p.nombre);
+    let estrellas = 0;
+    $("#resTit").textContent = "¿Cómo te quedó tu compra?";
+    $("#resCuerpo").innerHTML = `<p style="margin:0">${nombres.length ? esc(nombres.join(", ")) + ". " : ""}Tu opinión ayuda a otras personas a elegir.</p>
+      <div class="op-estrellas" id="opEstrellas" role="group" aria-label="Puntaje">${[1, 2, 3, 4, 5].map(n => `<button type="button" data-n="${n}" aria-pressed="false" aria-label="${n} ${n === 1 ? "estrella" : "estrellas"}">★</button>`).join("")}</div>
+      <div class="campo"><label for="opTexto">Contanos qué te pareció <small>(opcional)</small></label><textarea class="in" id="opTexto" rows="4" maxlength="600"></textarea></div>
+      <div class="campo"><label for="opNombre">Tu nombre <small>(se muestra solo el nombre)</small></label><input class="in" id="opNombre" maxlength="30" autocomplete="given-name" value="${esc(String(leer("nacireina-datos", {}).nombre || "").split(" ")[0])}"></div>
+      <p class="aviso-error" id="opFalta" aria-live="polite"></p>
+      <button class="btn btn-negro" id="opEnviar">Enviar mi opinión</button>`;
+    $("#resultado").hidden = false;
+    $("#opEstrellas").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      estrellas = +b.dataset.n;
+      document.querySelectorAll("#opEstrellas button").forEach(x => x.setAttribute("aria-pressed", +x.dataset.n <= estrellas));
+    });
+    $("#opEnviar").addEventListener("click", async () => {
+      if (!estrellas) { $("#opFalta").textContent = "Tocá las estrellas para puntuar."; return; }
+      $("#opEnviar").disabled = true;
+      try {
+        await api("/api/opiniones", { numero, ids, k, estrellas, texto: $("#opTexto").value, nombre: $("#opNombre").value });
+        $("#resTit").textContent = "¡Gracias por tu opinión!";
+        $("#resCuerpo").innerHTML = `<p style="margin:0">Ya la recibimos. Gracias por elegir Nací Reina 👑</p><a class="btn btn-rosa" href="#catalogo" id="opSeguir">Ver productos</a>`;
+        $("#opSeguir").addEventListener("click", () => { $("#resultado").hidden = true; });
+      } catch (err) { $("#opFalta").textContent = err.message; $("#opEnviar").disabled = false; }
+    });
+    ["opinar", "ids", "k"].forEach(x => q.delete(x));
+    const resto = q.toString();
+    history.replaceState(null, "", location.pathname + (resto ? "?" + resto : "") + location.hash);
+  }
+}
