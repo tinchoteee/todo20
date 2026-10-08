@@ -124,6 +124,11 @@ async function procesarPagoAprobado(pago) {
     try { await db.agregarPedido(pedido); } catch (err) { console.error("No se pudo guardar el pedido", numero, err.message); }
   }
 
+  // Si tenía un recordatorio de carrito pendiente, ya no hace falta
+  if (cliente.email) await require("./carrito.js").cancelarRecordatorio(cliente.email, { compro: true });
+  // Y unos días después se le pide su opinión
+  await require("./_opiniones.js").pedirOpinion({ numero, email: cliente.email, nombre: cliente.nombre, productos: m.productos, retiro: entrega.tipo === "local" });
+
   if (process.env.RESEND_API_KEY) {
     const lista = `<ul>${detalle.map(d => `<li>${esc(d)}</li>`).join("")}</ul>`;
     let aviso = "";

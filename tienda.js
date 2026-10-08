@@ -216,15 +216,56 @@ function tarjeta(p) {
     <div class="precio">${precioTxt(p)}</div>
   </a>`;
 }
+// Buscador, filtro por talle y orden por precio (como las tiendas grandes): con alguno activo se muestra una sola grilla
+const filtro = { texto: "", talle: 0, orden: "" };
+const sinAcentos = t => String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+function filtrados() {
+  const palabras = sinAcentos(filtro.texto).split(/\s+/).filter(Boolean).map(w => w.length > 3 ? w.replace(/(as|os|es|a|o|s)$/, "") : w);
+  const orden = p => CATS.findIndex(c => c.id === p.cat);
+  const precio = p => (rangoDe(p) || {}).min || Infinity;
+  return PRODUCTOS
+    .filter(p => catActual === "todo" || p.cat === catActual)
+    .filter(p => !filtro.talle || (p.talles.includes(filtro.talle) && talleDisponible(p, null, filtro.talle)))
+    .filter(p => { if (!palabras.length) return true;
+      const donde = sinAcentos([p.nombre, p.desc, nombreCat(p.cat), ...(p.colores || []).filter(c => !c.agotado).map(c => c.nombre)].join(" "));
+      return palabras.every(w => donde.includes(w)); })
+    .sort((a, b) => a.agotado - b.agotado || (filtro.orden === "menor" ? precio(a) - precio(b) : filtro.orden === "mayor" ? (precio(b) === Infinity ? -1 : precio(b)) - (precio(a) === Infinity ? -1 : precio(a)) : orden(a) - orden(b)));
+}
+{
+  const talles = [...new Set(PRODUCTOS.flatMap(p => p.talles))].sort((a, b) => a - b);
+  $("#fTalle").innerHTML = `<option value="">Talle</option>` + talles.map(t => `<option value="${t}">Talle ${t}</option>`).join("");
+  let espera;
+  $("#buscar").addEventListener("input", e => { clearTimeout(espera); espera = setTimeout(() => { filtro.texto = e.target.value.trim(); pintarCatalogo(); }, 180); });
+  $("#fTalle").addEventListener("change", e => { filtro.talle = +e.target.value || 0; pintarCatalogo(); });
+  $("#fOrden").addEventListener("change", e => { filtro.orden = e.target.value; pintarCatalogo(); });
+  $("#buscador").addEventListener("submit", e => { e.preventDefault(); $("#buscar").blur(); if (filtro.texto) medir("Search", { search_string: filtro.texto }); });
+  $("#catalogo").addEventListener("click", e => {
+    if (!e.target.closest("#limpiarFiltros")) return;
+    Object.assign(filtro, { texto: "", talle: 0, orden: "" }); $("#buscador").reset(); catActual = "todo"; pintarCatalogo();
+  });
+  // La lupa de arriba lleva al buscador
+  $("#irABuscar").addEventListener("click", e => {
+    e.preventDefault();
+    if (location.hash && !location.hash.startsWith("#cat")) location.hash = "";
+    setTimeout(() => { $("#catalogo").scrollIntoView(); $("#buscar").focus(); }, 60);
+  });
+}
+
 function pintarCatalogo() {
   $("#cats").innerHTML = CATS.map(c => `<button class="cat" data-cat="${c.id}" aria-pressed="${c.id === catActual}">${c.nombre}</button>`).join("");
   // Agrupados por categoría; los agotados van al final
   const orden = p => CATS.findIndex(c => c.id === p.cat);
   const grilla = $("#grilla");
   // En el celular, "Todo" se muestra en filas por categoría que se deslizan de costado (menos scroll hacia abajo)
-  const enFilas = catActual === "todo" && CELU.matches;
+  const filtrando = Boolean(filtro.texto || filtro.talle || filtro.orden);
+  const enFilas = catActual === "todo" && CELU.matches && !filtrando;
   grilla.classList.toggle("filas", enFilas);
-  grilla.innerHTML = enFilas
+  const lista = filtrando ? filtrados() : null;
+  $("#filtroInfo").hidden = !filtrando;
+  if (filtrando) $("#filtroInfo").innerHTML = lista.length
+    ? `${lista.length} ${lista.length === 1 ? "producto" : "productos"}${filtro.talle ? ` con stock en talle ${filtro.talle}` : ""} · <button type="button" class="link" id="limpiarFiltros">Borrar filtros</button>`
+    : `No encontramos nada con esa búsqueda. <button type="button" class="link" id="limpiarFiltros">Ver todo</button>${WHATSAPP ? ` o <a class="link" href="${wa("¡Hola Nací Reina! Estoy buscando " + (filtro.texto || "un calzado") + (filtro.talle ? " en talle " + filtro.talle : "") + ".")}" target="_blank" rel="noopener">consultanos por WhatsApp</a>` : ""}.`;
+  grilla.innerHTML = filtrando ? lista.map(tarjeta).join("") : enFilas
     ? CATS.filter(c => c.id !== "todo").map(c => {
         const ps = PRODUCTOS.filter(p => p.cat === c.id).sort((a, b) => a.agotado - b.agotado);
         return ps.length ? `<div class="fila-cat">
@@ -337,22 +378,53 @@ $("#vista-producto").addEventListener("click", e => {
   }
 });
 
+// Celular: barra fija abajo con el precio y "Agregar al carrito" cuando el botón de la página queda fuera de pantalla
+{
+  let fuera = false;
+  const barra = $("#barraCompra");
+  const pintarBarra = () => {
+    const p = producto(sel.id), btn = $("#agregarBtn");
+    const ver = Boolean(fuera && p && btn && CELU.matches && !$("#vista-producto").hidden);
+    barra.hidden = !ver;
+    document.body.classList.toggle("con-barra", ver);
+    if (!ver) return;
+    $("#bcNombre").textContent = p.nombre;
+    $("#bcPrecio").textContent = $("#pPrecio").textContent + (sel.talle ? ` · talle ${sel.talle}` : "");
+  };
+  const medirBarra = () => {
+    const r = $("#pAcciones").getBoundingClientRect();
+    const ahora = r.height > 0 && (r.bottom < 70 || r.top > innerHeight);
+    if (ahora !== fuera || !barra.hidden) { fuera = ahora; pintarBarra(); }
+  };
+  window.addEventListener("scroll", medirBarra, { passive: true });
+  window.addEventListener("resize", medirBarra);
+  window.addEventListener("hashchange", () => setTimeout(medirBarra, 0));
+  new MutationObserver(medirBarra).observe($("#pAcciones"), { childList: true });
+  $("#bcBtn").addEventListener("click", () => {
+    const p = producto(sel.id); if (!p) return;
+    // Si falta color o talle, se lo lleva a elegirlos
+    if (((p.colores || []).length && !sel.color) || !sel.talle) $("#pTalles").scrollIntoView({ block: "center", behavior: SIN_MOVIMIENTO ? "auto" : "smooth" });
+    $("#agregarBtn").click();
+  });
+}
+
 // Calculadora de envío en la página de producto
 const opcionesProv = `<option value="">Provincia</option>` + PROVINCIAS.map(p => `<option>${p}</option>`).join("");
 $("#calcProv").innerHTML = opcionesProv;
 $("#ckProv").innerHTML = opcionesProv;
 const zonaGuardada = leer("nacireina-cp", {});
-$("#calcCP").value = zonaGuardada.cp || ""; $("#calcProv").value = zonaGuardada.provincia || "";
+$("#calcCP").value = zonaGuardada.cp || ""; $("#calcProv").value = zonaGuardada.provincia || ""; $("#calcLoc").value = zonaGuardada.localidad || "";
 const diasTxt = d => d && d.min ? (d.max && d.max !== d.min ? `Llega entre ${d.min} y ${d.max} días hábiles` : `Llega en ${d.min} días hábiles`) : "";
 
 $("#calcForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const cp = $("#calcCP").value.trim(), provincia = $("#calcProv").value;
-  if (!/\d{4}/.test(cp) || !provincia) { $("#calcRes").innerHTML = `<p class="aviso-error">Ingresá tu código postal y provincia.</p>`; return; }
-  escribir("nacireina-cp", { cp, provincia });
+  // El correo cotiza por localidad: sin ella no hay precio real
+  const cp = $("#calcCP").value.trim(), provincia = $("#calcProv").value, localidad = $("#calcLoc").value.trim();
+  if (!/\d{4}/.test(cp) || !provincia || !localidad) { $("#calcRes").innerHTML = `<p class="aviso-error">Ingresá tu código postal, provincia y localidad.</p>`; return; }
+  escribir("nacireina-cp", { cp, provincia, localidad });
   $("#calcRes").innerHTML = `<p class="cargando">Calculando…</p>`;
   try {
-    const r = await api("/api/cotizar-envio", { cp, provincia, items: [{ id: sel.id, color: sel.color, cant: 1 }] });
+    const r = await api("/api/cotizar-envio", { cp, provincia, localidad, items: [{ id: sel.id, color: sel.color, cant: 1 }] });
     $("#calcRes").innerHTML = `<ul class="opciones-envio">${r.opciones.map(o => `<li><span>${esc(o.nombre)}<small>${esc(o.tipo === "local" ? o.detalle : diasTxt(o.dias))}</small></span><b class="${o.precio ? "" : "gratis"}">${o.precio ? pesos(o.precio) : "Gratis"}</b></li>`).join("")}</ul>`;
   } catch (err) {
     $("#calcRes").innerHTML = `<p class="aviso-error">${esc(err.message)}</p>`;
@@ -374,6 +446,7 @@ function mostrarCheckout() {
   // Si ya calculó el envío en la página del producto, se completa solo
   const z = leer("nacireina-cp", {});
   if (!val("ckCP") && z.cp) { $("#ckCP").value = z.cp; $("#ckProv").value = z.provincia || ""; }
+  if (!val("ckLoc") && z.localidad) $("#ckLoc").value = z.localidad;
   pintarCheckout();
 }
 function pintarCheckout() {
@@ -439,8 +512,10 @@ $("#form1").addEventListener("submit", e => {
   if (faltan.length) { $("#falta1").textContent = "Completá " + juntar(faltan) + "."; document.querySelector("#form1 .mal").focus(); return; }
   $("#falta1").textContent = "";
   guardarDatos();
+  // Si no termina la compra, a las 2 horas le llega un recordatorio por email (api/carrito.js). Si falla, no pasa nada.
+  api("/api/carrito", { email: val("ckEmail"), nombre: val("ckNombre"), items: carrito.map(i => ({ id: i.id, color: i.color, talle: i.talle, cant: i.cant })) }).catch(() => {});
   irPaso(2);
-  if (!ck.cot && val("ckCP") && $("#ckProv").value) cotizarCheckout();
+  if (!ck.cot && val("ckCP") && $("#ckProv").value && val("ckLoc")) cotizarCheckout();
 });
 const juntar = l => l.length > 1 ? l.slice(0, -1).join(", ") + " y " + l[l.length - 1] : l[0];
 function guardarDatos() {
@@ -450,17 +525,17 @@ function guardarDatos() {
 
 // Paso 2: entrega
 $("#formCP").addEventListener("submit", e => { e.preventDefault(); cotizarCheckout(); });
-["ckCP", "ckProv"].forEach(id => document.getElementById(id).addEventListener("change", () => { ck.cot = null; ck.opcion = null; ck.sucursal = null; pintarCheckout(); }));
+["ckCP", "ckProv", "ckLoc"].forEach(id => document.getElementById(id).addEventListener("change", () => { ck.cot = null; ck.opcion = null; ck.sucursal = null; pintarCheckout(); }));
 
 async function cotizarCheckout() {
-  const cp = val("ckCP"), provincia = $("#ckProv").value;
-  if (!/\d{4}/.test(cp) || !provincia) { $("#falta2").textContent = "Ingresá tu código postal y provincia."; return; }
-  escribir("nacireina-cp", { cp, provincia });
+  const cp = val("ckCP"), provincia = $("#ckProv").value, localidad = val("ckLoc");
+  if (!/\d{4}/.test(cp) || !provincia || !localidad) { $("#falta2").textContent = "Ingresá tu código postal, provincia y localidad."; return; }
+  escribir("nacireina-cp", { cp, provincia, localidad });
   $("#falta2").textContent = "";
   ck.cot = null; ck.opcion = null; ck.sucursal = null;
   $("#opcionesCk").innerHTML = `<p class="cargando">Buscando opciones de envío…</p>`;
   try {
-    ck.cot = await api("/api/cotizar-envio", { cp, provincia, localidad: val("ckLoc"), items: carrito.map(i => ({ id: i.id, color: i.color, cant: i.cant })) });
+    ck.cot = await api("/api/cotizar-envio", { cp, provincia, localidad, items: carrito.map(i => ({ id: i.id, color: i.color, cant: i.cant })) });
   } catch (err) {
     $("#opcionesCk").innerHTML = "";
     // Aunque no se pueda cotizar, siempre se puede retirar en el local
@@ -824,6 +899,21 @@ pintarCarrito();
     const resto = q.toString();
     history.replaceState(null, "", location.pathname + (resto ? "?" + resto : "") + "#p/" + pid + (col ? "/" + encodeURIComponent(col) : ""));
   }
+  // Link del email de carrito abandonado: ?carrito=id.color.talle.cant,… vuelve a armar el carrito y lo abre
+  const guardado = q.get("carrito");
+  if (guardado) {
+    for (const parte of guardado.split(",").slice(0, 12)) {
+      const [id, color, talle, cant] = parte.split(".");
+      const p = producto(+id), c = color || null;
+      if (!p || !p.talles.includes(+talle) || (c && !colorDe(p, c)) || !talleDisponible(p, c, +talle)) continue;
+      if (!carrito.some(i => i.id === p.id && i.color === c && i.talle === +talle)) carrito.push({ id: p.id, color: c, talle: +talle, cant: Math.max(1, Math.min(maxCant(p, c, +talle), +cant || 1)) });
+    }
+    guardarCarrito();
+    q.delete("carrito");
+    const resto = q.toString();
+    history.replaceState(null, "", location.pathname + (resto ? "?" + resto : "") + location.hash);
+    if (carrito.length) setTimeout(abrirCarrito, 400);
+  }
 }
 ruta();
 actualizarStock();
@@ -910,5 +1000,64 @@ function festejar(desde) {
     const ang = Math.random() * Math.PI * 2, dist = 70 + Math.random() * 120;
     s.style.cssText = `left:${r.left + r.width / 2}px;top:${r.top + r.height / 2}px;--x:${Math.cos(ang) * dist}px;--y:${Math.sin(ang) * dist - 60}px;--r:${(Math.random() - .5) * 120}deg;color:${i % 3 ? "#E0157F" : "#D4A017"};font-size:${14 + Math.random() * 16}px`;
     document.body.append(s); setTimeout(() => s.remove(), 1100);
+  }
+}
+
+// ---------- Opiniones de compradores ----------
+// Solo de compras reales: el link para opinar llega por email después de la compra (api/opiniones.js).
+let OPINIONES = [];
+const estrellasTxt = n => "★".repeat(Math.round(n)) + "☆".repeat(5 - Math.round(n));
+function pintarOpiniones() {
+  const id = sel.id, lista = OPINIONES.filter(o => (o.productos || []).includes(id));
+  $("#opiniones").hidden = !lista.length;
+  $("#pEstrellas").hidden = !lista.length;
+  if (!lista.length) return;
+  const prom = lista.reduce((a, o) => a + o.estrellas, 0) / lista.length;
+  const resumen = `${prom.toFixed(1).replace(".", ",")} de 5 · ${lista.length} ${lista.length === 1 ? "opinión" : "opiniones"}`;
+  $("#pEstrellas").innerHTML = `<span class="estrellas" aria-hidden="true">${estrellasTxt(prom)}</span> ${resumen}`;
+  $("#opResumen").innerHTML = `<span class="estrellas" aria-hidden="true">${estrellasTxt(prom)}</span> ${resumen} · de personas que compraron en la tienda`;
+  $("#opLista").innerHTML = lista.slice(0, 12).map(o => `<div class="opinion">
+    <span class="estrellas" aria-label="${o.estrellas} de 5 estrellas">${estrellasTxt(o.estrellas)}</span>
+    ${o.texto ? `<p>${esc(o.texto)}</p>` : ""}
+    <small>${esc(o.nombre)} · ${new Date(o.fecha).toLocaleDateString("es-AR", { month: "long", year: "numeric" })}</small>
+  </div>`).join("");
+}
+window.addEventListener("hashchange", () => setTimeout(pintarOpiniones, 0));
+$("#pEstrellas").addEventListener("click", e => { e.preventDefault(); $("#opiniones").scrollIntoView({ behavior: SIN_MOVIMIENTO ? "auto" : "smooth" }); });
+fetch("/api/opiniones").then(r => r.ok ? r.json() : null).then(d => { if (d && Array.isArray(d.opiniones)) { OPINIONES = d.opiniones; pintarOpiniones(); } }).catch(() => {});
+
+// Link del email "¿Cómo te quedó tu compra?": ?opinar=PEDIDO&ids=2-72&k=firma abre el formulario
+{
+  const q = new URLSearchParams(location.search), numero = q.get("opinar");
+  if (numero) {
+    const ids = q.get("ids") || "", k = q.get("k") || "";
+    const nombres = ids.split("-").map(i => producto(+i)).filter(Boolean).map(p => p.nombre);
+    let estrellas = 0;
+    $("#resTit").textContent = "¿Cómo te quedó tu compra?";
+    $("#resCuerpo").innerHTML = `<p style="margin:0">${nombres.length ? esc(nombres.join(", ")) + ". " : ""}Tu opinión ayuda a otras personas a elegir.</p>
+      <div class="op-estrellas" id="opEstrellas" role="group" aria-label="Puntaje">${[1, 2, 3, 4, 5].map(n => `<button type="button" data-n="${n}" aria-pressed="false" aria-label="${n} ${n === 1 ? "estrella" : "estrellas"}">★</button>`).join("")}</div>
+      <div class="campo"><label for="opTexto">Contanos qué te pareció <small>(opcional)</small></label><textarea class="in" id="opTexto" rows="4" maxlength="600"></textarea></div>
+      <div class="campo"><label for="opNombre">Tu nombre <small>(se muestra solo el nombre)</small></label><input class="in" id="opNombre" maxlength="30" autocomplete="given-name" value="${esc(String(leer("nacireina-datos", {}).nombre || "").split(" ")[0])}"></div>
+      <p class="aviso-error" id="opFalta" aria-live="polite"></p>
+      <button class="btn btn-negro" id="opEnviar">Enviar mi opinión</button>`;
+    $("#resultado").hidden = false;
+    $("#opEstrellas").addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      estrellas = +b.dataset.n;
+      document.querySelectorAll("#opEstrellas button").forEach(x => x.setAttribute("aria-pressed", +x.dataset.n <= estrellas));
+    });
+    $("#opEnviar").addEventListener("click", async () => {
+      if (!estrellas) { $("#opFalta").textContent = "Tocá las estrellas para puntuar."; return; }
+      $("#opEnviar").disabled = true;
+      try {
+        await api("/api/opiniones", { numero, ids, k, estrellas, texto: $("#opTexto").value, nombre: $("#opNombre").value });
+        $("#resTit").textContent = "¡Gracias por tu opinión!";
+        $("#resCuerpo").innerHTML = `<p style="margin:0">Ya la recibimos. Gracias por elegir Nací Reina 👑</p><a class="btn btn-rosa" href="#catalogo" id="opSeguir">Ver productos</a>`;
+        $("#opSeguir").addEventListener("click", () => { $("#resultado").hidden = true; });
+      } catch (err) { $("#opFalta").textContent = err.message; $("#opEnviar").disabled = false; }
+    });
+    ["opinar", "ids", "k"].forEach(x => q.delete(x));
+    const resto = q.toString();
+    history.replaceState(null, "", location.pathname + (resto ? "?" + resto : "") + location.hash);
   }
 }

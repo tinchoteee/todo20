@@ -39,6 +39,9 @@
   <div class="wrap">
     <a class="logo" href="#" aria-label="Nací Reina Calzados, inicio"><img src="img/logo.jpg" alt="Nací Reina Calzados" width="1221" height="1005"></a>
     <nav class="nav" id="nav" aria-label="Categorías"></nav>
+    <a class="btn-carrito btn-buscar" href="#catalogo" id="irABuscar" aria-label="Buscar productos">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    </a>
     <button class="btn-carrito" id="abrirCarrito" aria-label="Ver carrito">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
       <span class="c" id="contador"></span>
@@ -86,7 +89,17 @@
       <section class="bloque" id="catalogo">
         <h2>Nuestros productos</h2>
         <p class="sub">Tocá un producto para ver fotos, colores y talles.</p>
+        <form class="buscador" id="buscador" role="search">
+          <input class="in" type="search" id="buscar" placeholder="Buscá: botas, negro, texana…" aria-label="Buscar productos" autocomplete="off" enterkeyhint="search">
+          <select class="in" id="fTalle" aria-label="Filtrar por talle"></select>
+          <select class="in" id="fOrden" aria-label="Ordenar">
+            <option value="">Ordenar</option>
+            <option value="menor">Menor precio</option>
+            <option value="mayor">Mayor precio</option>
+          </select>
+        </form>
         <div class="cats" id="cats" role="group" aria-label="Filtrar por categoría"></div>
+        <p class="filtro-info" id="filtroInfo" aria-live="polite" hidden></p>
         <div class="grilla" id="grilla"></div>
       </section>
 
@@ -131,7 +144,7 @@
           <details><summary>¿Y si me arrepiento de la compra?</summary>
             <p>Por ley tenés 10 días corridos desde que recibís el producto para arrepentirte y pedir la devolución del dinero, sin dar explicaciones. Usá el <button class="link" data-arrepentimiento>botón de arrepentimiento</button>: el producto tiene que volver sin uso y en su caja.</p></details>
           <details id="privacidad"><summary>¿Qué hacen con mis datos?</summary>
-            <p>Usamos tu nombre, teléfono, email, DNI y dirección solo para preparar tu pedido, cobrarlo y enviarlo. Para eso los compartimos únicamente con Mercado Pago (el cobro) y con el correo que lleva el paquete. No los vendemos ni los pasamos a nadie más. Los datos de tu tarjeta los carga Mercado Pago: nunca llegan a nosotros.</p>
+            <p>Usamos tu nombre, teléfono, email, DNI y dirección solo para preparar tu pedido, cobrarlo y enviarlo. Para eso los compartimos únicamente con Mercado Pago (el cobro) y con el correo que lleva el paquete. No los vendemos ni los pasamos a nadie más. Si dejás tu email al iniciar una compra y no la terminás, te podemos mandar un único recordatorio de tu carrito; desde ese mismo email podés pedir no recibir más. Los datos de tu tarjeta los carga Mercado Pago: nunca llegan a nosotros.</p>
             <p>Para saber cuánta gente visita la tienda y mostrar nuestras publicidades en Instagram y Facebook, usamos herramientas de medición (Vercel Analytics y el Píxel de Meta) que registran qué páginas mirás y si comprás, sin tu nombre ni tus datos de contacto. Podés bloquearlas desde la configuración de tu navegador o de tu cuenta de Meta.</p>
             <p>Podés pedirnos ver, corregir o borrar tus datos cuando quieras escribiéndonos por WhatsApp (Ley 25.326 de Protección de Datos Personales). La Agencia de Acceso a la Información Pública es el organismo que controla el cumplimiento de esta ley.</p></details>
         </div>
@@ -153,6 +166,7 @@
             <p class="cat-lbl" id="pCat"></p>
             <h1 id="pNombre"></h1>
           </div>
+          <a class="estrellas-link" id="pEstrellas" href="#opiniones" hidden></a>
           <div class="precio" id="pPrecio"></div>
           <p class="precio-transf" id="pTransf" hidden></p>
           <p class="desc" id="pDesc"></p>
@@ -172,6 +186,7 @@
             <form class="fila" id="calcForm">
               <input class="in" id="calcCP" inputmode="numeric" maxlength="8" placeholder="Código postal" aria-label="Código postal" autocomplete="postal-code">
               <select class="in" id="calcProv" aria-label="Provincia"></select>
+              <input class="in" id="calcLoc" maxlength="80" placeholder="Localidad" aria-label="Localidad" autocomplete="address-level2">
               <button class="btn btn-borde" style="width:auto;padding-block:11px">Calcular</button>
             </form>
             <div id="calcRes" aria-live="polite"></div>
@@ -183,6 +198,11 @@
           </ul>
         </div>
       </div>
+      <section class="bloque" id="opiniones" hidden>
+        <h2>Opiniones de quienes compraron</h2>
+        <p class="sub" id="opResumen"></p>
+        <div class="opiniones" id="opLista"></div>
+      </section>
       <section class="bloque" id="relacionados" hidden>
         <h2>También te puede gustar</h2>
         <p class="sub"></p>
@@ -311,6 +331,12 @@
       <button class="btn btn-negro">Enviar solicitud</button>
     </div>
   </form>
+</div>
+
+<!-- Celular: barra fija para comprar cuando el botón "Agregar al carrito" queda fuera de pantalla -->
+<div class="barra-compra" id="barraCompra" hidden>
+  <div class="bc-txt"><b id="bcNombre"></b><span id="bcPrecio"></span></div>
+  <button class="btn btn-negro" id="bcBtn">Agregar al carrito</button>
 </div>
 
 <a class="flotante" id="flotante" href="#" target="_blank" rel="noopener" hidden><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.1-4.6-4-4.7-4.2-.1-.2-1.1-1.5-1.1-2.9s.7-2 1-2.3c.3-.3.6-.3.8-.3h.6c.2 0 .4 0 .6.5l.9 2.1c.1.2.1.4 0 .5l-.4.6-.4.4c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1l.9-1.1c.2-.3.4-.2.6-.1l2 1c.3.1.5.2.5.3.1.2.1.7-.1 1.3z"/></svg>Consultas</a>

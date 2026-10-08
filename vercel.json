@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    { "source": "/api/opiniones", "destination": "/api/carrito?op=opiniones" }
+  ],
+  "functions": {
+    "api/whatsapp.js": { "maxDuration": 60 }
+  },
   "git": {
     "deploymentEnabled": {
       "main": true,
