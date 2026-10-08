@@ -216,15 +216,56 @@ function tarjeta(p) {
     <div class="precio">${precioTxt(p)}</div>
   </a>`;
 }
+// Buscador, filtro por talle y orden por precio (como las tiendas grandes): con alguno activo se muestra una sola grilla
+const filtro = { texto: "", talle: 0, orden: "" };
+const sinAcentos = t => String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+function filtrados() {
+  const palabras = sinAcentos(filtro.texto).split(/\s+/).filter(Boolean).map(w => w.length > 3 ? w.replace(/(as|os|es|a|o|s)$/, "") : w);
+  const orden = p => CATS.findIndex(c => c.id === p.cat);
+  const precio = p => (rangoDe(p) || {}).min || Infinity;
+  return PRODUCTOS
+    .filter(p => catActual === "todo" || p.cat === catActual)
+    .filter(p => !filtro.talle || (p.talles.includes(filtro.talle) && talleDisponible(p, null, filtro.talle)))
+    .filter(p => { if (!palabras.length) return true;
+      const donde = sinAcentos([p.nombre, p.desc, nombreCat(p.cat), ...(p.colores || []).filter(c => !c.agotado).map(c => c.nombre)].join(" "));
+      return palabras.every(w => donde.includes(w)); })
+    .sort((a, b) => a.agotado - b.agotado || (filtro.orden === "menor" ? precio(a) - precio(b) : filtro.orden === "mayor" ? (precio(b) === Infinity ? -1 : precio(b)) - (precio(a) === Infinity ? -1 : precio(a)) : orden(a) - orden(b)));
+}
+{
+  const talles = [...new Set(PRODUCTOS.flatMap(p => p.talles))].sort((a, b) => a - b);
+  $("#fTalle").innerHTML = `<option value="">Talle</option>` + talles.map(t => `<option value="${t}">Talle ${t}</option>`).join("");
+  let espera;
+  $("#buscar").addEventListener("input", e => { clearTimeout(espera); espera = setTimeout(() => { filtro.texto = e.target.value.trim(); pintarCatalogo(); }, 180); });
+  $("#fTalle").addEventListener("change", e => { filtro.talle = +e.target.value || 0; pintarCatalogo(); });
+  $("#fOrden").addEventListener("change", e => { filtro.orden = e.target.value; pintarCatalogo(); });
+  $("#buscador").addEventListener("submit", e => { e.preventDefault(); $("#buscar").blur(); if (filtro.texto) medir("Search", { search_string: filtro.texto }); });
+  $("#catalogo").addEventListener("click", e => {
+    if (!e.target.closest("#limpiarFiltros")) return;
+    Object.assign(filtro, { texto: "", talle: 0, orden: "" }); $("#buscador").reset(); catActual = "todo"; pintarCatalogo();
+  });
+  // La lupa de arriba lleva al buscador
+  $("#irABuscar").addEventListener("click", e => {
+    e.preventDefault();
+    if (location.hash && !location.hash.startsWith("#cat")) location.hash = "";
+    setTimeout(() => { $("#catalogo").scrollIntoView(); $("#buscar").focus(); }, 60);
+  });
+}
+
 function pintarCatalogo() {
   $("#cats").innerHTML = CATS.map(c => `<button class="cat" data-cat="${c.id}" aria-pressed="${c.id === catActual}">${c.nombre}</button>`).join("");
   // Agrupados por categoría; los agotados van al final
   const orden = p => CATS.findIndex(c => c.id === p.cat);
   const grilla = $("#grilla");
   // En el celular, "Todo" se muestra en filas por categoría que se deslizan de costado (menos scroll hacia abajo)
-  const enFilas = catActual === "todo" && CELU.matches;
+  const filtrando = Boolean(filtro.texto || filtro.talle || filtro.orden);
+  const enFilas = catActual === "todo" && CELU.matches && !filtrando;
   grilla.classList.toggle("filas", enFilas);
-  grilla.innerHTML = enFilas
+  const lista = filtrando ? filtrados() : null;
+  $("#filtroInfo").hidden = !filtrando;
+  if (filtrando) $("#filtroInfo").innerHTML = lista.length
+    ? `${lista.length} ${lista.length === 1 ? "producto" : "productos"}${filtro.talle ? ` con stock en talle ${filtro.talle}` : ""} · <button type="button" class="link" id="limpiarFiltros">Borrar filtros</button>`
+    : `No encontramos nada con esa búsqueda. <button type="button" class="link" id="limpiarFiltros">Ver todo</button>${WHATSAPP ? ` o <a class="link" href="${wa("¡Hola Nací Reina! Estoy buscando " + (filtro.texto || "un calzado") + (filtro.talle ? " en talle " + filtro.talle : "") + ".")}" target="_blank" rel="noopener">consultanos por WhatsApp</a>` : ""}.`;
+  grilla.innerHTML = filtrando ? lista.map(tarjeta).join("") : enFilas
     ? CATS.filter(c => c.id !== "todo").map(c => {
         const ps = PRODUCTOS.filter(p => p.cat === c.id).sort((a, b) => a.agotado - b.agotado);
         return ps.length ? `<div class="fila-cat">
@@ -336,6 +377,36 @@ $("#vista-producto").addEventListener("click", e => {
     setTimeout(abrirCarrito, SIN_MOVIMIENTO ? 0 : 450);
   }
 });
+
+// Celular: barra fija abajo con el precio y "Agregar al carrito" cuando el botón de la página queda fuera de pantalla
+{
+  let fuera = false;
+  const barra = $("#barraCompra");
+  const pintarBarra = () => {
+    const p = producto(sel.id), btn = $("#agregarBtn");
+    const ver = Boolean(fuera && p && btn && CELU.matches && !$("#vista-producto").hidden);
+    barra.hidden = !ver;
+    document.body.classList.toggle("con-barra", ver);
+    if (!ver) return;
+    $("#bcNombre").textContent = p.nombre;
+    $("#bcPrecio").textContent = $("#pPrecio").textContent + (sel.talle ? ` · talle ${sel.talle}` : "");
+  };
+  const medirBarra = () => {
+    const r = $("#pAcciones").getBoundingClientRect();
+    const ahora = r.height > 0 && (r.bottom < 70 || r.top > innerHeight);
+    if (ahora !== fuera || !barra.hidden) { fuera = ahora; pintarBarra(); }
+  };
+  window.addEventListener("scroll", medirBarra, { passive: true });
+  window.addEventListener("resize", medirBarra);
+  window.addEventListener("hashchange", () => setTimeout(medirBarra, 0));
+  new MutationObserver(medirBarra).observe($("#pAcciones"), { childList: true });
+  $("#bcBtn").addEventListener("click", () => {
+    const p = producto(sel.id); if (!p) return;
+    // Si falta color o talle, se lo lleva a elegirlos
+    if (((p.colores || []).length && !sel.color) || !sel.talle) $("#pTalles").scrollIntoView({ block: "center", behavior: SIN_MOVIMIENTO ? "auto" : "smooth" });
+    $("#agregarBtn").click();
+  });
+}
 
 // Calculadora de envío en la página de producto
 const opcionesProv = `<option value="">Provincia</option>` + PROVINCIAS.map(p => `<option>${p}</option>`).join("");
