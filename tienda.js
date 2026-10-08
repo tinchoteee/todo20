@@ -89,12 +89,13 @@ let transf = null;
 configPublica.then(c => {
   transf = c && c.transferencia ? c.transferencia : null;
   const faq = document.querySelector("[data-transf-faq]");
+  document.querySelectorAll("[data-pct-transf]").forEach(el => { if (transf && transf.porcentaje) el.textContent = transf.porcentaje; });
   if (faq && transf && transf.porcentaje) faq.textContent = `También podés pagar con transferencia bancaria y tenés ${transf.porcentaje}% OFF en los productos.`;
   if (!$("#vista-producto").hidden && sel.id) pintarProducto();
   if (!$("#vista-checkout").hidden) pintarCheckout();
   pintarAvisoTransf();
 });
-// Cartelito en el carrito y en el resumen del checkout: "con transferencia pagás $X (5% OFF)"
+// Cartelito en el carrito y en el resumen del checkout: "con transferencia pagás $X (10% OFF)"
 function pintarAvisoTransf() {
   const hay = transf && transf.porcentaje && carrito.length && !hayConsultar();
   const txt = hay ? `💸 <b>${transf.porcentaje}% OFF pagando con transferencia bancaria</b>: tus productos te quedan en <b>${pesos(cuenta(transf.porcentaje).total)}</b>${$("#vista-checkout").hidden ? "" : ". Elegilo en el paso 3 (Pago)"}.` : "";

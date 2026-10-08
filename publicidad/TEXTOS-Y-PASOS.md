@@ -4,14 +4,14 @@
 
 **Texto principal**
 1. 👑 Botas, zapatillas, sandalias y más, al mejor precio. Envío gratis a todo el país desde $165.000. Comprá online en 2 minutos.
-2. ¿Buscás calzado con onda y que dure? Pisá fuerte 👟 Pagá con tarjeta, Mercado Pago o transferencia con 5% OFF.
+2. ¿Buscás calzado con onda y que dure? Pisá fuerte 👟 Pagá con tarjeta, Mercado Pago o transferencia con 10% OFF.
 3. Nuevos ingresos todas las semanas 🔥 Botas texanas, zapatillas urbanas y sandalias. 10% OFF comprando desde $220.000.
 4. Comprá desde tu casa y recibilo donde estés 📦 O retiralo gratis por nuestro local en Ramos Mejía.
 
 **Títulos (cortos)**
 - Envío gratis desde $165.000
 - 10% OFF desde $220.000
-- 5% OFF con transferencia
+- 10% OFF con transferencia
 - Pisá fuerte. Para todos.
 - Calzado con actitud
 

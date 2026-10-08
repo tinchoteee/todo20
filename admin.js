@@ -283,7 +283,7 @@ function pintarEstado(cfg) {
       ? `Zipnova no está cotizando: mientras tanto el envío se cobra con los precios fijos por zona y el envío lo creás a mano en Zipnova. Último error (${new Date(cfg.zipnovaError.fecha).toLocaleString("es-AR")}): código ${esc(String(cfg.zipnovaError.estado))} · ${esc(String(cfg.zipnovaError.detalle || "").slice(0, 300))}`
       : "Falta configurar Zipnova: mientras tanto el envío se cobra con los precios fijos por zona."],
     [cfg.zipnova && cfg.baseDeDatos && cfg.envioAutomatico, "Envío automático", "Cada venta pagada crea sola el envío en Zipnova.", "Desactivado: los envíos se crean a mano desde el panel de Zipnova."],
-    [cfg.transferencia, "Pago por transferencia (5% OFF)", "El cliente ve tu alias al confirmar el pedido; lo pasás a Pagado cuando llega la plata.", "Falta cargar TRANSFERENCIA_ALIAS (o TRANSFERENCIA_CBU) y TRANSFERENCIA_TITULAR en Vercel: por ahora no aparece la opción."],
+    [cfg.transferencia, "Pago por transferencia (10% OFF)", "El cliente ve tu alias al confirmar el pedido; lo pasás a Pagado cuando llega la plata.", "Falta cargar TRANSFERENCIA_ALIAS (o TRANSFERENCIA_CBU) y TRANSFERENCIA_TITULAR en Vercel: por ahora no aparece la opción."],
     [cfg.emails, "Avisos por email", "Te llega un email con cada venta.", "Falta RESEND_API_KEY y AVISOS_EMAIL: no vas a recibir emails de las ventas."]
   ];
   $("#listaEstado").innerHTML = items.map(([ok, tit, si, no]) => `<div class="check"><span class="ic">${ok ? "✅" : "⚠️"}</span><div><b>${tit}</b><p>${ok ? si : no}</p></div></div>`).join("")

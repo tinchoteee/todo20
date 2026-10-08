@@ -61,7 +61,7 @@ Mientras no esté Zipnova, la tienda cobra el envío con precios fijos por zona 
 
 En Vercel agregá `ADMIN_CLAVE` con una contraseña larga que solo sepas vos (por ejemplo, tres palabras y un número).
 
-## Paso 6 bis · Pago por transferencia (5% OFF)
+## Paso 6 bis · Pago por transferencia (10% OFF)
 
 En Vercel → Settings → Environment Variables agregá (los escribís vos, no los pegues en ningún chat):
 - `TRANSFERENCIA_ALIAS`: tu alias (ej. nacireina.calzados). Si preferís, o además, `TRANSFERENCIA_CBU` con el CBU/CVU.
@@ -97,7 +97,7 @@ Proyecto → **Settings → Environment Variables**. Después de agregarlas: **D
 | `ZIPNOVA_CREAR_ENVIOS` | Poné `no` si preferís crear los envíos a mano | No |
 | `RESEND_API_KEY`, `AVISOS_EMAIL` | Email con cada venta | Recomendado |
 | `META_PIXEL_ID` | Píxel de Meta: medir visitas y ventas que vienen de Instagram | No |
-| `TRANSFERENCIA_ALIAS` / `TRANSFERENCIA_CBU`, `TRANSFERENCIA_TITULAR` | Pago por transferencia con 5% OFF | No |
+| `TRANSFERENCIA_ALIAS` / `TRANSFERENCIA_CBU`, `TRANSFERENCIA_TITULAR` | Pago por transferencia con 10% OFF | No |
 | `RESEND_FROM` | Email de confirmación al cliente (dominio propio) | No |
 
 **Nunca** compartas estas claves por WhatsApp ni las pegues en la página: solo van en Vercel.
