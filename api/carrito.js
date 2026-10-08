@@ -74,6 +74,8 @@ function htmlRecordatorio({ nombre, lineas, link, baja }) {
 }
 
 module.exports = async function handler(req, res) {
+  // Las opiniones entran por acá (vercel.json manda /api/opiniones a esta función): el plan gratis de Vercel permite 12 funciones
+  if ((req.query || {}).op === "opiniones") return require("./_opiniones.js")(req, res);
   // Link de baja del email
   if (req.method === "GET") {
     const q = req.query || {}, email = limpio(q.baja);
