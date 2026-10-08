@@ -157,4 +157,4 @@ Solo funciona si en Vercel están `RESEND_API_KEY` y **`RESEND_FROM`** (ej. `Nac
 
 ## Opiniones de compradores
 
-`api/_opiniones.js`: 10 días después de cada compra pagada con Mercado Pago (3 si retira en el local) al cliente le llega un email para puntuar su compra. Las opiniones aparecen en la página de cada producto. Al local le llega cada opinión por email (`AVISOS_EMAIL`) con un link para ocultarla si es spam o un insulto. Necesita `RESEND_FROM`. Para no pedir opiniones: `OPINIONES_PEDIR` = `no`.
+`api/_opiniones.js`: 10 días después de cada compra pagada (con Mercado Pago, o por transferencia cuando se marca Pagado en el editor; 3 días si retira en el local) al cliente le llega un email para puntuar su compra. Las opiniones aparecen en la página de cada producto. Al local le llega cada opinión por email (`AVISOS_EMAIL`) con un link para ocultarla si es spam o un insulto. Necesita `RESEND_FROM`. Para no pedir opiniones: `OPINIONES_PEDIR` = `no`.

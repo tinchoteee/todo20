@@ -111,6 +111,11 @@ module.exports = async function handler(req, res) {
         // Pagado: se crea el envío en Zipnova, igual que con Mercado Pago
         const conZipnova = process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID;
         const d = pedido.datos || {};
+        // Y se le pide la opinión unos días después (una sola vez por pedido)
+        if (body.estado === "pagado" && !pedido.opinionPedida && d.cliente && d.cliente.email) {
+          await require("./_opiniones.js").pedirOpinion({ numero, email: d.cliente.email, nombre: d.cliente.nombre, productos: d.productos, retiro: d.entrega && d.entrega.tipo === "local" });
+          cambios.opinionPedida = true;
+        }
         if (body.estado === "pagado" && !pedido.envio && d.entrega && d.entrega.tipo !== "local" && d.entrega.zipnova && conZipnova && process.env.ZIPNOVA_CREAR_ENVIOS !== "no") {
           try {
             cambios.envio = await crearEnvioZipnova(numero, d);
