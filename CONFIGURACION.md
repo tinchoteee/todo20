@@ -144,7 +144,8 @@ El código está en `api/whatsapp.js`. No hace nada hasta que estén cargadas la
 
 Opcional:
 - `WHATSAPP_PLANTILLA_AVISO`: WhatsApp solo deja mandarle un mensaje libre al dueño si él le escribió al número del local en las últimas 24 hs. Para que el aviso llegue siempre, crear en YCloud una plantilla de tipo *Utilidad*, idioma *Español (ARG)*, con el texto `Un cliente necesita que lo atiendas. Cliente: {{1}}. Motivo: {{2}}. Resumen: {{3}}` y poner acá su nombre. Sin plantilla, el aviso llega igual por email (`AVISOS_EMAIL`).
-- `WHATSAPP_BOT` = `no`: apaga el asistente.
+- `WHATSAPP_BOT` = `no`: apaga el asistente (la IA). El reenvío de mensajes sigue andando.
+- **Reenvío de cada mensaje**: cada mensaje que un cliente le manda al número del local te llega a `WHATSAPP_AVISOS_NUMERO` ("📩 Nuevo mensaje en Nací Reina", con el texto y el link al chat). Anda aunque la IA esté apagada o sin `ANTHROPIC_API_KEY` (alcanza con YCloud). `WHATSAPP_REENVIAR` = `no` lo apaga. Fuera de las 24 hs usa la misma plantilla `WHATSAPP_PLANTILLA_AVISO` (Motivo: "Te escribió").
 - `asistente.extra` en `productos.js`: texto libre con información extra para la IA (horarios, etc.).
 
 Cómo se comporta: contesta solo mensajes de texto; con audios, fotos, reclamos, pedidos ya hechos o dudas le avisa al dueño y se calla 12 horas en ese chat. Si el dueño contesta desde el celular, también se calla 12 horas en ese chat.

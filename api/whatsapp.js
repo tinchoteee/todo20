@@ -15,7 +15,11 @@
 //   WHATSAPP_AVISOS_NUMERO  celular del dueño para los avisos, ej: 5491123456789 (no va en el código: no es público)
 //   WHATSAPP_PLANTILLA_AVISO (opcional) nombre de la plantilla aprobada para avisar fuera de las 24 hs
 //   WHATSAPP_MODELO          (opcional) modelo de la IA
-//   WHATSAPP_BOT = "no"      apaga el asistente sin tocar nada más
+//   WHATSAPP_BOT = "no"      apaga el asistente (la IA) sin tocar nada más; el reenvío de mensajes sigue andando
+//   WHATSAPP_REENVIAR = "no" deja de reenviarle al dueño cada mensaje que llega (solo quedan los avisos de "atendé este chat")
+//
+// Reenvío: cada mensaje que un cliente le manda al número del local se le reenvía al dueño (WHATSAPP_AVISOS_NUMERO).
+// Funciona aunque la IA esté apagada o sin ANTHROPIC_API_KEY.
 const crypto = require("crypto");
 const CATALOGO = require("../productos.js");
 const aplicarAjustes = require("../ajustes.js");
@@ -30,6 +34,7 @@ const HORAS_PAUSA = 12;          // cuánto se calla en un chat después de deri
 const MENSAJES_DE_MEMORIA = 20;  // cuántos mensajes del chat recuerda
 const ESPERA_MS = 2500;          // espera por si el cliente manda varios mensajes seguidos
 
+const iaActiva = () => Boolean(process.env.ANTHROPIC_API_KEY) && process.env.WHATSAPP_BOT !== "no";
 const soloNumeros = t => String(t || "").replace(/\D/g, "");
 const k = (tipo, tel) => `nacireina:wa:${tipo}:${tel}`;
 const dormir = ms => new Promise(r => setTimeout(r, ms));
@@ -193,19 +198,30 @@ async function herramientaCotizar(entrada, productos) {
 }
 
 // ---------- Aviso al dueño ----------
+// Manda un WhatsApp al dueño. Fuera de las 24 hs desde el último mensaje del dueño al número del local,
+// WhatsApp solo deja mandar una plantilla aprobada: se usa esa (Cliente / Motivo / Resumen).
+async function mandarAlDueno(texto, { tel, nombre, motivo, resumen }) {
+  const dueno = soloNumeros(process.env.WHATSAPP_AVISOS_NUMERO);
+  if (!dueno) return false;
+  let avisado = await mandarTexto(dueno, texto);
+  if (!avisado && process.env.WHATSAPP_PLANTILLA_AVISO) {
+    const corto = x => String(x || "-").replace(/\s+/g, " ").slice(0, 300);
+    avisado = await ycloud({ to: "+" + dueno, type: "template", template: { name: process.env.WHATSAPP_PLANTILLA_AVISO, language: { code: "es_AR" },
+      components: [{ type: "body", parameters: [{ type: "text", text: corto(`${nombre || "Sin nombre"} (+${tel})`) }, { type: "text", text: corto(motivo) }, { type: "text", text: corto(resumen) }] }] } });
+  }
+  return avisado;
+}
+
+// Reenvía al dueño el mensaje que acaba de llegar
+async function reenviarAlDueno({ tel, nombre, contenido }) {
+  if (process.env.WHATSAPP_REENVIAR === "no") return;
+  const texto = `📩 *Nuevo mensaje en Nací Reina*\n\nDe: ${nombre || "sin nombre"} (+${tel})\n\n${contenido}\n\nAbrí el chat: https://wa.me/${tel}`;
+  if (!(await mandarAlDueno(texto, { tel, nombre, motivo: "Te escribió", resumen: contenido }))) console.error("No se pudo reenviar el mensaje al dueño", tel);
+}
+
 async function avisarAlLocal({ tel, nombre, motivo, resumen }) {
   const texto = `🔔 *Un cliente necesita que lo atiendas*\n\nCliente: ${nombre || "sin nombre"} (+${tel})\nMotivo: ${motivo}\n${resumen ? "Resumen: " + resumen + "\n" : ""}\nAbrí el chat: https://wa.me/${tel}\n\nEl asistente no va a contestar en ese chat por ${HORAS_PAUSA} horas.`;
-  const dueno = soloNumeros(process.env.WHATSAPP_AVISOS_NUMERO);
-  let avisado = false;
-  if (dueno) {
-    avisado = await mandarTexto(dueno, texto);
-    // Fuera de las 24 hs desde el último mensaje del dueño, WhatsApp solo deja mandar una plantilla aprobada
-    if (!avisado && process.env.WHATSAPP_PLANTILLA_AVISO) {
-      const corto = x => String(x || "-").replace(/\s+/g, " ").slice(0, 300);
-      avisado = await ycloud({ to: "+" + dueno, type: "template", template: { name: process.env.WHATSAPP_PLANTILLA_AVISO, language: { code: "es_AR" },
-        components: [{ type: "body", parameters: [{ type: "text", text: corto(`${nombre || "Sin nombre"} (+${tel})`) }, { type: "text", text: corto(motivo) }, { type: "text", text: corto(resumen) }] }] } });
-    }
-  }
+  const avisado = await mandarAlDueno(texto, { tel, nombre, motivo, resumen });
   if (process.env.RESEND_API_KEY && process.env.AVISOS_EMAIL) {
     await mandarEmail({ para: process.env.AVISOS_EMAIL, asunto: `WhatsApp: ${nombre || "+" + tel} necesita que lo atiendas`, clave: `wa-${tel}-${Date.now()}`,
       html: `<p><b>Un cliente necesita que lo atiendas en WhatsApp.</b></p><p>Cliente: ${esc(nombre || "sin nombre")} (+${esc(tel)})<br>Motivo: ${esc(motivo)}<br>Resumen: ${esc(resumen || "-")}</p><p><a href="https://wa.me/${esc(tel)}">Abrir el chat</a></p>` }).catch(e => console.error("Email de aviso", e.message));
@@ -267,6 +283,15 @@ async function mensajeDelCliente(m) {
   if ((await db.comando("SET", `nacireina:wa:visto:${id}`, "1", "NX", "EX", 86400)) !== "OK") return;
 
   const nombre = (m.customerProfile && m.customerProfile.name) || "";
+
+  // Reenvío al dueño de cada mensaje (con o sin IA)
+  if (m.type !== "reaction") {
+    const media = m[m.type] || {};
+    const contenido = m.type === "text" && m.text ? m.text.body : `[Mandó ${TIPOS[m.type] || "un mensaje"}${media.caption ? `: "${media.caption}"` : ""}]`;
+    await reenviarAlDueno({ tel, nombre, contenido: String(contenido || "").slice(0, 1500) });
+  }
+  if (!iaActiva()) return;
+
   const pausado = await enPausa(tel);
 
   if (m.type !== "text" || !m.text || !m.text.body) {
@@ -320,20 +345,19 @@ async function mensajeDesdeElCelular(m) {
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") return res.status(200).send("Asistente de WhatsApp de Nací Reina");
   const secreto = process.env.YCLOUD_WEBHOOK_SECRET;
-  if (!secreto || !process.env.YCLOUD_API_KEY || !process.env.ANTHROPIC_API_KEY || !db.hayDB()) {
+  if (!secreto || !process.env.YCLOUD_API_KEY || !db.hayDB()) {
     console.error("Asistente de WhatsApp sin configurar");
     return res.status(200).send("sin configurar");
   }
   let crudo = await cuerpoCrudo(req);
   if (!crudo && req.body) crudo = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
   if (!firmaValida(req.headers["ycloud-signature"], crudo, secreto)) return res.status(401).send("firma inválida");
-  if (process.env.WHATSAPP_BOT === "no") return res.status(200).send("apagado");
 
   let evento;
   try { evento = JSON.parse(crudo); } catch (e) { return res.status(200).send("ok"); }
   try {
     if (evento.type === "whatsapp.inbound_message.received" && evento.whatsappInboundMessage) await mensajeDelCliente(evento.whatsappInboundMessage);
-    else if (evento.type === "whatsapp.smb.message.echoes" && evento.whatsappMessage) await mensajeDesdeElCelular(evento.whatsappMessage);
+    else if (evento.type === "whatsapp.smb.message.echoes" && evento.whatsappMessage && iaActiva()) await mensajeDesdeElCelular(evento.whatsappMessage);
   } catch (e) { console.error("Asistente de WhatsApp", e.message); }
   return res.status(200).send("ok");
 };
