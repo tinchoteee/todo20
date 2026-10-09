@@ -50,7 +50,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Chavitos con cordones con suela de borcego (id 90, 2026-09-29, sección Chavitos): Negro, $27.500 ($25.000 + 10%), talles 35–40, foto propia (se borraron los parches con logo "Tamara Rey" y la etiqueta colgante).
 - Suecos Olivia (id 91, 2026-09-29, gamuza con flecos y cordones; distinto del sueco con flecos y borlas id 26): Negro y Bison, $33.000 ($30.000 + 10%), talles 35–40, fotos propias.
 - Sandalia de taco alto con plataforma y tiras cruzadas (id 92, 2026-09-29, en la caja dice "Umma"): Negro, $33.000 ($30.000 + 10%), talles 35–40, foto propia. Distinta de la id 23 (ojalillos).
-- Sandalia de charol con plataforma y taco (id 93, 2026-10-03): Negro, $38.500 ($35.000 + 10%), talles 35–40, foto propia (los reflejos naranjas de la caja en el charol se pasaron a negro/forro).
+- Sandalia de charol con plataforma y taco (id 93, 2026-10-03): Negro, $38.500 ($35.000 + 10%), talles 35–40, foto propia. 2026-10-09: foto rehecha con una toma de costado (en la anterior el recorte se había comido el taco de una sandalia, el dueño lo marcó); los reflejos naranjas de la caja en el charol se pasaron a gris/negro.
 - Sandalia de dos tiras anchas (id 94, 2026-10-03): Negro (base negra) y Blanco (base suela), $27.500 ($25.000 + 10%), talles 35–40, fotos propias.
 - Sandalia gomón de tiras cruzadas (id 95, 2026-10-03; era "Chinela…", el dueño pidió sacar "chinela"): Negro, $33.000 ($30.000 + 10%), talles 35–40, foto propia. Distinta de la id 18 (lisa, base más baja).
 - Borcego con correas y tachas (id 96, 2026-10-07): Chocolate, $38.500 ($35.000 + 10%), talles 35–40, foto propia (la puntera metálica reflejaba el naranja de la caja: se pasó a plateado).
