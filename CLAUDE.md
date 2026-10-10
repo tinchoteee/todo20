@@ -44,7 +44,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Botineta texana símil víbora (id 84, 2026-09-29): Negro, Oro y Suela, $49.500 ($45.000 + 10%), talles 35–40, fotos propias.
 - Zapato texano símil víbora (id 85, 2026-09-29, la versión baja de la 84): Negro, Oro y Suela, $49.500 ($45.000 + 10%), talles 35–40, fotos propias.
 - Chavitos sin cordones (id 86, 2026-09-29, nombre que usa el local; gamuza estilo chelsea con suela de crepe), en su propia sección "Chavitos" (`cat:"chavitos"`, en `CATS` de tienda.js y caja en `envio.cajas`): Negro y Suela, $27.500 ($25.000 + 10%), talles 35–40, fotos propias.
-- Sandalia con hebillas y tira al dedo (id 87, 2026-09-29): Plata, $24.200 ($22.000 + 10%), talles 35–40, foto propia (la base se recuperó con un contorno a mano porque se confundía con la caja).
+- Sandalia con hebillas y tira al dedo (id 87, 2026-09-29): Plata, $24.200 ($22.000 + 10%), talles 35–40. 2026-10-10: foto reemplazada por una de estudio que mandó el dueño (vista de arriba, sobre el fondo de estudio).
 - Chavitos con cordones (id 88, 2026-09-29, sección Chavitos): Negro y Suela, $27.500 ($25.000 + 10%), talles 35–40, fotos propias (en la negra se borró el parche con logo "Tamara Rey").
 - Chavitos sin cordones con suela de borcego (id 89, 2026-09-29, sección Chavitos): Negro, $27.500 ($25.000 + 10%), talles 35–40, foto propia (se neutralizó el reflejo naranja de la caja en la suela).
 - Chavitos con cordones con suela de borcego (id 90, 2026-09-29, sección Chavitos): Negro, $27.500 ($25.000 + 10%), talles 35–40, foto propia (se borraron los parches con logo "Tamara Rey" y la etiqueta colgante).
