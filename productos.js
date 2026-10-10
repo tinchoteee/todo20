@@ -139,6 +139,6 @@
     {id:95,cat:"sandalias",nombre:"Sandalia gomón de tiras cruzadas",desc:"Tiras anchas cruzadas de cuero texturado, plantilla acolchada y base alta liviana.",precio:33000,talles:[35,36,37,38,39,40],colores:[{id:"negro",nombre:"Negro",hex:"#1a1a1a",foto:"fotos/chinela-cruzada-negra.jpg"}]},
     {id:96,cat:"borcegos",nombre:"Borcego con correas y tachas",desc:"Acordonado con cierre lateral, correas con tachas y puntera metálica, plataforma dentada.",precio:38500,talles:[35,36,37,38,39,40],colores:[{id:"chocolate",nombre:"Chocolate",hex:"#5A3A2A",foto:"fotos/borcego-correa-chocolate.jpg"}]},
     {id:97,cat:"sandalias",nombre:"Sandalia cruzada metalizada",desc:"Dos tiras anchas cruzadas metalizadas, plantilla de gamuza con almohadilla y base liviana.",precio:22000,talles:[35,36,37,38,39,40],colores:[{id:"dorado",nombre:"Dorado",hex:"#D4BE8C",foto:"fotos/sandalia-cruzada-dorada.jpg"}]},
-    {id:98,cat:"suecos",nombre:"Sueco tejido con hebilla",desc:"Capellada tejida con tiras de cuero y hebilla metálica, plantilla de gamuza y base liviana.",precio:33000,talles:[35,36,37,38,39,40],colores:[{id:"chocolate",nombre:"Chocolate",hex:"#5A3E2E",foto:"fotos/sueco-tejido-chocolate.jpg"}]}
+    {id:98,cat:"suecos",nombre:"Sueco rafia con hebilla",desc:"Capellada de rafia tejida con tiras de cuero y hebilla metálica, plantilla de gamuza y base liviana.",precio:33000,talles:[35,36,37,38,39,40],colores:[{id:"chocolate",nombre:"Chocolate",hex:"#5A3E2E",foto:"fotos/sueco-tejido-chocolate.jpg"}]}
   ]
 });
