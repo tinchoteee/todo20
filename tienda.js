@@ -41,6 +41,9 @@ const pixelListo = configPublica.then(c => {
   if (!c.metaPixelId) return false;
   /* Código oficial de Meta */
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");
+  // Sin eventos automáticos: Meta contaba clics en cualquier botón y aparecían miles de "agregar al carrito"
+  // que la tienda nunca mandó (2026-10-12). Solo se mide lo que manda medir().
+  fbq("set", "autoConfig", false, String(c.metaPixelId));
   fbq("init", String(c.metaPixelId));
   fbq("track", "PageView");
   return true;
