@@ -63,8 +63,18 @@ async function ycloud(cuerpo) {
     body: JSON.stringify({ from: "+" + CATALOGO.whatsapp, ...cuerpo }),
     signal: AbortSignal.timeout(10000)
   });
-  if (!r.ok) { console.error("YCloud no mandó el mensaje", r.status, (await r.text()).slice(0, 400)); return false; }
+  if (!r.ok) {
+    const detalle = (await r.text()).slice(0, 400);
+    console.error("YCloud no mandó el mensaje", r.status, detalle);
+    await anotar("error", { estado: r.status, detalle });
+    return false;
+  }
   return true;
+}
+
+// Estado para el editor (Configuración → WhatsApp): último aviso de YCloud, último reenvío y último error
+async function anotar(que, datos = {}) {
+  try { await db.guardar(`nacireina:wa:estado:${que}`, { fecha: new Date().toISOString(), ...datos }); } catch (e) { /* no corta nada */ }
 }
 const mandarTexto = (tel, texto) => ycloud({ to: "+" + tel, type: "text", text: { body: String(texto).slice(0, 4000), preview_url: true } });
 
@@ -216,7 +226,9 @@ async function mandarAlDueno(texto, { tel, nombre, motivo, resumen }) {
 async function reenviarAlDueno({ tel, nombre, contenido }) {
   if (process.env.WHATSAPP_REENVIAR === "no") return;
   const texto = `📩 *Nuevo mensaje en Nací Reina*\n\nDe: ${nombre || "sin nombre"} (+${tel})\n\n${contenido}\n\nAbrí el chat: https://wa.me/${tel}`;
-  if (!(await mandarAlDueno(texto, { tel, nombre, motivo: "Te escribió", resumen: contenido }))) console.error("No se pudo reenviar el mensaje al dueño", tel);
+  if (!soloNumeros(process.env.WHATSAPP_AVISOS_NUMERO)) { await anotar("error", { estado: 0, detalle: "Falta WHATSAPP_AVISOS_NUMERO en Vercel" }); return; }
+  if (await mandarAlDueno(texto, { tel, nombre, motivo: "Te escribió", resumen: contenido })) await anotar("reenvio");
+  else console.error("No se pudo reenviar el mensaje al dueño", tel);
 }
 
 async function avisarAlLocal({ tel, nombre, motivo, resumen }) {
@@ -351,10 +363,14 @@ module.exports = async function handler(req, res) {
   }
   let crudo = await cuerpoCrudo(req);
   if (!crudo && req.body) crudo = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
-  if (!firmaValida(req.headers["ycloud-signature"], crudo, secreto)) return res.status(401).send("firma inválida");
+  if (!firmaValida(req.headers["ycloud-signature"], crudo, secreto)) {
+    await anotar("error", { estado: 401, detalle: "Llegó un aviso de YCloud pero la firma no coincide: revisá YCLOUD_WEBHOOK_SECRET en Vercel" });
+    return res.status(401).send("firma inválida");
+  }
 
   let evento;
   try { evento = JSON.parse(crudo); } catch (e) { return res.status(200).send("ok"); }
+  await anotar("evento", { tipo: String(evento.type || "") });
   try {
     if (evento.type === "whatsapp.inbound_message.received" && evento.whatsappInboundMessage) await mensajeDelCliente(evento.whatsappInboundMessage);
     else if (evento.type === "whatsapp.smb.message.echoes" && evento.whatsappMessage && iaActiva()) await mensajeDesdeElCelular(evento.whatsappMessage);

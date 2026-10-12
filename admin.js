@@ -274,6 +274,17 @@ $("#listaPedidos").addEventListener("change", async e => {
 });
 
 // ---------- Estado de la configuración ----------
+// Reenvío de WhatsApp al dueño: dice en qué paso se corta
+function estadoWhatsapp(w) {
+  const cuando = x => x && x.fecha ? new Date(x.fecha).toLocaleString("es-AR") : "";
+  const tit = "WhatsApp · te reenvía los mensajes de clientes";
+  if (!w.ycloud) return [false, tit, "", "Falta conectar YCloud: cargá YCLOUD_API_KEY y YCLOUD_WEBHOOK_SECRET en Vercel (pasos en CONFIGURACION.md, sección Asistente de WhatsApp)."];
+  if (!w.numero) return [false, tit, "", "Falta WHATSAPP_AVISOS_NUMERO en Vercel (tu celular con 549 adelante)."];
+  if (!w.evento) return [false, tit, "", "Las claves están, pero todavía no llegó ningún mensaje desde YCloud. Revisá en YCloud → Developers → Webhooks que esté la dirección https://nacireinacalzados.com/api/whatsapp con el evento whatsapp.inbound_message.received, y que el número esté conectado."];
+  const err = w.error && (!w.reenvio || w.error.fecha > w.reenvio.fecha) ? `Último error (${cuando(w.error)}): ${w.error.estado ? "código " + w.error.estado + " · " : ""}${String(w.error.detalle || "").slice(0, 300)}` : "";
+  if (err) return [false, tit, "", `YCloud avisa bien (último mensaje: ${cuando(w.evento)}), pero el reenvío a tu celular falló. ${err}. Si dice algo de 24 horas o "re-engagement", mandale un "hola" al número del local desde tu celular, o cargá la plantilla (WHATSAPP_PLANTILLA_AVISO).`];
+  return [true, tit, `Anda: último mensaje de un cliente ${cuando(w.evento)}${w.reenvio ? ", último reenvío a tu celular " + cuando(w.reenvio) : ""}.`, ""];
+}
 function pintarEstado(cfg) {
   const items = [
     [cfg.mercadoPago, "Mercado Pago", "Cobros online con tarjeta, débito y dinero en cuenta.", "Falta MP_ACCESS_TOKEN en Vercel: sin esto no se puede cobrar."],
@@ -284,6 +295,7 @@ function pintarEstado(cfg) {
       : "Falta configurar Zipnova: mientras tanto el envío se cobra con los precios fijos por zona."],
     [cfg.zipnova && cfg.baseDeDatos && cfg.envioAutomatico, "Envío automático", "Cada venta pagada crea sola el envío en Zipnova.", "Desactivado: los envíos se crean a mano desde el panel de Zipnova."],
     [cfg.transferencia, "Pago por transferencia (10% OFF)", "El cliente ve tu alias al confirmar el pedido; lo pasás a Pagado cuando llega la plata.", "Falta cargar TRANSFERENCIA_ALIAS (o TRANSFERENCIA_CBU) y TRANSFERENCIA_TITULAR en Vercel: por ahora no aparece la opción."],
+    estadoWhatsapp(cfg.whatsapp || {}),
     [cfg.emails, "Avisos por email", "Te llega un email con cada venta.", "Falta RESEND_API_KEY y AVISOS_EMAIL: no vas a recibir emails de las ventas."]
   ];
   $("#listaEstado").innerHTML = items.map(([ok, tit, si, no]) => `<div class="check"><span class="ic">${ok ? "✅" : "⚠️"}</span><div><b>${tit}</b><p>${ok ? si : no}</p></div></div>`).join("")

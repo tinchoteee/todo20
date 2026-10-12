@@ -73,7 +73,14 @@ module.exports = async function handler(req, res) {
           tarjetaEnPagina: Boolean(process.env.MP_ACCESS_TOKEN && process.env.MP_PUBLIC_KEY),
           zipnova: Boolean(process.env.ZIPNOVA_API_TOKEN && process.env.ZIPNOVA_API_SECRET && process.env.ZIPNOVA_ACCOUNT_ID),
           envioAutomatico: process.env.ZIPNOVA_CREAR_ENVIOS !== "no",
-          zipnovaError: await db.leer("nacireina:zipnova-error"),   // último error al cotizar (null = anda bien)
+          zipnovaError: await db.leer("nacireina:zipnova-error"),
+          whatsapp: {
+            ycloud: Boolean(process.env.YCLOUD_API_KEY && process.env.YCLOUD_WEBHOOK_SECRET),
+            numero: Boolean(String(process.env.WHATSAPP_AVISOS_NUMERO || "").replace(/\D/g, "")),
+            evento: await db.leer("nacireina:wa:estado:evento"),
+            reenvio: await db.leer("nacireina:wa:estado:reenvio"),
+            error: await db.leer("nacireina:wa:estado:error")
+          },   // último error al cotizar (null = anda bien)
           emails: Boolean(process.env.RESEND_API_KEY && process.env.AVISOS_EMAIL),
           transferencia: Boolean(process.env.TRANSFERENCIA_ALIAS || process.env.TRANSFERENCIA_CBU)
         }
