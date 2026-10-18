@@ -141,7 +141,6 @@ DATOS DEL NEGOCIO
 - Envíos: a todo el país por Correo Argentino u OCA, a domicilio o a sucursal. Se despacha dentro de las 48 hs hábiles de acreditado el pago y el correo tarda entre 2 y 7 días hábiles según la zona. El costo depende del destino: pedí código postal, provincia y localidad y usá la herramienta cotizar_envio para dar el precio real. Nunca inventes un costo de envío.
 - Seguimiento: cuando se despacha, llega por email el número de seguimiento.
 - Cambios: 30 días desde que se recibe, sin uso y en su caja. Por talle, el envío de vuelta lo paga el cliente; si llegó fallado, el cambio es sin costo.
-- Arrepentimiento: 10 días corridos desde que se recibe, con el botón de arrepentimiento de la web.
 - Talles: la mayoría de los modelos va del 35 al 40; algunos de hombre del 39 al 45. Los talles disponibles de cada color están en el catálogo.
 
 CUÁNDO LLAMAR A UNA PERSONA (herramienta avisar_al_local)

@@ -141,8 +141,6 @@
             <p>Pagás con Mercado Pago: tarjeta de crédito, débito, dinero en cuenta y otros medios que ofrece Mercado Pago. Las cuotas disponibles las ves al momento de pagar. <span data-transf-faq></span></p></details>
           <details id="cambios"><summary>¿Puedo cambiar el talle o el modelo?</summary>
             <p>Sí. Tenés 30 días desde que recibís el producto para cambiarlo, sin uso y en su caja original. Escribinos por WhatsApp con tu número de pedido. Si el cambio es por talle, el envío de vuelta corre por tu cuenta; si el producto llegó fallado, el cambio no tiene costo.</p></details>
-          <details><summary>¿Y si me arrepiento de la compra?</summary>
-            <p>Por ley tenés 10 días corridos desde que recibís el producto para arrepentirte y pedir la devolución del dinero, sin dar explicaciones. Usá el <button class="link" data-arrepentimiento>botón de arrepentimiento</button>: el producto tiene que volver sin uso y en su caja.</p></details>
           <details id="privacidad"><summary>¿Qué hacen con mis datos?</summary>
             <p>Usamos tu nombre, teléfono, email, DNI y dirección solo para preparar tu pedido, cobrarlo y enviarlo. Para eso los compartimos únicamente con Mercado Pago (el cobro) y con el correo que lleva el paquete. No los vendemos ni los pasamos a nadie más. Si dejás tu email al iniciar una compra y no la terminás, te podemos mandar un único recordatorio de tu carrito; desde ese mismo email podés pedir no recibir más. Los datos de tu tarjeta los carga Mercado Pago: nunca llegan a nosotros.</p>
             <p>Para saber cuánta gente visita la tienda y mostrar nuestras publicidades en Instagram y Facebook, usamos herramientas de medición (Vercel Analytics y el Píxel de Meta) que registran qué páginas mirás y si comprás, sin tu nombre ni tus datos de contacto. Podés bloquearlas desde la configuración de tu navegador o de tu cuenta de Meta.</p>
@@ -305,33 +303,13 @@
     <nav class="pie-links" aria-label="Ayuda">
       <a class="pie-ig" href="https://www.instagram.com/nacireinacalzados/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg> Instagram</a>
       <a href="#ayuda">Preguntas frecuentes</a>
-      <a href="#cambios">Cambios y devoluciones</a>
+      <a href="#cambios">Cambios</a>
       <a href="#privacidad">Privacidad</a>
-      <button data-arrepentimiento>Botón de arrepentimiento</button>
       <a href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario" target="_blank" rel="noopener">Defensa del consumidor</a>
     </nav>
   </div>
   <div class="wrap pie-final">Envíos a todo el país · Pagos con Mercado Pago · © Nací Reina Calzados</div>
 </footer>
-
-<!-- Botón de arrepentimiento -->
-<div class="modal" id="arrepentimiento" hidden role="dialog" aria-modal="true" aria-labelledby="arrTit">
-  <form class="modal-caja" id="formArr" novalidate>
-    <div class="paso-h"><h2 id="arrTit">Botón de arrepentimiento</h2><button type="button" class="cerrar" data-cerrar-arr aria-label="Cerrar">×</button></div>
-    <div id="arrCuerpo" style="display:grid;gap:12px">
-      <p style="margin:0;color:var(--tinta-2)">Tenés 10 días corridos desde que recibiste tu compra para cancelarla. Completá tus datos y te contactamos para coordinar la devolución y el reintegro del dinero.</p>
-      <div class="campo"><label for="arrNombre">Nombre y apellido</label><input class="in" id="arrNombre" autocomplete="name"></div>
-      <div class="fila2">
-        <div class="campo"><label for="arrEmail">Email</label><input class="in" id="arrEmail" type="email" autocomplete="email"></div>
-        <div class="campo"><label for="arrTel">Teléfono</label><input class="in" id="arrTel" type="tel" autocomplete="tel"></div>
-      </div>
-      <div class="campo"><label for="arrPedido">Número de pedido <small>(ej: NR-ABC123)</small></label><input class="in" id="arrPedido"></div>
-      <div class="campo"><label for="arrMotivo">Motivo <small>(opcional)</small></label><input class="in" id="arrMotivo"></div>
-      <p class="aviso-error" id="arrError" aria-live="polite"></p>
-      <button class="btn btn-negro">Enviar solicitud</button>
-    </div>
-  </form>
-</div>
 
 <!-- Celular: barra fija para comprar cuando el botón "Agregar al carrito" queda fuera de pantalla -->
 <div class="barra-compra" id="barraCompra" hidden>

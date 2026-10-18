@@ -747,8 +747,7 @@ function ruta() {
 window.addEventListener("hashchange", () => { $("#resultado").hidden = true; cerrarCarrito(); ruta(); });
 document.addEventListener("keydown", e => {
   if (e.key !== "Escape") return;
-  if (!$("#arrepentimiento").hidden) $("#arrepentimiento").hidden = true;
-  else if (!$("#resultado").hidden) $("#resultado").hidden = true; else cerrarCarrito();
+  if (!$("#resultado").hidden) $("#resultado").hidden = true; else cerrarCarrito();
 });
 
 // ---------- Textos que dependen de la configuración ----------
@@ -796,28 +795,6 @@ if (WHATSAPP) $("#flotante").href = wa("¡Hola Nací Reina! Tengo una consulta:"
   arrancar();
 }
 document.querySelectorAll("[data-gratis]").forEach(el => { el.textContent = ENVIO.gratisDesde > 0 ? `En compras desde ${pesos(ENVIO.gratisDesde)} el envío es gratis.` : ""; });
-
-// ---------- Botón de arrepentimiento ----------
-const formArrOriginal = $("#arrCuerpo").innerHTML;
-document.addEventListener("click", e => {
-  if (e.target.closest("[data-arrepentimiento]")) {
-    if (!$("#arrNombre")) $("#arrCuerpo").innerHTML = formArrOriginal; // si ya había mandado una, formulario nuevo
-    $("#arrepentimiento").hidden = false; $("#arrNombre").focus();
-  }
-  if (e.target.closest("[data-cerrar-arr]") || e.target === $("#arrepentimiento")) $("#arrepentimiento").hidden = true;
-});
-$("#formArr").addEventListener("submit", async e => {
-  e.preventDefault();
-  const datos = { nombre: $("#arrNombre").value.trim(), email: $("#arrEmail").value.trim(), telefono: $("#arrTel").value.trim(), pedido: $("#arrPedido").value.trim(), motivo: $("#arrMotivo").value.trim() };
-  if (!datos.nombre || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(datos.email) || !datos.pedido) { $("#arrError").textContent = "Completá tu nombre, email y número de pedido."; return; }
-  $("#arrError").textContent = "";
-  try {
-    const r = await api("/api/arrepentimiento", datos);
-    $("#arrCuerpo").innerHTML = `<p style="margin:0">Recibimos tu solicitud. Tu código de trámite es <b>${esc(r.codigo)}</b>: guardalo.</p><p style="margin:0;color:var(--tinta-2)">Te vamos a contactar en las próximas 24 horas hábiles para coordinar la devolución del producto y el reintegro del dinero.</p><button type="button" class="btn btn-negro" data-cerrar-arr>Cerrar</button>`;
-  } catch (err) {
-    $("#arrError").textContent = err.message + (WHATSAPP ? " También podés pedirlo por WhatsApp." : "");
-  }
-});
 
 // ---------- Vuelta de Mercado Pago ----------
 (function () {
