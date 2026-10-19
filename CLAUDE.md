@@ -38,7 +38,7 @@ No hay Node ni Python en las computadoras. `.claude/launch.json` → "tienda" le
 - Sueco de gamuza con tira y hebilla (id 76, topo): era el Bison de los Suecos Petty, quedó `oculto` a pedido del dueño. Borcego con plataforma dentada (id 77, negro), 2026-09-29: $33.000 ($30.000 + 10%), talles 35–40.
 - Sandalia de taco bajo con faja ancha (id 78) y con tiras cruzadas (id 79), negras, 2026-09-29: $33.000 ($30.000 + 10%), talles 35–40, publicaciones separadas (modelos distintos). La "Sandalia de taco con tiras cruzadas" (id 56, Pontecomoda) era la misma que la 79: quedó `oculto` a pedido del dueño.
 - Suecos Diana (id 80, 2026-09-29, de cuero): Negro y Chocolate, $33.000 ($30.000 + 10%), talles 35–40, fotos propias.
-- Suecos Petty (id 81, 2026-09-29, de cuero): Negro, Oro (símil croco), Bison y Rosa, $33.000 ($30.000 + 10%), talles 35–40, fotos propias.
+- Suecos Petty (id 81, 2026-09-29, de cuero): Negro, Oro (símil croco), Bison, Rosa y Vaca (print vaca de pelo, hebilla labrada; agregado 2026-10-19, el dueño lo llamó "Suecos Petty Vaca"), $33.000 ($30.000 + 10%), talles 35–40, fotos propias.
 - Bota texana de jean con tachas (id 82, 2026-09-29): color Jean, $33.000 ($30.000 + 10%), talles 35–40, foto propia.
 - Zapatillas urbanas blanco y negro (id 83, 2026-09-29): $27.500 ($25.000 + 10%), talles 35–40, foto propia (se borró a mano la etiqueta de precio que colgaba).
 - Botineta texana símil víbora (id 84, 2026-09-29): Negro, Oro y Suela, $49.500 ($45.000 + 10%), talles 35–40, fotos propias.
