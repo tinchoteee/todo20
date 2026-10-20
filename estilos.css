@@ -302,9 +302,12 @@ footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;align-ite
   .fila3{grid-template-columns:1fr 1fr}
   .fila3 .campo:first-child{grid-column:1/-1}
 }
-@media (min-width:761px){ .hero .wrap{grid-template-columns:1fr auto} .hero{min-height:500px} }
+@media (min-width:761px){ .hero .wrap{grid-template-columns:1fr auto} .hero{min-height:300px;padding-block:24px 16px} .hero-logo{width:190px} .hero-txt{gap:12px} #catalogo{padding-top:26px} #catalogo .sub{display:none} }
 @media (max-width:760px){
-  .hero{padding-block:36px 20px}
+  .hero{padding-block:22px 14px}
+  .hero-txt{gap:10px}
+  .hero-txt p{display:none}
+  #catalogo .sub{display:none}
   .hero-fotos::after{background:linear-gradient(180deg,rgba(31,10,22,.72) 0%,rgba(31,10,22,.5) 55%,rgba(31,10,22,.78) 100%)}
 }
 @media (max-width:420px){ .fila2{grid-template-columns:1fr} }
