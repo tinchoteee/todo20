@@ -5,6 +5,8 @@
 //
 //   GET                         → { opiniones: [{ nombre, estrellas, texto, fecha, productos: [ids] }] }
 //   POST { numero, ids, k, estrellas, texto, nombre } → guarda la opinión (k = firma del link)
+//   POST { numero, email, producto, estrellas, texto, nombre } → desde la página del producto: se verifica
+//        que el pedido exista, esté pagado, sea de ese email y tenga ese producto (máx. 10 intentos por hora por IP)
 //   GET ?ocultar=NUMERO&f=FIRMA → la oculta (link del email del dueño)
 //
 // Necesita la base de datos; el email al cliente, además, RESEND_API_KEY + RESEND_FROM.
@@ -84,21 +86,43 @@ module.exports = async function handler(req, res) {
     if (!db.hayDB()) return res.status(503).json({ error: "No pudimos guardar tu opinión. Probá más tarde." });
 
     const b = (typeof req.body === "object" && req.body) || {};
-    const numero = String(b.numero || "").slice(0, 60), ids = idsValidos(b.ids);
-    if (!numero || !ids.length || b.k !== firma(`opinar:${numero}:${ids.join("-")}`)) return res.status(400).json({ error: "El link para opinar no es válido. Abrilo de nuevo desde el email." });
+    let numero = String(b.numero || "").trim().slice(0, 60), ids, claveOp;
+    if (b.k) {
+      ids = idsValidos(b.ids); claveOp = numero;
+      if (!numero || !ids.length || b.k !== firma(`opinar:${numero}:${ids.join("-")}`)) return res.status(400).json({ error: "El link para opinar no es válido. Abrilo de nuevo desde el email." });
+    } else {
+      // Desde la página del producto: solo quien compró, con su número de pedido y su email
+      const ip = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim() || "sin-ip";
+      const clave = "nacireina:opinar-intentos:" + ip;
+      const n = await db.comando("INCR", clave); if (n === 1) await db.comando("EXPIRE", clave, 3600);
+      if (n > 10) return res.status(429).json({ error: "Probaste muchas veces. Esperá un rato o escribinos por WhatsApp." });
+      numero = numero.toUpperCase();
+      const email = String(b.email || "").trim().toLowerCase();
+      const prod = CATALOGO.productos.find(p => p.id === Number(b.producto));
+      if (!numero || !email || !prod) return res.status(400).json({ error: "Completá tu número de pedido y el email con el que compraste." });
+      const pedido = await db.buscarPedido(numero);
+      const emailPedido = String((pedido && pedido.cliente && pedido.cliente.email) || "").trim().toLowerCase();
+      if (!pedido || emailPedido !== email) return res.status(400).json({ error: "No encontramos un pedido con ese número y ese email. Fijate en el email de tu compra (el número empieza con NR-)." });
+      if (["esperando-transferencia", "cancelado"].includes(pedido.estado)) return res.status(400).json({ error: "Ese pedido todavía no está pagado. Vas a poder opinar cuando lo recibas." });
+      const tiene = (pedido.detalle || []).some(d => String(d).toLowerCase().includes(prod.nombre.toLowerCase()));
+      if (!tiene) return res.status(400).json({ error: `Ese pedido no incluye “${prod.nombre}”. Opiná desde la página del producto que compraste.` });
+      ids = [prod.id]; claveOp = `${numero}:${prod.id}`;
+      const previa = await db.comando("HGET", CLAVE, numero);
+      if (previa && (JSON.parse(previa).productos || []).includes(prod.id)) return res.status(400).json({ error: "Ya recibimos tu opinión de este producto. ¡Gracias!" });
+    }
     const estrellas = Math.round(Number(b.estrellas));
     if (!(estrellas >= 1 && estrellas <= 5)) return res.status(400).json({ error: "Elegí de 1 a 5 estrellas." });
     const texto = String(b.texto || "").replace(/\s+/g, " ").trim().slice(0, 600);
     const nombre = String(b.nombre || "").replace(/[^\p{L} .'-]/gu, "").trim().split(/\s+/)[0].slice(0, 30) || "Cliente";
     const opinion = { numero, nombre, estrellas, texto, fecha: new Date().toISOString(), productos: ids };
-    if (!(await db.comando("HSETNX", CLAVE, numero, JSON.stringify(opinion)))) return res.status(400).json({ error: "Ya recibimos tu opinión de esta compra. ¡Gracias!" });
+    if (!(await db.comando("HSETNX", CLAVE, claveOp, JSON.stringify(opinion)))) return res.status(400).json({ error: "Ya recibimos tu opinión de esta compra. ¡Gracias!" });
 
     if (process.env.RESEND_API_KEY && process.env.AVISOS_EMAIL) {
       await mandar({
         from: process.env.RESEND_FROM || "Nací Reina <onboarding@resend.dev>", to: [process.env.AVISOS_EMAIL],
         subject: `Nueva opinión: ${"★".repeat(estrellas)}${"☆".repeat(5 - estrellas)} de ${nombre}`,
         html: `<p><b>${esc(nombre)}</b> opinó sobre el pedido ${esc(numero)}: ${"★".repeat(estrellas)}${"☆".repeat(5 - estrellas)}</p><p>${esc(texto) || "(sin comentario)"}</p>
-          <p>Ya se muestra en la página del producto. Solo si es spam o un insulto: <a href="${WEB}/api/opiniones?ocultar=${encodeURIComponent(numero)}&f=${firma("ocultar:" + numero)}">ocultarla</a>.</p>`
+          <p>Ya se muestra en la página del producto. Solo si es spam o un insulto: <a href="${WEB}/api/opiniones?ocultar=${encodeURIComponent(claveOp)}&f=${firma("ocultar:" + claveOp)}">ocultarla</a>.</p>`
       }).catch(e => console.error("Email de opinión", e.message));
     }
     return res.status(200).json({ ok: true });
