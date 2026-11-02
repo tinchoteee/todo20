@@ -326,6 +326,8 @@ function pintarProducto() {
   // Galería: una foto por color (y la foto general si la hay)
   const fotos = [];
   cols.forEach(c => { if (c.foto) fotos.push({ src: c.foto, color: c.id }); });
+  // Foto con modelo usando el calzado (IA, 2026-11): va después de las fotos del producto
+  cols.forEach(c => { if (c.puesta) fotos.push({ src: c.puesta, color: c.id }); });
   if (p.foto && !fotos.some(f => f.src === p.foto)) fotos.unshift({ src: p.foto, color: null });
   const actual = sel.foto || fotoDe(p, sel.color);
   const colFoto = colorDe(p, sel.color);
