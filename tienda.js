@@ -325,16 +325,19 @@ function pintarProducto() {
   const cols = p.colores || [];
   // Galería: una foto por color (y la foto general si la hay)
   const fotos = [];
-  cols.forEach(c => { if (c.foto) fotos.push({ src: c.foto, color: c.id }); });
-  // Foto con modelo usando el calzado (IA, 2026-11): va después de las fotos del producto
-  cols.forEach(c => { if (c.puesta) fotos.push({ src: c.puesta, color: c.id }); });
+  const colElegido = colorDe(p, sel.color) || cols.find(c => c.foto);
+  cols.forEach(c => {
+    if (c.foto) fotos.push({ src: c.foto, color: c.id });
+    // Foto con modelo (IA, 2026-11): solo se ve con su color elegido, al lado de la foto de ese color
+    if (c.puesta && c === colElegido) fotos.push({ src: c.puesta, color: c.id, puesta: true });
+  });
   if (p.foto && !fotos.some(f => f.src === p.foto)) fotos.unshift({ src: p.foto, color: null });
   const actual = sel.foto || fotoDe(p, sel.color);
   const colFoto = colorDe(p, sel.color);
   // Si el color elegido todavía no tiene foto propia, se aclara que la foto es de otro color
   const nota = colFoto && !colFoto.foto && !sel.foto ? `<span class="foto-nota">Foto de referencia en otro color · este modelo también viene en ${esc(colFoto.nombre)}</span>` : "";
   $("#fotoGrande").innerHTML = img(actual, p.nombre).replace(' loading="lazy"', "") + nota;
-  $("#miniaturas").innerHTML = fotos.length > 1 ? fotos.map(f => `<button data-foto="${esc(f.src)}" data-color="${f.color || ""}" aria-pressed="${f.src === actual}" aria-label="Ver foto">${img(f.src)}</button>`).join("") : "";
+  $("#miniaturas").innerHTML = fotos.length > 1 ? fotos.map(f => `<button data-foto="${esc(f.src)}" data-color="${f.color || ""}" aria-pressed="${f.src === actual}" aria-label="${f.puesta ? "Ver puesto" : "Ver foto"}"${f.puesta ? ' class="puesta"' : ""}>${img(f.src)}${f.puesta ? '<span class="et-puesta">Puesto</span>' : ""}</button>`).join("") : "";
 
   const colSel = colorDe(p, sel.color);
   const colAgotado = c => c.agotado || p.talles.every(t => c.sinTalle.includes(t));
