@@ -23,7 +23,8 @@
         const ac = (a.colores && a.colores[c.id]) || {};
         if (ac.precio > 0) c.precio = ac.precio;
         c.agotado = Boolean(ac.agotado);
-        c.sinTalle = Array.isArray(ac.sinTalle) ? ac.sinTalle.map(Number) : [];
+        // sinTalle en productos.js (talles sin stock cargados en el catálogo) + los que marca el editor
+        c.sinTalle = [...new Set([...(Array.isArray(c.sinTalle) ? c.sinTalle : []), ...(Array.isArray(ac.sinTalle) ? ac.sinTalle : [])].map(Number))];
         c.pares = {};
         for (const t of p.talles) {
           const n = pares[`${p.id}|${c.id}|${t}`];
