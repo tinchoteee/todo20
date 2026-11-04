@@ -382,8 +382,11 @@ $("#vista-producto").addEventListener("click", e => {
     const faltaColor = (p.colores || []).length && !sel.color;
     if (faltaColor || !sel.talle) { $("#pFalta").textContent = faltaColor && !sel.talle ? "Elegí el color y tu talle." : faltaColor ? "Elegí un color." : "Elegí tu talle."; return; }
     agregar(p.id, sel.color, sel.talle);
-    festejar($("#agregarBtn"));
-    setTimeout(abrirCarrito, SIN_MOVIMIENTO ? 0 : 450);
+    // El botón confirma que se agregó (idea tomada de 21st.dev) y después se abre el carrito
+    const btn = $("#agregarBtn");
+    if (btn) { btn.classList.add("agregado"); btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>¡Agregado al carrito!`; }
+    festejar(btn);
+    setTimeout(abrirCarrito, SIN_MOVIMIENTO ? 0 : 700);
   }
 });
 

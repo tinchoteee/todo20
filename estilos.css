@@ -497,3 +497,8 @@ body.con-barra .flotante{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .op-estrellas{display:flex;gap:6px}
 .op-estrellas button{font-size:34px;line-height:1;background:none;border:0;padding:2px;color:var(--borde)}
 .op-estrellas button[aria-pressed="true"]{color:#E8A400}
+
+/* Botón "Agregar al carrito": confirma que se agregó (idea de 21st.dev) */
+#agregarBtn.agregado{background:#1F8A4C;color:#fff;animation:agregado .35s ease}
+@keyframes agregado{0%{transform:scale(.96)}60%{transform:scale(1.03)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){#agregarBtn.agregado{animation:none}}
