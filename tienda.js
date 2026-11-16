@@ -86,7 +86,16 @@ let carrito = leer("nacireina-carrito", []).filter(i => producto(i.id) && produc
 const subtotal = () => carrito.reduce((a, i) => a + precioDe(producto(i.id), i.color) * i.cant, 0);
 // Descuento por monto (ver "descuento" en productos.js): misma cuenta que hace el servidor al cobrar
 const DESCUENTO = CATALOGO.descuento || { desde: 0, porcentaje: 0 };
-const cuenta = extra => aplicarAjustes.conDescuento(carrito.map(i => ({ precio: precioDe(producto(i.id), i.color), cant: i.cant })), DESCUENTO, extra);
+// Código de descuento (productos.js → cupones): se guarda en el navegador; también llega con ?cupon=CODIGO
+let cupon = aplicarAjustes.cupon(leer("nacireina-cupon", ""), CATALOGO.cupones);
+const cuenta = extra => aplicarAjustes.conDescuento(carrito.map(i => ({ precio: precioDe(producto(i.id), i.color), cant: i.cant })), DESCUENTO, extra, cupon ? cupon.porcentaje : 0);
+function ponerCupon(codigo) {
+  cupon = aplicarAjustes.cupon(codigo, CATALOGO.cupones);
+  escribir("nacireina-cupon", cupon ? cupon.codigo : "");
+  pintarCarrito();
+  if (!$("#vista-checkout").hidden) pintarCheckout();
+  return cupon;
+}
 // Descuento por transferencia: solo si el servidor tiene cargados los datos de la cuenta (ver /api/config)
 let transf = null;
 configPublica.then(c => {
@@ -150,8 +159,9 @@ function pintarCarrito() {
   const sinPrecio = carrito.some(i => !(precioDe(producto(i.id), i.color) > 0));
   const cta = cuenta();
   $("#subtotal").textContent = sinPrecio ? (sub ? pesos(cta.total) + " + a consultar" : "A consultar") : pesos(cta.total);
-  $("#filaDescuento").hidden = !cta.porcentaje;
-  if (cta.porcentaje) $("#filaDescuento").innerHTML = `<span>Descuento ${cta.porcentaje}% OFF</span><span>−${pesos(cta.descuento)}</span>`;
+  $("#filaDescuento").hidden = !cta.porcentaje && !cta.porcentajeCupon;
+  $("#filaDescuento").innerHTML = (cta.porcentaje ? `<div><span>Descuento ${cta.porcentaje}% OFF</span><span>−${pesos(cta.descuento)}</span></div>` : "")
+    + (cta.porcentajeCupon ? `<div><span>Código ${esc(cupon.codigo)} (${cta.porcentajeCupon}% OFF)</span><span>−${pesos(cta.descuentoCupon)}</span></div>` : "");
   pintarBarraBeneficios(sub);
   $("#notaConsultar").hidden = !hayConsultar();
   $("#notaConsultar").textContent = carrito.some(i => problemaItem(i) === "Se agotó")
@@ -470,6 +480,7 @@ function pintarCheckout() {
   const cta = cuenta();
   $("#resCuentas").innerHTML = `<div><span>Subtotal</span><span>${pesos(cta.subtotal)}</span></div>
     ${cta.porcentaje ? `<div class="gratis"><span>Descuento ${cta.porcentaje}% OFF</span><span>−${pesos(cta.descuento)}</span></div>` : ""}
+    ${cta.porcentajeCupon ? `<div class="gratis"><span>Código ${esc(cupon.codigo)} (${cta.porcentajeCupon}% OFF)</span><span>−${pesos(cta.descuentoCupon)}</span></div>` : ""}
     <div><span>Envío</span><span>${envio == null ? '<span style="color:var(--tinta-2)">Se calcula en el paso 2</span>' : envio ? pesos(envio) : '<span class="gratis">Gratis</span>'}</span></div>
     <div class="tot"><span>Total</span><span>${pesos(cta.total + (envio || 0))}</span></div>`;
   $("#pagarTxt").textContent = `Pagar ${pesos(cta.total + (envio || 0))} con Mercado Pago`;
@@ -603,6 +614,7 @@ function datosPedido() {
   const o = ck.opcion;
   return {
     items: carrito.map(i => ({ id: i.id, talle: i.talle, color: i.color, cant: i.cant })),
+    cupon: cupon ? cupon.codigo : "",
     cliente: { nombre: val("ckNombre"), telefono: val("ckTel"), email: val("ckEmail"), dni: val("ckDni") },
     entrega: { opcion: o.id, sucursal: ck.sucursal ? ck.sucursal.id : null, cp: val("ckCP"), provincia: $("#ckProv").value,
       localidad: val("ckLoc"), calle: val("ckCalle"), numero: val("ckNum"), piso: val("ckPiso") }
@@ -1067,3 +1079,25 @@ $("#opDejar").addEventListener("click", () => abrirOpinion({ producto: sel.id })
     history.replaceState(null, "", location.pathname + (resto ? "?" + resto : "") + location.hash);
   }
 }
+
+// ---------- Código de descuento ----------
+(function () {
+  const desdeLink = new URLSearchParams(location.search).get("cupon");
+  if (desdeLink) ponerCupon(desdeLink);
+  const f = $("#formCupon"); if (!f) return;
+  const pintar = () => {
+    $("#cuponIn").value = cupon ? cupon.codigo : "";
+    $("#cuponMsj").className = "cupon-msj" + (cupon ? " gratis" : "");
+    $("#cuponMsj").textContent = cupon ? `✓ Código ${cupon.codigo} aplicado: ${cupon.porcentaje}% OFF en los productos.` : "";
+    $("#cuponQuitar").hidden = !cupon;
+  };
+  f.addEventListener("submit", e => {
+    e.preventDefault();
+    const v = $("#cuponIn").value.trim();
+    if (!v) return;
+    if (ponerCupon(v)) pintar();
+    else { $("#cuponMsj").className = "cupon-msj aviso-error"; $("#cuponMsj").textContent = "Ese código no existe o ya no está vigente."; }
+  });
+  $("#cuponQuitar").addEventListener("click", () => { ponerCupon(""); pintar(); });
+  pintar();
+})();

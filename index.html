@@ -291,6 +291,12 @@
       <aside class="resumen" aria-label="Resumen del pedido">
         <h2>Tu pedido</h2>
         <div id="resLineas"></div>
+        <form class="cupon" id="formCupon" autocomplete="off">
+          <label for="cuponIn">¿Tenés un código de descuento?</label>
+          <div class="cupon-fila"><input class="in" id="cuponIn" placeholder="Ej: REINA5" maxlength="30" autocapitalize="characters"><button class="btn btn-borde" type="submit" style="width:auto;padding-block:11px">Aplicar</button></div>
+          <p class="cupon-msj" id="cuponMsj" aria-live="polite"></p>
+          <button class="link" type="button" id="cuponQuitar" hidden>Quitar código</button>
+        </form>
         <div class="cuentas" id="resCuentas"></div>
         <p class="aviso-transf" data-aviso-transf hidden></p>
         <a class="link" href="#" id="seguirComprando" style="justify-self:start">← Seguir comprando</a>

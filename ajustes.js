@@ -55,17 +55,28 @@
   // Descuento por monto de compra (ver "descuento" en productos.js). Recibe [{ precio, cant }] y devuelve
   // el precio con descuento de cada línea (redondeado a centavos) y los totales. Página y servidor usan esta misma cuenta.
   // extra: porcentaje de descuento por pagar con transferencia (se aplica después del de monto, solo a los productos).
-  aplicarAjustes.conDescuento = function (lineas, cfg, extra) {
+  // Código de descuento (productos.js → cupones): devuelve { codigo, porcentaje } o null si no existe
+  aplicarAjustes.cupon = function (codigo, cupones) {
+    const c = String(codigo || "").trim().toUpperCase();
+    const pct = c && cupones ? Number(cupones[c]) || 0 : 0;
+    return pct > 0 ? { codigo: c, porcentaje: pct } : null;
+  };
+  // Orden: descuento por monto → código de descuento (cupon, %) → transferencia (extra, %). Nunca al envío.
+  aplicarAjustes.conDescuento = function (lineas, cfg, extra, cupon) {
     const subtotal = lineas.reduce((a, l) => a + l.precio * l.cant, 0);
     const pct = cfg && cfg.desde > 0 && subtotal >= cfg.desde ? Number(cfg.porcentaje) || 0 : 0;
     const suma = ps => Math.round(ps.reduce((a, p, i) => a + p * lineas[i].cant, 0) * 100) / 100;
     const conMonto = lineas.map(l => Math.round(l.precio * (100 - pct)) / 100);
     const totalMonto = suma(conMonto);
+    const pctC = Number(cupon) > 0 ? Number(cupon) : 0;
+    const conCupon = pctC ? conMonto.map(p => Math.round(p * (100 - pctC)) / 100) : conMonto;
+    const totalCupon = suma(conCupon);
     const pctT = Number(extra) > 0 ? Number(extra) : 0;
-    const precios = pctT ? conMonto.map(p => Math.round(p * (100 - pctT)) / 100) : conMonto;
+    const precios = pctT ? conCupon.map(p => Math.round(p * (100 - pctT)) / 100) : conCupon;
     const total = suma(precios);
     return { subtotal, porcentaje: pct, descuento: Math.round((subtotal - totalMonto) * 100) / 100,
-      porcentajeTransferencia: pctT, descuentoTransferencia: Math.round((totalMonto - total) * 100) / 100, total, precios };
+      porcentajeCupon: pctC, descuentoCupon: Math.round((totalMonto - totalCupon) * 100) / 100,
+      porcentajeTransferencia: pctT, descuentoTransferencia: Math.round((totalCupon - total) * 100) / 100, total, precios };
   };
   return aplicarAjustes;
 })());
