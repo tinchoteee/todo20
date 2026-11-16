@@ -87,10 +87,17 @@ const subtotal = () => carrito.reduce((a, i) => a + precioDe(producto(i.id), i.c
 // Descuento por monto (ver "descuento" en productos.js): misma cuenta que hace el servidor al cobrar
 const DESCUENTO = CATALOGO.descuento || { desde: 0, porcentaje: 0 };
 // Código de descuento (productos.js → cupones): se guarda en el navegador; también llega con ?cupon=CODIGO
-let cupon = aplicarAjustes.cupon(leer("nacireina-cupon", ""), CATALOGO.cupones);
+let cupon = null;
 const cuenta = extra => aplicarAjustes.conDescuento(carrito.map(i => ({ precio: precioDe(producto(i.id), i.color), cant: i.cant })), DESCUENTO, extra, cupon ? cupon.porcentaje : 0);
-function ponerCupon(codigo) {
-  cupon = aplicarAjustes.cupon(codigo, CATALOGO.cupones);
+async function huellaCupon(c) {
+  try {
+    const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode("nacireina:" + c));
+    return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join("");
+  } catch (e) { return ""; }
+}
+async function ponerCupon(codigo) {
+  const c = aplicarAjustes.normalizarCupon(codigo).slice(0, 30);
+  cupon = c ? aplicarAjustes.cupon(c, await huellaCupon(c), CATALOGO.cupones) : null;
   escribir("nacireina-cupon", cupon ? cupon.codigo : "");
   pintarCarrito();
   if (!$("#vista-checkout").hidden) pintarCheckout();
@@ -1083,21 +1090,22 @@ $("#opDejar").addEventListener("click", () => abrirOpinion({ producto: sel.id })
 // ---------- Código de descuento ----------
 (function () {
   const desdeLink = new URLSearchParams(location.search).get("cupon");
-  if (desdeLink) ponerCupon(desdeLink);
-  const f = $("#formCupon"); if (!f) return;
+  const f = $("#formCupon");
   const pintar = () => {
     $("#cuponIn").value = cupon ? cupon.codigo : "";
     $("#cuponMsj").className = "cupon-msj" + (cupon ? " gratis" : "");
     $("#cuponMsj").textContent = cupon ? `✓ Código ${cupon.codigo} aplicado: ${cupon.porcentaje}% OFF en los productos.` : "";
     $("#cuponQuitar").hidden = !cupon;
   };
-  f.addEventListener("submit", e => {
+  const guardado = desdeLink || leer("nacireina-cupon", "");
+  if (guardado) ponerCupon(guardado).then(pintar);
+  f.addEventListener("submit", async e => {
     e.preventDefault();
     const v = $("#cuponIn").value.trim();
     if (!v) return;
-    if (ponerCupon(v)) pintar();
+    if (await ponerCupon(v)) pintar();
     else { $("#cuponMsj").className = "cupon-msj aviso-error"; $("#cuponMsj").textContent = "Ese código no existe o ya no está vigente."; }
   });
-  $("#cuponQuitar").addEventListener("click", () => { ponerCupon(""); pintar(); });
+  $("#cuponQuitar").addEventListener("click", async () => { await ponerCupon(""); pintar(); });
   pintar();
 })();

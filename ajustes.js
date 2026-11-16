@@ -55,11 +55,15 @@
   // Descuento por monto de compra (ver "descuento" en productos.js). Recibe [{ precio, cant }] y devuelve
   // el precio con descuento de cada línea (redondeado a centavos) y los totales. Página y servidor usan esta misma cuenta.
   // extra: porcentaje de descuento por pagar con transferencia (se aplica después del de monto, solo a los productos).
-  // Código de descuento (productos.js → cupones): devuelve { codigo, porcentaje } o null si no existe
-  aplicarAjustes.cupon = function (codigo, cupones) {
-    const c = String(codigo || "").trim().toUpperCase();
-    const pct = c && cupones ? Number(cupones[c]) || 0 : 0;
-    return pct > 0 ? { codigo: c, porcentaje: pct } : null;
+  // Código de descuento (productos.js → cupones). huella = sha256("nacireina:" + código), la calcula quien llama
+  // (navegador y servidor). Devuelve { codigo, porcentaje } o null si no existe o ya venció.
+  aplicarAjustes.normalizarCupon = c => String(c || "").trim().toUpperCase();
+  aplicarAjustes.cupon = function (codigo, huella, cupones, ahora) {
+    const c = aplicarAjustes.normalizarCupon(codigo);
+    const k = c && Array.isArray(cupones) ? cupones.find(x => x.huella === huella) : null;
+    if (!k || !(Number(k.porcentaje) > 0)) return null;
+    if (k.hasta && (ahora || Date.now()) > Date.parse(k.hasta)) return null;
+    return { codigo: c, porcentaje: Number(k.porcentaje), hasta: k.hasta || "" };
   };
   // Orden: descuento por monto → código de descuento (cupon, %) → transferencia (extra, %). Nunca al envío.
   aplicarAjustes.conDescuento = function (lineas, cfg, extra, cupon) {

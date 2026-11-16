@@ -19,9 +19,12 @@
   // Descuento extra por pagar con transferencia bancaria (sobre los productos, después del de monto).
   // Los datos de la cuenta (alias, CBU, titular) se cargan en Vercel: TRANSFERENCIA_ALIAS, TRANSFERENCIA_CBU, TRANSFERENCIA_TITULAR.
   transferencia: { porcentaje: 10 },
-  // Códigos de descuento para mandar a clientes: "CÓDIGO": porcentaje (sobre los productos, no el envío).
-  // Se escriben en el checkout o vienen en el link nacireinacalzados.com/?cupon=CÓDIGO. Para darlo de baja, borrar la línea.
-  cupones: { "REINA5": 5 },
+  // Códigos de descuento exclusivos (los manda el dueño a sus clientes): sobre los productos, no el envío.
+  // El código NO se escribe acá (este archivo es público): va su huella, sha256("nacireina:" + CÓDIGO en mayúsculas).
+  // hasta: vence en esa fecha y hora (hora argentina). Se escriben en el checkout o vienen en el link ?cupon=CÓDIGO.
+  cupones: [
+    { huella: "244981f94321c59538dd95b4ff83de8ddde9cc3eba418c256b19e72329a5c0c7", porcentaje: 5, hasta: "2026-11-18T18:00:00-03:00" }
+  ],
 
   envio: {
     // Envío gratis cuando los productos suman este monto o más. 0 = sin envío gratis.

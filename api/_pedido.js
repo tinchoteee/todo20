@@ -45,7 +45,8 @@ async function armarPedido(body, base, { transferencia = false } = {}) {
   // Descuento por monto (10% desde $220.000): se aplica a cada producto, no al envío
   const pctTransf = transferencia ? Number((CATALOGO.transferencia || {}).porcentaje) || 0 : 0;
   // Código de descuento: se valida acá contra productos.js (si no existe, no se aplica)
-  const cupon = aplicarAjustes.cupon(body.cupon, CATALOGO.cupones);
+  const codigo = aplicarAjustes.normalizarCupon(body.cupon).slice(0, 30);
+  const cupon = codigo ? aplicarAjustes.cupon(codigo, require("crypto").createHash("sha256").update("nacireina:" + codigo).digest("hex"), CATALOGO.cupones) : null;
   const cuenta = aplicarAjustes.conDescuento(lineas.map(l => ({ precio: l.precio, cant: l.cant })), CATALOGO.descuento, pctTransf, cupon ? cupon.porcentaje : 0);
   const off = [cuenta.porcentaje ? `${cuenta.porcentaje}% OFF` : "", cupon ? `código ${cupon.codigo}` : "", cuenta.porcentajeTransferencia ? `${cuenta.porcentajeTransferencia}% OFF transferencia` : ""].filter(Boolean).join(" + ");
   const items = lineas.map((l, i) => ({

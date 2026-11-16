@@ -73,7 +73,7 @@ const piezas = {
   <div style="position:absolute;top:380px;left:0;right:0;text-align:center"><span style="display:inline-block;background:#FFB3DA;border:6px solid #111;box-shadow:12px 12px 0 #111;border-radius:99px;padding:20px 60px;font-family:'Lilita One';font-size:70px">NO HAY MÁS PASOS</span></div>
   <div style="position:absolute;top:600px;left:0;right:0;text-align:center;font-size:200px">😁👑</div>
   <div style="position:absolute;top:900px;left:0;right:0;text-align:center;font-size:44px;line-height:1.4;color:#2a1a20">
-    Elegí las tuyas en <b>nacireinacalzados.com</b><br>y con el código <b style="background:#111;color:#fff;padding:2px 18px;border-radius:10px">REINA5</b> tenés 5% OFF
+    Elegí las tuyas en<br><b style="font-size:54px">nacireinacalzados.com</b><br>Envíos a todo el país 🚚
   </div>
   ${marca('#7a5a60')}`,
 };

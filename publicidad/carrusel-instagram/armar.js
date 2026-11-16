@@ -75,16 +75,15 @@ const slides = [
      </div>`).join('')}
   </div>
   <div class="pie">Pagás con tarjeta, débito o Mercado Pago</div>`,
-  // 7 Código
+  // 7 Cierre
   `${base}
   <div class="num">7/7</div>
   <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 70px">
     <span class="logo" style="margin-bottom:56px"><img src="${logo}" style="height:150px"></span>
-    <p style="font-size:40px;font-weight:700;color:#f3d6e6">Un regalo para vos 👑</p>
-    <h2 class="serif" style="font-size:150px;margin:10px 0 24px"><span class="rosa">5% OFF</span></h2>
-    <p style="font-size:36px;color:#f3d6e6;margin-bottom:26px">con el código</p>
-    <div style="border:5px dashed #FF7DBE;border-radius:30px;padding:22px 60px;font-size:96px;font-weight:800;letter-spacing:8px;background:#ffffff10">REINA5</div>
-    <p style="font-size:34px;line-height:1.35;margin-top:46px;color:#f3d6e6">Escribilo al finalizar tu compra en<br><b style="color:#fff;font-size:44px">nacireinacalzados.com</b></p>
+    <h2 class="serif" style="font-size:118px;line-height:1.02">¿Cuál es<br><i class="rosa">la tuya?</i></h2>
+    <p style="font-size:38px;color:#f3d6e6;margin:34px 0 44px;line-height:1.35">Elegí tu talle y tu color<br>y te lo mandamos a todo el país 🚚</p>
+    <span class="flecha" style="font-size:40px;padding:20px 44px">nacireinacalzados.com</span>
+    <p style="font-size:32px;margin-top:40px;color:#f3d6e6">o escribinos por WhatsApp 💬</p>
   </div>
   <div class="pie" style="font-size:28px">WhatsApp 11 2474 1073 · Av. de Mayo 1600, Ramos Mejía</div>`,
 ];
