@@ -1,6 +1,8 @@
 // Portada 3D (2026-11, pedido del dueño: "igual de imponente que POWER UP"):
 // una corona de oro en el centro con un anillo de calzados que gira alrededor, brillitos rosa y dorado que suben
-// en espiral, hilos de luz de la corona a los zapatos y reflejo en el piso (Three.js, en vendor/).
+// en espiral, hilos de luz de la corona a los zapatos y reflejo de luz (Three.js, en vendor/).
+// Optimizada (2026-11-17, el dueño: "va muy trabada"): sin reflejo de las fotos, máximo 60 cuadros por segundo,
+// menos brillitos y la resolución baja sola de a poco si la compu o el celu no llegan.
 // Se arrastra con el mouse o el dedo; tocando un zapato se abre ese producto y tocando la corona hay lluvia de coronas.
 // Lo carga tienda.js cuando la página ya terminó de cargar. Sin WebGL o con "reducir movimiento" queda la portada de siempre.
 import * as THREE from "./vendor/three.module.min.js";
@@ -53,10 +55,10 @@ function armarCorona(env) {
   const piedra = new THREE.MeshStandardMaterial({ color: ROSA, metalness: 0.2, roughness: 0.08, emissive: 0x7a0638, emissiveIntensity: 0.9, envMap: env, envMapIntensity: 1.5 });
   const perla = new THREE.MeshStandardMaterial({ color: 0xfff6ee, metalness: 0.3, roughness: 0.18, envMap: env, envMapIntensity: 1.6 });
   const g = new THREE.Group(), R = 1, PICOS = 8;
-  const aro = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.04, R, 0.55, 64, 1, true), oro);
+  const aro = new THREE.Mesh(new THREE.CylinderGeometry(R * 1.04, R, 0.55, 40, 1, true), oro);
   g.add(aro);
   for (const [y, r] of [[-0.28, R * 1.0], [0.27, R * 1.04]]) {
-    const t = new THREE.Mesh(new THREE.TorusGeometry(r, 0.06, 12, 64), oro);
+    const t = new THREE.Mesh(new THREE.TorusGeometry(r, 0.06, 8, 40), oro);
     t.rotation.x = Math.PI / 2; t.position.y = y; g.add(t);
   }
   const terciopelo = new THREE.Mesh(new THREE.SphereGeometry(R * 0.96, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2),
@@ -103,7 +105,7 @@ function iniciar() {
   let renderer;
   try { renderer = new THREE.WebGLRenderer({ antialias: !flojo, alpha: true, powerPreference: "high-performance" }); }
   catch (e) { return false; }
-  let resolucion = Math.min(devicePixelRatio || 1, flojo ? 1 : movil ? 1.5 : 1.75);
+  let resolucion = Math.min(devicePixelRatio || 1, flojo ? 1.25 : movil ? 1.75 : 2);   // nítida de entrada; baja sola si no da
   renderer.setPixelRatio(resolucion);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -135,7 +137,7 @@ function iniciar() {
   // ---- Anillo de zapatos (y su reflejo en el piso) ----
   const anillo = new THREE.Group(), reflejo = new THREE.Group();
   anillo.rotation.x = 0.1;
-  escena.add(anillo, reflejo);
+  escena.add(anillo);   // el reflejo de las fotos se sacó: duplicaba el trabajo de la placa de video
   const N = productos.length, ancho = 1.8, alto = 1.8;
   const radio = Math.max(3.6, (N * (ancho + 0.4)) / (2 * Math.PI));
   const altura = -1.1, piso = altura - alto / 2 - 0.5;
@@ -169,17 +171,15 @@ function iniciar() {
     paneles.push({ grupo, grupoRef, foto, mat, matRef, escala: 1, brillo: 0 });
   });
 
-  // ---- Piso: grilla rosa + velo que se funde con el reflejo ----
+  // ---- Piso: grilla rosa ----
   const grilla = new THREE.GridHelper(44, 44, ROSA, ROSA);
   grilla.material.transparent = true; grilla.material.opacity = 0.14;
   grilla.position.y = piso;
   escena.add(grilla);
-  const velo = new THREE.Mesh(new THREE.CircleGeometry(30, 48), new THREE.MeshBasicMaterial({ color: TINTA, transparent: true, opacity: 0.55, depthWrite: false }));
-  velo.rotation.x = -Math.PI / 2; velo.position.y = piso + 0.01;
-  escena.add(velo);
+  // (el velo oscuro del piso se sacó junto con el reflejo: en el celu marcaba el borde del lienzo)
 
   // ---- Polvo brillante de fondo ----
-  const cantPolvo = flojo ? 140 : movil ? 220 : 480;
+  const cantPolvo = flojo ? 60 : movil ? 110 : 220;
   const pos = new Float32Array(cantPolvo * 3);
   for (let i = 0; i < cantPolvo; i++) { pos[i * 3] = (Math.random() - 0.5) * 28; pos[i * 3 + 1] = (Math.random() - 0.3) * 11; pos[i * 3 + 2] = (Math.random() - 0.5) * 24; }
   const pgeo = new THREE.BufferGeometry(); pgeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
@@ -187,7 +187,7 @@ function iniciar() {
   escena.add(polvo);
 
   // ---- Brillitos rosa y dorado que suben en espiral ----
-  const cantChispas = flojo ? 90 : movil ? 140 : 300;
+  const cantChispas = flojo ? 50 : movil ? 90 : 170;
   const chispas = Array.from({ length: cantChispas }, () => ({ a: Math.random() * Math.PI * 2, r: 0.6 + Math.random() * (radio - 1), y: piso + Math.random() * 6, v: 0.25 + Math.random() * 0.7 }));
   const cpos = new Float32Array(cantChispas * 3), ccol = new Float32Array(cantChispas * 3);
   const cRosa = new THREE.Color(0xff5fae), cOro = new THREE.Color(0xffd27a);
@@ -309,17 +309,19 @@ function iniciar() {
   function cuidarFluidez(ms) {
     if (nivel >= 3 || entrada < 1) return;
     muestras++; sumaMs += Math.min(ms, 100);
-    if (muestras < 90) return;
+    if (muestras < 50) return;
     const prom = sumaMs / muestras; muestras = sumaMs = 0;
-    if (prom < 24) return;
-    nivel++;
-    if (resolucion > 1) { resolucion = Math.max(1, resolucion - 0.5); renderer.setPixelRatio(resolucion); anchoPrev = 0; medir(); }
-    else if (nivel >= 2) { reflejo.visible = false; polvo.visible = false; nivel = 3; }
+    if (prom < 19) return;                   // anda a más de ~52 cuadros por segundo: no se toca nada
+    if (resolucion > 1) { resolucion = Math.max(1, resolucion - 0.25); renderer.setPixelRatio(resolucion); anchoPrev = 0; medir(); }
+    else { nivel++; if (nivel >= 2) { polvo.visible = false; grilla.visible = false; nivel = 3; } }
   }
 
-  function cuadro() {
+  let ultimoCuadro = 0;
+  function cuadro(ahora) {
     requestAnimationFrame(cuadro);
     if (!visible || sinContexto || document.hidden || (inicio && inicio.hidden)) { reloj.getDelta(); return; }
+    if (ahora - ultimoCuadro < 15.5) return;   // pantallas de 120/144 Hz: no más de 60 cuadros por segundo
+    ultimoCuadro = ahora;
     const crudo = reloj.getDelta(), dt = Math.min(crudo, 0.05), t = performance.now() / 1000;
     cuidarFluidez(crudo * 1000);
     entrada = Math.min(1, entrada + dt * 0.6);
@@ -381,14 +383,17 @@ function iniciar() {
       p.grupo.scale.setScalar(p.escala); p.grupoRef.scale.setScalar(p.escala);
       p.brillo = Math.max(0, p.brillo - dt * 2.5);
       if (p.mat.map) {
-        p.mat.opacity = Math.min(1, p.mat.opacity + dt * 1.5);
+        if (p.mat.transparent) {
+          p.mat.opacity = Math.min(1, p.mat.opacity + dt * 1.5);
+          if (p.mat.opacity >= 1) { p.mat.transparent = false; p.mat.needsUpdate = true; }   // opaca: se dibuja más rápido
+        }
         p.matRef.opacity = p.mat.opacity * 0.16;
         p.mat.color.setScalar(1 + p.brillo * 0.35);
       }
     }
     renderer.render(escena, camara);
   }
-  cuadro();
+  requestAnimationFrame(cuadro);
   return true;
 }
 

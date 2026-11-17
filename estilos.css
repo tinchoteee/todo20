@@ -554,3 +554,20 @@ body.con-barra .flotante{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 @media (min-width:761px){ .hero--3d{min-height:clamp(560px,74vh,700px)} .hero--3d .wrap{grid-template-columns:1fr} .hero--3d h1{font-size:clamp(46px,6vw,80px)} }
 @media (max-width:760px){ .hero--3d{--zona-txt:250px;min-height:580px} .hero-3d{height:calc(100% - var(--zona-txt) + 30px)} .hero-ayuda3d{left:0;right:0;text-align:center;top:12px;font-size:11px} }
 @media (prefers-reduced-motion:reduce){ .intro{display:none} .cintas{transform:none} .foto-grande{transform:none} }
+
+/* ---------- Encabezado como POWER UP (2026-11-17): lupa · NR girando · carrito; categorías debajo en compu ---------- */
+.top .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px 16px;min-height:64px;padding-block:6px}
+.top .btn-buscar{grid-column:1;justify-self:start;margin:0!important}
+.top .logo-nr{grid-column:2;display:block;perspective:500px;line-height:0}
+.top #abrirCarrito{grid-column:3;justify-self:end;margin:0!important}
+.top .nav{grid-column:1/-1;justify-content:center;margin:0;padding-bottom:2px}
+.logo-nr .gira{display:block;position:relative;height:54px;width:auto;transform-style:preserve-3d;animation:nrGira 6s linear infinite;will-change:transform}
+.logo-nr img{display:block;height:54px;width:auto;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.logo-nr img.dorso{position:absolute;inset:0;transform:rotateY(180deg)}   /* de espaldas también se lee "NR" */
+@keyframes nrGira{to{transform:rotateY(360deg)}}
+@media (max-width:760px){ .top .wrap{min-height:60px} .logo-nr .gira,.logo-nr img{height:48px} }
+@media (prefers-reduced-motion:reduce){ .logo-nr .gira{animation:none} }
+
+/* ---------- Portada 3D más liviana (2026-11-17) ---------- */
+.hero--3d .hero-fotos,.hero--3d::before{display:none}   /* sin fotos animadas ni grano detrás del 3D */
+.hero--3d .hero-3d{-webkit-mask-image:none;mask-image:none}
