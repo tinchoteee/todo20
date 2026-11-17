@@ -32,6 +32,10 @@
 <script defer src="/_vercel/insights/script.js"></script>
 </head>
 <body>
+<!-- Intro con el logo: una vez por visita, se va sola en menos de un segundo (estilo POWER UP) -->
+<div class="intro" aria-hidden="true"><div class="intro-logo"><img src="img/logo.jpg" alt="" width="1221" height="1005"></div><div class="intro-barra"><i></i></div></div>
+<script>try { if (sessionStorage.getItem("nr-intro") || matchMedia("(prefers-reduced-motion: reduce)").matches) document.documentElement.classList.add("sin-intro"); else sessionStorage.setItem("nr-intro", "1"); } catch (e) { document.documentElement.classList.add("sin-intro"); }</script>
+<div class="avance" aria-hidden="true"><i id="avance"></i></div>
 
 <div class="aviso" id="aviso">Envíos a <b>todo el país</b> · Pagá con Mercado Pago</div>
 

@@ -1109,3 +1109,47 @@ $("#opDejar").addEventListener("click", () => abrirOpinion({ producto: sel.id })
   $("#cuponQuitar").addEventListener("click", async () => { await ponerCupon(""); pintar(); });
   pintar();
 })();
+
+// ---------- Efectos "imponentes" (2026-11, como POWER UP) ----------
+// Portada 3D: corona de oro con anillo de zapatos (portada3d.js + Three.js en vendor/). Se carga al terminar la página.
+// La portada toma el tamaño del 3D desde el principio para que no salte; si no se arma en 8 s vuelve a la de siempre.
+if (!SIN_MOVIMIENTO && "WebGLRenderingContext" in window) {
+  const hero = document.querySelector(".hero");
+  hero.classList.add("hero--3d");
+  const portada3d = () => import("./portada3d.js").catch(e => console.warn("Sin portada 3D", e));
+  const revisar = () => setTimeout(() => { if (!hero.querySelector(".hero-3d")) hero.classList.remove("hero--3d"); }, 8000);
+  const despues = () => { setTimeout(portada3d, 300); revisar(); };
+  if (document.readyState === "complete") despues(); else addEventListener("load", despues);
+}
+// Barra de avance arriba (cuánto falta de la página) y cintas gigantes que se doblan con la velocidad del scroll
+{
+  const barra = document.getElementById("avance"), cintas = document.querySelector(".cintas");
+  let ultimo = scrollY, doblez = 0, andando = false;
+  const loop = () => {
+    const alto = document.documentElement.scrollHeight - innerHeight;
+    if (barra) barra.style.transform = `scaleX(${alto > 0 ? Math.min(1, scrollY / alto) : 0})`;
+    if (!cintas || SIN_MOVIMIENTO) { andando = false; return; }
+    const v = scrollY - ultimo; ultimo = scrollY;
+    doblez += (Math.max(-12, Math.min(12, v * 0.35)) - doblez) * 0.12;
+    if (Math.abs(doblez) < 0.03 && v === 0) doblez = 0;
+    cintas.style.setProperty("--doblez", doblez.toFixed(2) + "deg");
+    if (doblez === 0) { andando = false; return; }
+    requestAnimationFrame(loop);
+  };
+  addEventListener("scroll", () => { if (!andando) { andando = true; requestAnimationFrame(loop); } }, { passive: true });
+}
+// Foto grande del producto: se inclina siguiendo al mouse (solo compu)
+if (!SIN_MOVIMIENTO && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+  const fg = document.getElementById("fotoGrande");
+  let ev = null, espera = false;
+  fg.addEventListener("mousemove", e => {
+    ev = e; if (espera) return; espera = true;
+    requestAnimationFrame(() => {
+      espera = false;
+      const r = fg.getBoundingClientRect();
+      fg.style.setProperty("--fg-ry", (((ev.clientX - r.left) / r.width - 0.5) * 8).toFixed(2) + "deg");
+      fg.style.setProperty("--fg-rx", (-((ev.clientY - r.top) / r.height - 0.5) * 6).toFixed(2) + "deg");
+    });
+  }, { passive: true });
+  fg.addEventListener("mouseleave", () => { fg.style.removeProperty("--fg-ry"); fg.style.removeProperty("--fg-rx"); });
+}
