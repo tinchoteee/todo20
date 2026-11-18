@@ -20,14 +20,14 @@ const pieza = (alto) => `<link rel="stylesheet" href="file://${D}/fonts.css"><st
 body{width:1080px;height:${alto}px;overflow:hidden;font-family:Figtree,sans-serif;position:relative;
  background:radial-gradient(60% 50% at 50% 45%,#FF8A2B 0%,#F26A0F 55%,#C94E00 100%)}
 .rayos{position:absolute;inset:-30%;background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(242,196,107,.0) 0deg 9deg,rgba(255,255,255,.22) 9deg 12deg,rgba(242,196,107,0) 12deg 24deg)}
-.card{position:absolute;left:60px;right:60px;top:${alto > 1100 ? 230 : 150}px;bottom:${alto > 1100 ? 74 : 60}px;border-radius:44px;background:linear-gradient(180deg,#ffffff,#fff1e6);box-shadow:0 30px 80px #0006}
+.card{position:absolute;left:60px;right:60px;top:${alto > 1100 ? 236 : 152}px;bottom:${alto > 1100 ? 74 : 60}px;border-radius:44px;background:linear-gradient(180deg,#ffffff,#fff1e6);box-shadow:0 30px 80px #0006}
 .chico{font-weight:500;color:#222;text-align:center}
 .gigante{font-weight:900;text-align:center;letter-spacing:-6px;line-height:.85;color:#111;
   text-shadow:6px 8px 0 #F26A0F,10px 16px 30px rgba(242,106,15,.4)}
 .marca{position:absolute;left:0;right:0;bottom:${alto > 1100 ? 22 : 16}px;text-align:center;font-size:24px;letter-spacing:4px;color:#fff;font-weight:700}
 </style>
 <div class="rayos"></div>
-<div style="position:absolute;top:${alto > 1100 ? 60 : 30}px;left:0;right:0;text-align:center"><span style="display:inline-block;background:#fff;border-radius:22px;padding:${alto > 1100 ? '14px 40px' : '8px 30px'};box-shadow:0 10px 30px #0004;font-weight:900;font-size:${alto > 1100 ? 96 : 72}px;letter-spacing:-3px;line-height:1"><span style="color:#111">TODO</span><span style="color:#F26A0F">20</span><span style="display:block;font-size:${alto > 1100 ? 22 : 17}px;letter-spacing:10px;color:#111;font-weight:700;margin-top:4px">CALZADOS</span></span></div>
+<div style="position:absolute;top:${alto > 1100 ? 22 : 12}px;left:0;right:0;text-align:center"><img src="file://${D}/logo-todo20.png" style="height:${alto > 1100 ? 196 : 128}px;border-radius:50%;box-shadow:0 10px 30px #0005;background:#fff"></div>
 <div class="card">
   <p class="chico" style="font-size:${alto > 1100 ? 30 : 26}px;margin-top:${alto > 1100 ? 50 : 30}px">No importa cuál sea tu</p>
   <p class="gigante" style="font-size:${alto > 1100 ? 250 : 200}px;margin-top:6px">SEXO</p>
@@ -43,7 +43,7 @@ body{width:1080px;height:${alto}px;overflow:hidden;font-family:Figtree,sans-seri
   <img src="${P('bota-texana-tachas-blanca', D)}" style="position:absolute;left:470px;bottom:30px;width:200px;filter:drop-shadow(0 14px 14px #0003)">
   ${media(-18, 680, 600, 100)}${media(6, 740, 590, 100)}${media(-6, 790, 640, 100)}${media(16, 850, 630, 100)}`}
 </div>
-<div class="marca">@todo20calzados.rm</div>`;
+<div class="marca">@todo20calzados.rm · Av. de Mayo 1614, Ramos Mejía</div>`;
 
 (async () => {
   const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium', args: ['--allow-file-access-from-files'] });
