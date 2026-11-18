@@ -1,7 +1,7 @@
 // Placa "No importa cuál sea tu SEXO / medias GRATIS" (1080x1350 y 1080x1080) — Nací Reina
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
-const D = __dirname, M = path.join(__dirname, '..', 'carrusel-instagram', 'portadas');   // recortes .png sin fondo (se generan con rembg)
+const D = __dirname, M = __dirname;   // recortes .png sin fondo (se generan con rembg)
 const P = (n, dir = M) => 'file://' + path.join(dir, n + '.png');
 const logo = 'file:///home/user/todo20/img/logo.jpg';
 
@@ -29,19 +29,19 @@ body{width:1080px;height:${alto}px;overflow:hidden;font-family:Figtree,sans-seri
 <div class="rayos"></div>
 <div style="position:absolute;top:${alto > 1100 ? 50 : 22}px;left:0;right:0;text-align:center"><span style="display:inline-block;background:#fff;border-radius:22px;padding:10px 16px;box-shadow:0 10px 30px #0005"><img src="${logo}" style="height:${alto > 1100 ? 140 : 100}px;display:block"></span></div>
 <div class="card">
-  <p class="chico" style="font-size:46px;margin-top:${alto > 1100 ? 44 : 26}px">No importa cuál sea tu</p>
+  <p class="chico" style="font-size:${alto > 1100 ? 30 : 26}px;margin-top:${alto > 1100 ? 50 : 30}px">No importa cuál sea tu</p>
   <p class="gigante" style="font-size:${alto > 1100 ? 250 : 200}px;margin-top:6px">SEXO</p>
-  <p class="chico" style="font-size:40px;margin-top:${alto > 1100 ? 26 : 14}px">Con tu compra de calzado te llevás <b style="color:#E0157F">unas medias</b></p>
+  <p class="chico" style="font-size:${alto > 1100 ? 27 : 23}px;margin-top:${alto > 1100 ? 22 : 12}px">Con tu compra de calzado te llevás <b style="color:#E0157F">2 pares de medias</b></p>
   <p class="gigante" style="font-size:${alto > 1100 ? 250 : 200}px;margin-top:${alto > 1100 ? 14 : 6}px">GRATIS</p>
   ${alto > 1100 ? `
   <img src="${P('sandalia-umma-negra')}" style="position:absolute;left:-10px;bottom:30px;width:300px;filter:drop-shadow(0 14px 14px #0003)">
   <img src="${P('zapatilla-falcon-negro-camel', D)}" style="position:absolute;left:250px;bottom:20px;width:330px;filter:drop-shadow(0 14px 14px #0003)">
   <img src="${P('bota-texana-tachas-blanca', D)}" style="position:absolute;left:520px;bottom:40px;width:260px;filter:drop-shadow(0 14px 14px #0003)">
-  ${media(-14, 760, 790, 150)}${media(12, 840, 770, 150)}` : `
+  ${media(-20, 735, 700, 125)}${media(4, 805, 690, 125)}${media(-8, 770, 840, 125)}${media(16, 845, 825, 125)}` : `
   <img src="${P('sandalia-umma-negra')}" style="position:absolute;left:0;bottom:30px;width:220px;filter:drop-shadow(0 14px 14px #0003)">
   <img src="${P('zapatilla-falcon-negro-camel', D)}" style="position:absolute;left:210px;bottom:20px;width:250px;filter:drop-shadow(0 14px 14px #0003)">
   <img src="${P('bota-texana-tachas-blanca', D)}" style="position:absolute;left:470px;bottom:30px;width:200px;filter:drop-shadow(0 14px 14px #0003)">
-  ${media(-14, 700, 640, 120)}${media(12, 790, 625, 120)}`}
+  ${media(-18, 680, 600, 100)}${media(6, 740, 590, 100)}${media(-6, 790, 640, 100)}${media(16, 850, 630, 100)}`}
 </div>
 <div class="marca">@nacireinacalzados · nacireinacalzados.com</div>`;
 
