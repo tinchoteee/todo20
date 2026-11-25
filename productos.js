@@ -29,9 +29,10 @@
   envio: {
     // Envío gratis cuando los productos suman este monto o más. 0 = sin envío gratis.
     gratisDesde: 165000,
-    // Transportista preferido: si ese correo cotiza, se muestran solo sus opciones. Vacío = todos los activos en Zipnova
-    // (hoy Correo Argentino y OCA; Andreani no está disponible sin contrato propio).
-    transportista: "",
+    // Transportista preferido: si ese correo cotiza, se muestran solo sus opciones. Vacío = todos los activos en Zipnova.
+    // 2026-11-25: solo Correo Argentino (pedido del dueño: OCA tuvo demoras y Zipnova lo suspendió). Para volver a mostrar todos, dejar "".
+    // Si Correo Argentino no cotiza para un destino, se muestran los demás para no perder la venta.
+    transportista: "correo argentino",
     // Caja de cada par (peso en gramos, medidas en cm). El correo cobra según peso y tamaño.
     // Un producto puede usar otra caja con  caja: "bota-alta".
     cajas: {
